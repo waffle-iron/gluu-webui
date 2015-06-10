@@ -1,18 +1,21 @@
-{% extends base.html %}
+{% extends 'base.html' %}
 {% block interface %}
 
 <div class="container-fluid">
-	<div class="row">
-		<div class="col-sm-3 col-md-2 sidebar">
-        	<ul class="nav nav-sidebar">
-          	</ul>
-          	<ul class="nav nav-sidebar">
-          	</ul>
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="/node">Node</a></li>
+                <li><a href="/cluster">Cluster</a></li>
+                <li><a href="/provider">Provider</a></li>
+            </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-         
+            {% block content %}
+                <!-- A default view is required here -->
+            {% endblock %}
         </div>
-	</div>
+    </div>
 </div>
 
 {% endblock %}
