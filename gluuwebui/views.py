@@ -32,20 +32,19 @@ def list_providers():
         r = requests.get(url)
         providers = r.json()
         for provider in providers:
-            p = requests.get(api_base+"provider/"+provider['id'])
+            p = requests.get(url + "/" + provider['id'])
             provider_data.append(p.json())
         return render_template("provider.html", data=provider_data)
 
     elif request.method == "POST":
         # if it is a delete request then send DELETE to the api
-        if request.form['deleteProvider']:
-            payload = {"id": request.form["deleteProvider"]}
-            r = requests.delete(url, data=payload)
+        if 'deleteProvider' in request.form.keys():
+            r = requests.delete(url + "/" + request.form["deleteProvider"])
             if r.status_code != 204:
                 flash("The provider could not be removed. Reason: "+r.reason,
                       'danger')
             else:
-                flash("The provider with the ID '" + payload['id'] +
+                flash("The provider ID '" + request.form['deleteProvider'] +
                       "' was deleted successfully", 'success')
         # otherwise the post request is for creating a new provider
         else:

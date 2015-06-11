@@ -1,3 +1,3 @@
 from gluuwebui import app
 
-app.run()
+app.run(debug=True)
