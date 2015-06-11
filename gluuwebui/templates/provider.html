@@ -20,6 +20,12 @@
             <p><strong>Host Name:</strong> {{ provider['hostname'] }}</p>
             <p><strong>Docker URL:</strong> {{ provider['docker_base_url'] }}</p>
         </div>
+        <div class="panel-footer">
+        	<form action="/provider" method="post">
+                <input type="hidden" name="deleteProvider" value="{{ provider['id'] }}">
+                <button type="submit" class="btn btn-sm btn-danger">Remove Provider</button>
+            </form>
+        </div>
     </div>
     {% endfor %}
 

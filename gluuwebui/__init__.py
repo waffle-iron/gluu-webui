@@ -1,4 +1,6 @@
+"""The gluuwebui is a Flask application to manage Gluu Cluster using its API"""
 from flask import Flask
+
 app = Flask(__name__)
 
 
