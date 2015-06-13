@@ -32,7 +32,7 @@ def index():
 @app.route("/node")
 def list_nodes():
     # TODO call the API and get the list
-    return render_template("entity_list.html", name="Nodes")
+    return render_template("entity.html", entity="Node")
 
 
 @app.route("/provider", methods=['GET', 'POST'])
@@ -50,7 +50,7 @@ def list_providers():
         if r.status_code != 200:
             raise APIError("Could not obtain the list of providers.",
                            r.status_code, r.reason)
-        return render_template("provider.html", data=r.json())
+        return render_template("entity.html", data=r.json())
 
     elif request.method == "POST":
         # if it is a delete request then send DELETE to the api
@@ -83,7 +83,8 @@ def list_clusters():
         if r.status_code != 200:
             raise APIError("Could not obtain the list of clusters.",
                            r.status_code, r.reason)
-        return render_template("clusters.html", data=r.json())
+        return render_template("entity.html", data=r.json(),
+                               entity="Cluster")
 
     elif request.method == 'POST':
         if 'deleteCluster' in request.form.keys():

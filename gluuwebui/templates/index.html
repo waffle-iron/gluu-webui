@@ -5,20 +5,35 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="/node">Node</a></li>
-                <li><a href="/cluster">Cluster</a></li>
                 <li><a href="/provider">Provider</a></li>
+                <li><a href="/cluster">Cluster</a></li>
+                <li><a href="/node">Node</a></li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            {% block content %}
-                <!-- Content has two things. 1. list of entites, 2. A new entity form -->
-                {% block entity_list %}
-                {% endblock entity_list %}
-
-                {% block entity_form %}
-                {% endblock entity_form %}
-            {% endblock content %}
+            <h2>{{ entity }}</h2>
+            <!-- Content has two things. 1. list of entites, 2. A new entity form -->
+            <ul id="actionTab" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a></li>
+                <li role="presentation" ><a href="#newform" aria-controls="newform" role="tab" data-toggle="tab">New {{entity}}</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" role="tabpanel" id="status">
+                    <p></p>
+                    {% block entity_status %}
+                    {% endblock entity_status %}
+                </div>
+                <div class="tab-pane" role="tabpanel" id="newform">
+                    <p></p>
+                    {% block entity_form %}
+                    {% endblock entity_form %}
+                </div>
+            </div>
+            <script>
+                $(function(){
+                    $('#actionTab a:new').tab('show');
+                });
+            </script>
         </div>
     </div>
 </div>

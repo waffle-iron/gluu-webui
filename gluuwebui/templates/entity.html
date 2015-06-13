@@ -1,0 +1,61 @@
+{% extends 'index.html' %}
+{% block entity_status %}
+    <!-- show the flash messages first -->
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{message[0]}}" role="alert">
+        {{message[1]}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% if not data|length %}
+        <div class="alert alert-warning" role="alert">
+            <p>There are no {{entity}}s defined in the server. Kindly add a {{entity}}.</p>
+        </div>
+    {% endif %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{{entity}} Details</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for provider in data %}
+            <tr>
+                <td>{{ data.index(provider) }}</td>
+                <td>
+                    {% for key in provider.keys() %}
+                    <p><strong>{{ key }}: </strong>{{ provider[key] }}</p>
+                    {% endfor %}
+                </td>
+                <td>
+                    <form action="/provider" method="post">
+                        <input type="hidden" name="deleteProvider" value="{{ provider['id'] }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock entity_status %}
+
+{% block entity_form %}
+    {% if entity == "Provider" %}
+        {% include 'new_provider.html' %}
+    {% elif entity == "Cluster" %}
+        {% include 'new_cluster.html' %}
+    {% elif entity == "Node" %}
+        {% include  'new_node.html' %}
+    {% endif %}
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            $().alert();
+        });
+    </script>
+{% endblock entity_form %}
