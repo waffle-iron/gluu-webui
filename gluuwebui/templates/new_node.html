@@ -1,3 +1,20 @@
 <form action="/node" method="post">
-
+    <div class="form-group">
+        <label for="cluster_id">Cluster ID</label>
+        <input class="form-control" type="text" name="cluster_id" placeholder="The ID of the cluster">
+    </div>
+    <div class="form-group">
+        <label for="node_type">Node Type</label>
+        <select id="node_type" name="node_type" class="form-control">
+            <option value="ldap">LDAP</option>
+            <option value="oxauth">oxAuth</option>
+            <option value="oxTrust">oxTrust</option>
+            <option value="httpd">Httpd</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="provider_id">Provider ID</label>
+        <input class="form-control" type="text" name="provider_id" placeholder="The ID of the provider">
+    </div>
+    <button type="submit" class="btn btn-primary">Create Node</button>
 </form>
