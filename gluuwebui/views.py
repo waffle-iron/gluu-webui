@@ -47,6 +47,9 @@ def list_providers():
     if request.method == "GET":
         # call the API and get the list
         r = requests.get(url)
+        if r.status_code != 200:
+            raise APIError("Could not obtain the list of providers.",
+                           r.status_code, r.reason)
         return render_template("provider.html", data=r.json())
 
     elif request.method == "POST":
