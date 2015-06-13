@@ -50,7 +50,7 @@ def list_providers():
         if r.status_code != 200:
             raise APIError("Could not obtain the list of providers.",
                            r.status_code, r.reason)
-        return render_template("entity.html", data=r.json())
+        return render_template("entity.html", data=r.json(), entity="Provider")
 
     elif request.method == "POST":
         # if it is a delete request then send DELETE to the api
