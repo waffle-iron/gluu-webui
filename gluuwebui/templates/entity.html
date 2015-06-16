@@ -23,17 +23,17 @@
             </tr>
         </thead>
         <tbody>
-        {% for provider in data %}
+        {% for object in data %}
             <tr>
-                <td>{{ data.index(provider) }}</td>
+                <td>{{ data.index(object) }}</td>
                 <td>
-                    {% for key in provider.keys() %}
-                    <p><strong>{{ key }}: </strong>{{ provider[key] }}</p>
+                    {% for key in object.keys()|sort %}
+                    <p><strong>{{ key }}: </strong>{{ object[key] }}</p>
                     {% endfor %}
                 </td>
                 <td>
-                    <form action="/provider" method="post">
-                        <input type="hidden" name="deleteProvider" value="{{ provider['id'] }}">
+                    <form action="/{{entity|lower}}" method="post">
+                        <input type="hidden" name="deleteEntity" value="{{ object['id'] }}">
                         <button type="submit" class="btn btn-sm btn-danger">Remove</button>
                     </form>
                 </td>

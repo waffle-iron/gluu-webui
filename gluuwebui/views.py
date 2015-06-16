@@ -1,5 +1,5 @@
 from gluuwebui import app
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect
 
 import requests
 
@@ -29,78 +29,42 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/node")
-def list_nodes():
-    # TODO call the API and get the list
-    return render_template("entity.html", entity="Node")
-
-
+@app.route("/node", methods=['GET', 'POST'])
 @app.route("/provider", methods=['GET', 'POST'])
-def list_providers():
-    """Render a web page that will have a list of providers and their details
-    listed. So this fucntion has to call GET /provider and then using the
-    returned result to call /provider/<provider_id> for each id listed. Then
-    pass the complete data to the template to render."""
-
-    url = api_base+"provider"
+@app.route("/cluster", methods=['GET', 'POST'])
+@app.route("/license", methods=['GET', 'POST'])
+def entity():
+    """The function that does the API work and renders the page"""
+    entity = request.url.split("/")[-1]
+    url = api_base + entity
 
     if request.method == "GET":
         # call the API and get the list
         r = requests.get(url)
         if r.status_code != 200:
-            raise APIError("Could not obtain the list of providers.",
-                           r.status_code, r.reason)
-        return render_template("entity.html", data=r.json(), entity="Provider")
+            raise APIError("Could not get the list of available {0}.".format(
+                entity), r.status_code, r.json()['message'])
+        return render_template("entity.html", data=r.json(),
+                               entity=entity.capitalize())
 
     elif request.method == "POST":
         # if it is a delete request then send DELETE to the api
-        if 'deleteProvider' in request.form.keys():
-            r = requests.delete(url + "/" + request.form["deleteProvider"])
+        if 'deleteEntity' in request.form.keys():
+            r = requests.delete(url + "/" + request.form["deleteEntity"])
             if r.status_code == 204:
-                flash("The provider ID '" + request.form['deleteProvider'] +
+                flash("The provider ID '" + request.form['deleteEntity'] +
                       "' was deleted successfully", 'success')
             else:
-                flash("The provider could not be removed. Reason: "+r.reason,
-                      'danger')
+                flash("The provider could not be removed. Reason: {0}".format(
+                    r.json()['message']), 'danger')
         # otherwise the post request is for creating a new provider
         else:
             # TODO form validation as required
             r = requests.post(url, data=request.form)
             if r.status_code == 201:  # TODO improve response handling
-                flash("Provider successfully added with ID: " + r.json()['id'],
-                      'success')
+                flash("Successfully added {0} with ID: {1}".format(entity,
+                      r.json()['id']), 'success')
             else:
-                flash("Sorry! the provider was not added. Reason: " + r.reason,
-                      'danger')
-        return redirect(url_for('list_providers'))
-
-
-@app.route("/cluster", methods=['GET', 'POST'])
-def list_clusters():
-    url = api_base+"cluster"
-    if request.method == 'GET':
-        r = requests.get(url)
-        if r.status_code != 200:
-            raise APIError("Could not obtain the list of clusters.",
-                           r.status_code, r.reason)
-        return render_template("entity.html", data=r.json(),
-                               entity="Cluster")
-
-    elif request.method == 'POST':
-        if 'deleteCluster' in request.form.keys():
-            r = requests.delte(url + "/" + request.form['deleteCluster'])
-            if r.status_code == 204:
-                flash("Successfully removed the cluster with ID: {0}".format(
-                    request.form['deleteCluster']), "success")
-            else:
-                flash("Couldn't delete the node you specified. API Server"
-                      " Reason: {0}".format(r.json()['message']), "danger")
-        else:
-            r = requests.post(url, data=request.form)
-            if r.status_code == 201:
-                flash("Successfully created a new cluster with id {0}".format(
-                      r.json()["id"]), "success")
-            else:
-                flash("Could not create a cluster. API Server Reason:{0}"
-                      .format(r.json()['message']), "danger")
-        return redirect(url_for('list_clusters'))
+                flash("Sorry! the {0} wasn't added. Reason: {1}".format(entity,
+                      r.json()['message']), 'danger')
+        return redirect("/{0}".format(entity))
