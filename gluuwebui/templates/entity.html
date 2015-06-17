@@ -50,6 +50,10 @@
         {% include 'new_cluster.html' %}
     {% elif entity == "Node" %}
         {% include  'new_node.html' %}
+    {% elif entity == "License" %}
+        {% include  'new_license.html' %}
+    {% elif entity == "License_Credential" %}
+        {% include  'new_license_credential.html' %}
     {% endif %}
 
     <script>

@@ -1,7 +1,7 @@
 <form action="/node" method="post">
     <div class="form-group">
         <label for="cluster_id">Cluster ID</label>
-        <input class="form-control" type="text" name="cluster_id" placeholder="The ID of the cluster">
+        <input class="form-control" type="text" name="cluster_id" required>
     </div>
     <div class="form-group">
         <label for="node_type">Node Type</label>
@@ -14,15 +14,15 @@
     </div>
     <div class="form-group">
         <label for="provider_id">Provider ID</label>
-        <input class="form-control" type="text" name="provider_id" placeholder="The ID of the provider">
+        <input class="form-control" type="text" name="provider_id" required>
     </div>
     <div class="form-group">
         <label for="connect_delay">Delay before connecting node (secs)</label>
-        <input class="form-control" type="number" name="connect_delay">
+        <input class="form-control" type="number" name="connect_delay" value="10" optional>
     </div>
     <div class="form-group">
         <label for="exec_delay">Delay before executing (secs)</label>
-        <input class="form-control" type="number" name="exec_delay">
+        <input class="form-control" type="number" name="exec_delay" value="15" optional>
     </div>
     <button type="submit" class="btn btn-primary">Create Node</button>
 </form>

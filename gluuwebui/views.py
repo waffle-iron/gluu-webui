@@ -33,6 +33,7 @@ def index():
 @app.route("/provider", methods=['GET', 'POST'])
 @app.route("/cluster", methods=['GET', 'POST'])
 @app.route("/license", methods=['GET', 'POST'])
+@app.route("/license_credential", methods=['GET', 'POST'])
 def entity():
     """The function that does the API work and renders the page"""
     entity = request.url.split("/")[-1]
@@ -45,7 +46,7 @@ def entity():
             raise APIError("Could not get the list of available {0}.".format(
                 entity), r.status_code, r.json()['message'])
         return render_template("entity.html", data=r.json(),
-                               entity=entity.capitalize())
+                               entity=entity.title())
 
     elif request.method == "POST":
         # if it is a delete request then send DELETE to the api
@@ -59,11 +60,13 @@ def entity():
                     r.json()['message']), 'danger')
         # otherwise the post request is for creating a new provider
         else:
-            # TODO form validation as required
             r = requests.post(url, data=request.form)
-            if r.status_code == 201:  # TODO improve response handling
+            if r.status_code == 201:  # Created
                 flash("Successfully added {0} with ID: {1}".format(entity,
                       r.json()['id']), 'success')
+            elif r.status_code == 202:  # Accepted
+                flash("You request to create new {0} is accepted.".format(
+                    entity), 'info')
             else:
                 flash("Sorry! the {0} wasn't added. Reason: {1}".format(entity,
                       r.json()['message']), 'danger')

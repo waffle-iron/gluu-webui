@@ -5,6 +5,7 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
+                <li><a href="/license_credential">License Credential</a></li>
                 <li><a href="/license">License</a></li>
                 <li><a href="/provider">Provider</a></li>
                 <li><a href="/cluster">Cluster</a></li>
@@ -12,11 +13,12 @@
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2>{{ entity }}</h2>
+            <h2>{{ entity|replace('_', ' ') }}</h2>
             <!-- Content has two things. 1. list of entites, 2. A new entity form -->
             <ul id="actionTab" class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#status" aria-controls="status" role="tab" data-toggle="tab">Status</a></li>
-                <li role="presentation" ><a href="#newform" aria-controls="newform" role="tab" data-toggle="tab">New {{entity}}</a></li>
+                <li role="presentation" ><a href="#newform" aria-controls="newform" role="tab" data-toggle="tab">New {{entity|replace('_', 
+                    ' ')}}</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" role="tabpanel" id="status">

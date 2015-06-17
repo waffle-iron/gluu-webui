@@ -1,0 +1,13 @@
+<form action="/license" method="post">
+    <div class="form-group">
+        <label for="code">License code</label>
+        <input type="text" class="form-control" name="code" required>
+        <span class="help-block">License code (licenseId) retrieved from https://license.gluu.org</span>
+    </div>
+    <div class="form-group">
+        <label for="credential_id">Credential ID</label>
+        <input type="text" class="form-control" name="credential_id" required>
+        <span class="help-block">Credential ID to use (useful for generating metadata)</span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add License</button>
+</form>

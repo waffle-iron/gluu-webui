@@ -1,47 +1,58 @@
 <form action="/cluster" method="post">
     <div class="form-group">
         <label for="name">Name</label>
-        <input class="form-control" type="text" name="name" placeholder="Name of the cluster">
+        <input class="form-control" type="text" name="name" required>
+        <span class="help-block">Name of the cluster</span>
     </div>
     <div class="form-group">
         <label for="description">Description</label>
-        <input class="form-control" type="text" name="description" placeholder="Description of the purpose of the cluster">
+        <input class="form-control" type="text" name="description" required>
+        <span class="help-block">Description of the purpose of the cluster</span>
     </div>
     <div class="form-group">
         <label for="org_name">Organization Name</label>
-        <input class="form-control" type="text" name="org_name" placeholder="Full name of the organization">
+        <input class="form-control" type="text" name="org_name" required>
+        <span class="help-block">Full name of the organization</span>
     </div>
     <div class="form-group">
         <label for="org_short_name">Org. Name Abbrevation</label>
-        <input class="form-control" type="text" name="org_short_name" placeholder="Short word or abbreviation for the organization">
+        <input class="form-control" type="text" name="org_short_name" required>
+        <span class="help-block">Short word or abbreviation for the organization</span>
     </div>
     <div class="form-group">
         <label for="city">City</label>
-        <input class="form-control" type="text" name="city" placeholder="City for self-signed certificates.">
+        <input class="form-control" type="text" name="city" required>
+        <span class="help-block">City for self-signed certificates.</span>
     </div>
     <div class="form-group">
         <label for="state">State or Province</label>
-        <input class="form-control" type="text" name="state" placeholder="State or province for self-signed certificates.">
+        <input class="form-control" type="text" name="state" required>
+        <span class="help-block">State or province for self-signed certificates.</span>
     </div>
     <div class="form-group">
         <label for="country_code">Country Code</label>
-        <input class="form-control" type="text" name="country_code" placeholder="ISO 3166-1 two-character country code for self-signed certificates.">
+        <input class="form-control" type="text" name="country_code" required>
+        <span class="help-block">ISO 3166-1 two-character country code for self-signed certificates.</span>
     </div>
     <div class="form-group">
         <label for="admin_email">Admin Email</label>
-        <input class="form-control" type="text" name="admin_email" placeholder="Admin email for the self-signed certifcates.">
+        <input class="form-control" type="text" name="admin_email" required>
+        <span class="help-block">Admin email for the self-signed certifcates.</span>
     </div>
     <div class="form-group">
         <label for="ox_cluster_hostname">oxCluster Hostname</label>
-        <input class="form-control" type="text" name="ox_cluster_hostname" placeholder="Hostname to use for the admin interface website.">
+        <input class="form-control" type="text" name="ox_cluster_hostname" required>
+        <span class="help-block">Hostname to use for the admin interface website.</span>
     </div>
     <div class="form-group">
         <label for="admin_pw">LDAP Admin Password</label>
-        <input class="form-control" type="password" name="admin_pw" placeholder="Password for LDAP replication admin.">
+        <input class="form-control" type="password" name="admin_pw" required>
+        <span class="help-block">Password for LDAP replication admin.</span>
     </div>
     <div class="form-group">
         <label for="weave_ip_network">Weave Network IP</label>
-        <input class="form-control" type="text" name="weave_ip_network" placeholder="The IP address for weave network, e.g. 10.20.10.0/24">
+        <input class="form-control" type="text" name="weave_ip_network" required>
+        <span class="help-block">The IP address for weave network, e.g. 10.20.10.0/24</span>
     </div>
     <button class="btn btn-primary" type="submit">Create Cluster</button>
 </form>
