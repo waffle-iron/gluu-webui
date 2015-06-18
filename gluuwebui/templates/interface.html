@@ -13,6 +13,7 @@
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block main_area %}
             <h2>{{ entity|replace('_', ' ') }}</h2>
             <!-- Content has two things. 1. list of entites, 2. A new entity form -->
             <ul id="actionTab" class="nav nav-tabs" role="tablist">
@@ -29,14 +30,27 @@
                 <div class="tab-pane" role="tabpanel" id="newform">
                     <p></p>
                     {% block entity_form %}
-                    {% endblock entity_form %}
+                        {% if entity == "Provider" %}
+                            {% include 'new_provider.html' %}
+                        {% elif entity == "Cluster" %}
+                            {% include 'new_cluster.html' %}
+                        {% elif entity == "Node" %}
+                            {% include  'new_node.html' %}
+                        {% elif entity == "License" %}
+                            {% include  'new_license.html' %}
+                        {% elif entity == "License_Credential" %}
+                            {% include  'new_license_credential.html' %}
+                        {% endif %}
+
+                       {% endblock entity_form %}
                 </div>
             </div>
             <script>
                 $(function(){
-                    $('#actionTab a:new').tab('show');
+                    $('#actionTab a:first').tab('show');
                 });
             </script>
+            {% endblock main_area %}
         </div>
     </div>
 </div>

@@ -26,7 +26,7 @@ def api_error(error):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("interface.html")
 
 
 @app.route("/node", methods=['GET', 'POST'])
@@ -45,7 +45,7 @@ def entity():
         if r.status_code != 200:
             raise APIError("Could not get the list of available {0}.".format(
                 entity), r.status_code, r.json()['message'])
-        return render_template("entity.html", data=r.json(),
+        return render_template("entity_status.html", data=r.json(),
                                entity=entity.title())
 
     elif request.method == "POST":
@@ -71,3 +71,16 @@ def entity():
                 flash("Sorry! the {0} wasn't added. Reason: {1}".format(entity,
                       r.json()['message']), 'danger')
         return redirect("/{0}".format(entity))
+
+
+@app.route("/edit/<entity>/<id>", methods=['POST'])
+def edit_entity(entity, id):
+    url = api_base + entity + "/" + id
+    r = requests.put(url, data=request.form)
+    if r.status_code == 200:
+        flash("The {0} with ID {1} was sucessfully updated.".format(entity,
+              id), 'success')
+    else:
+        flash("Sorry! couldn't update the {0} with ID {1}".format(entity, id),
+              'info')
+    return redirect("/{0}".format(entity))

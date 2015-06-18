@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'interface.html' %}
 {% block entity_status %}
     <!-- show the flash messages first -->
     {% for message in get_flashed_messages(with_categories=True) %}
@@ -36,30 +36,24 @@
                         <input type="hidden" name="deleteEntity" value="{{ object['id'] }}">
                         <button type="submit" class="btn btn-sm btn-danger">Remove</button>
                     </form>
+
+                    {# Only the provider and the License Cred enity now have PUT requests #}
+                    {% if entity == "Provider" or entity == "License_Credential"%}
+                    <a class="btn btn-sm btn-primary edit" href="#" data="{{object['id']}}">Edit</button>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-{% endblock entity_status %}
-
-{% block entity_form %}
-    {% if entity == "Provider" %}
-        {% include 'new_provider.html' %}
-    {% elif entity == "Cluster" %}
-        {% include 'new_cluster.html' %}
-    {% elif entity == "Node" %}
-        {% include  'new_node.html' %}
-    {% elif entity == "License" %}
-        {% include  'new_license.html' %}
-    {% elif entity == "License_Credential" %}
-        {% include  'new_license_credential.html' %}
-    {% endif %}
-
+    
     <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-            $().alert();
+        $('.edit').click(function(){
+                console.log("hey I was clicked ok!");
+            $('#actionTab a:last').tab('show');
+            $('#actionTab a:last').text("Edit {{entity}}");
+            $("form").attr("action", "/edit/{{entity|lower}}/"+$(this).attr('data') );
+            $("form button.btn-primary").text( "Update {{entity}}");
         });
     </script>
-{% endblock entity_form %}
+{% endblock entity_status %}
