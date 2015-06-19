@@ -1,7 +1,9 @@
 from gluuwebui import app
-from flask import render_template, request, flash, redirect
+from flask import render_template, request, flash, redirect, url_for, \
+    Response
 
 import requests
+import os
 
 api_base = app.config["API_SERVER_URL"]
 
@@ -24,9 +26,37 @@ def api_error(error):
     return render_template("api_error.html")
 
 
+def root_dir():  # pragma: no cover
+    return os.path.abspath(os.path.dirname(__file__))
+
+
+def get_file(filename):  # pragma: no cover
+    try:
+        src = os.path.join(root_dir(), filename)
+        return open(src).read()
+    except IOError as exc:
+        return str(exc)
+
+
 @app.route("/")
 def index():
-    return render_template("interface.html")
+    content = get_file('static/index.html')
+    return Response(content, mimetype="text/html")
+
+
+@app.route("/js/<filename>")
+def js(filename):
+    return redirect(url_for('static', filename="js/{0}".format(filename)))
+
+
+@app.route("/css/<filename>")
+def css(filename):
+    return redirect(url_for('static', filename="css/{0}".format(filename)))
+
+
+@app.route("/img/<filename>")
+def img(filename):
+    return redirect(url_for('static', filename="img/{0}".format(filename)))
 
 
 @app.route("/node", methods=['GET', 'POST'])
