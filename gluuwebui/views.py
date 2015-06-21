@@ -75,19 +75,46 @@ def img(filename):
 
 @app.route("/node")
 def represent_node():
-    response = api_get("node")
-    # TODO parse this data and pass only the table representaion
-    return response
+    resp = api_get("node")
+    data = []
+    for node in resp:
+        provider = api_get('provider/{0}'.format(node['provider_id']))
+        cluster = api_get('cluster/{0}'.format(node['cluster_id']))
+        data.append({u'Name': node['name'],
+                     u'Type': node['type'],
+                     u'IP': node['ip'],
+                     u'Provider': "/".join([provider['type'],
+                                           provider['hostname']]),
+                     u'Cluster': cluster['name']})
+    return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
 @app.route("/provider")
 def represent_provider():
-    pass
+    resp = api_get('provider')
+    data = []
+    for provider in resp:
+        data.append({u'Host Name': provider['hostname'],
+                     u'Type': provider['type'],
+                     u'ID': provider['id']})
+    return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
 @app.route("/cluster")
 def represent_cluster():
-    pass
+    resp = api_get('cluster')
+    data = []
+    for cluster in resp:
+        data.append({u'Name': cluster['name'],
+                     u'Organization': cluster['org_short_name'],
+                     u'City': cluster['city'],
+                     u'OX Cluster Host': cluster['ox_cluster_hostname'],
+                     u'Httpd Nodes': len(cluster['httpd_nodes']),
+                     u'LDAP Nodes': len(cluster['ldap_nodes']),
+                     u'OxAuth Nodes': len(cluster['oxauth_nodes']),
+                     u'OxTrust Nodes': len(cluster['oxtrust_nodes'])
+                     })
+    return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
 @app.route("/license")

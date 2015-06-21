@@ -50,7 +50,15 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
         $http.get('/'+resource).success( function( data ){
             $scope.headers = Object.keys( data[0] );
-            $scope.contents = data;
+            $scope.contents = [];
+            for( var i = 0; i < data.length; i++){
+                var row = [];
+                for( var j = 0; j < $scope.headers.length; j++ ){
+                    row.push(data[i][$scope.headers[j]]);
+                }
+                $scope.contents.push(row);
+                console.log("appending "+ row.toString());
+            }
         });
 
         //$http.get('/'+resource).success(function(data){
