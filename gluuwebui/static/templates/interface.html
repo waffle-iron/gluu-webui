@@ -1,9 +1,8 @@
-<h2>{{ currentResource }}</h2>
 <!-- Content has two things. 1. list of entites, 2. A new entity form -->
 <div class="row">
-    <div class="col-md-3"><a href="#/new/{{currentResURI}}" class="btn btn-primary">New {{currentResource}}</a></div>
-    <div class="col-md-3"><a href="#/edit/{{currentResURI}}" class="btn btn-info" >Edit {{currentResource}}</a></div>
-    <div class="col-md-6"></div>
+    <h2>{{ currentResource }}
+    <a href="#/{{currentResURI}}/new" class="btn btn-default">New {{currentResource}}</a>
+    <a href="#/{{currentResURI}}/edit/{{currentItemId}}" class="btn btn-info" >Edit {{currentResource}}</a></h2>
 </div>
 <div id="resourceTable">
     <table class="table">

@@ -44,6 +44,12 @@ def index():
     return Response(content, mimetype="text/html")
 
 
+@app.route("/templates/<filename>")
+def template(filename):
+    content = get_file('static/templates/{0}'.format(filename))
+    return Response(content, mimetype="text/html")
+
+
 @app.route("/js/<filename>")
 def js(filename):
     return redirect(url_for('static', filename="js/{0}".format(filename)))

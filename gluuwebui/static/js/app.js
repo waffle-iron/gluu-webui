@@ -8,27 +8,28 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
     $routeProvider.
         when('/view/:resource', {
             templateUrl: 'templates/interface.html',
+            controller: 'OverviewController'
+        }).
+        when('/:resource/:action/:id?',{
+            templateUrl: function(params) {
+                var resource = params.resource;
+                var template = "";
+                switch( resource ){
+                    case 'license_credential': template = 'templates/new_license_credential.html';
+                                               break;
+                    case 'license': template = 'templates/new_license.html';
+                                    break;
+                    case 'provider': template = 'templates/new_provider.html';
+                                     break;
+                    case 'cluster': template = 'templates/new_cluster.html';
+                                    break;
+                    case 'node': template = 'templates/new_node.html';
+                                 break;
+                    default: template = 'templates/error.html';
+                }
+                return template;
+            },
             controller: 'ResourceController'
-        }).
-        when('/license_credential/:action/:id', {
-            templateUrl: 'templates/new_license_credential.html',
-            controller: 'CredsController'
-        }).
-        when('/license/:action/:id',{
-            templateUrl: 'templates/new_license.html',
-            controller: 'LicenseController'
-        }).
-        when('/provider/:action/:id',{
-            templateUrl: 'templates/new_provider.html',
-            controller: 'ProviderController'
-        }).
-        when('/cluster/:action/:id',{
-            templateUrl: 'templates/new_cluster.html',
-            controller: 'ClusterController'
-        }).
-        when('/node/:action/:id', {
-            templateUrl: 'templates/new_node.html',
-            controller: 'NodeController'
         }).
         otherwise({
             redirectTo: '/'

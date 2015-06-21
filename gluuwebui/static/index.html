@@ -51,15 +51,20 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href='#/view/license_credentials'>License Credentials</a></li>
+                <li><a href='#/view/license_credential'>License Credential</a></li>
                 <li><a href='#/view/license'>License</a></li>
                 <li><a href='#/view/provider'>Provider</a></li>
                 <li><a href='#/view/cluster'>Cluster</a></li>
                 <li><a href='#/view/node'>Node</a></li>
             </ul>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-view>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div ng-controller='AlertController'>
+                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+            </div>
             <!-- main area where the templates regarding the different views will be loaded -->
+            <div ng-view>
+            </div>
         </div>
     </div>
     </div>
