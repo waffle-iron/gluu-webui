@@ -4,10 +4,18 @@
     <a href="#/{{currentResURI}}/new" class="btn btn-default">New {{currentResource}}</a>
     <a href="#/{{currentResURI}}/edit/{{currentItemId}}" class="btn btn-info" >Edit {{currentResource}}</a></h2>
 </div>
-<div id="resourceTable">
+<div id="resourceTable" class="row">
     <table class="table">
+        <thead>
         <tr>
-            <td></td>
+            <th ng-repeat="head in headers">{{head}}</th>
         </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents">
+                <td><a href="#" ng-click="loadResource(id)">{{row.Name}}</a></td>
+                <td>{{row.ID}}</td>
+            </tr>
+        </tbody>
     </table>
 </div>

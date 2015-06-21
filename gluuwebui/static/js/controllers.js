@@ -44,16 +44,20 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         // Clear the alerts
         AlertMsg.clear();
 
-        var res = $routeParams.resource;
-        $scope.currentResURI = res;
-        $scope.currentResource = res.charAt(0).toUpperCase() + res.slice(1).replace("_", " ");
+        var resource = $routeParams.resource;
+        $scope.currentResURI = resource;
+        $scope.currentResource = resource.charAt(0).toUpperCase() + resource.slice(1).replace("_", " ");
 
+        $http.get('/'+resource).success( function( data ){
+            $scope.headers = Object.keys( data[0] );
+            $scope.contents = data;
+        });
 
         //$http.get('/'+resource).success(function(data){
-            
         //});
 }]);
 
+// controller that is used to respond to add/edit actions on resources
 webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routeParams', 'AlertMsg',
     function($scope, $http, $routeParams, AlertMsg){
         // Clear all alert messages

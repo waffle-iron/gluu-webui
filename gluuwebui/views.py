@@ -2,6 +2,7 @@ from gluuwebui import app
 from flask import render_template, request, flash, redirect, url_for, \
     Response
 
+import json
 import requests
 import os
 
@@ -22,8 +23,7 @@ class APIError(Exception):
 
 @app.errorhandler(APIError)
 def api_error(error):
-    flash(error)
-    return render_template("api_error.html")
+    return error, 500
 
 
 def root_dir():  # pragma: no cover
@@ -36,6 +36,14 @@ def get_file(filename):  # pragma: no cover
         return open(src).read()
     except IOError as exc:
         return str(exc)
+
+
+def api_get(req):
+    r = requests.get(api_base + req)
+    if r.status_code != 200:
+        raise APIError('There was an issue fetching your data',
+                       r.status_code, r.reason)
+    return r.json()
 
 
 @app.route("/")
@@ -65,11 +73,37 @@ def img(filename):
     return redirect(url_for('static', filename="img/{0}".format(filename)))
 
 
-@app.route("/node", methods=['GET', 'POST'])
-@app.route("/provider", methods=['GET', 'POST'])
-@app.route("/cluster", methods=['GET', 'POST'])
-@app.route("/license", methods=['GET', 'POST'])
-@app.route("/license_credential", methods=['GET', 'POST'])
+@app.route("/node")
+def represent_node():
+    response = api_get("node")
+    # TODO parse this data and pass only the table representaion
+    return response
+
+
+@app.route("/provider")
+def represent_provider():
+    pass
+
+
+@app.route("/cluster")
+def represent_cluster():
+    pass
+
+
+@app.route("/license")
+def represent_license():
+    pass
+
+
+@app.route("/license_credential")
+def represent_credential():
+    res = api_get('license_credential')
+    data = []
+    for cred in res:
+        data.append({u'Name': cred['name'], u'ID': cred['id']})
+    return Response(json.dumps(data), status=200, mimetype='application/json')
+
+
 def entity():
     """The function that does the API work and renders the page"""
     entity = request.url.split("/")[-1]
