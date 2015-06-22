@@ -48,21 +48,11 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.currentResURI = resource;
         $scope.currentResource = resource.charAt(0).toUpperCase() + resource.slice(1).replace("_", " ");
 
+        // get the overview table and update the headers and rows
         $http.get('/'+resource).success( function( data ){
-            $scope.headers = Object.keys( data[0] );
-            $scope.contents = [];
-            for( var i = 0; i < data.length; i++){
-                var row = [];
-                for( var j = 0; j < $scope.headers.length; j++ ){
-                    row.push(data[i][$scope.headers[j]]);
-                }
-                $scope.contents.push(row);
-                console.log("appending "+ row.toString());
-            }
+            $scope.contents = data;
         });
 
-        //$http.get('/'+resource).success(function(data){
-        //});
 }]);
 
 // controller that is used to respond to add/edit actions on resources

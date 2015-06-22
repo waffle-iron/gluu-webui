@@ -5,15 +5,33 @@
     <a href="#/{{currentResURI}}/edit/{{currentItemId}}" class="btn btn-info" >Edit {{currentResource}}</a></h2>
 </div>
 <div id="resourceTable" class="row">
-    <table class="table">
+    <!-- License Credential Table -->
+    <table class="table table-bordered table-hover" ng-if="currentResource == 'License credential'">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Public Key</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/view/license_credential/{{row.ID}}">{{row.Name}}</a></td>
+                <td>{{row["Public Key"]}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Provider Table -->
+    <table class="table table-bordered table-hover" ng-if="currentResource == 'Provider'">
         <thead>
         <tr>
-            <th ng-repeat="head in headers">{{head}}</th>
+            <th>Name</th>
+            <th>Type</th>
         </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td ng-repeat="item in row track by $index">{{item}}</td>
+                <td><a href="#/view/provider/{{row.ID}}" >{{row["Host Name"]}}</a></td>
+                <td>{{row.Type}}</td>
             </tr>
         </tbody>
     </table>

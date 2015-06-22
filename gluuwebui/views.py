@@ -80,7 +80,8 @@ def represent_node():
     for node in resp:
         provider = api_get('provider/{0}'.format(node['provider_id']))
         cluster = api_get('cluster/{0}'.format(node['cluster_id']))
-        data.append({u'Name': node['name'],
+        data.append({u'ID': node['id'],
+                     u'Name': node['name'],
                      u'Type': node['type'],
                      u'IP': node['ip'],
                      u'Provider': "/".join([provider['type'],
@@ -105,7 +106,8 @@ def represent_cluster():
     resp = api_get('cluster')
     data = []
     for cluster in resp:
-        data.append({u'Name': cluster['name'],
+        data.append({u'ID': cluster['id'],
+                     u'Name': cluster['name'],
                      u'Organization': cluster['org_short_name'],
                      u'City': cluster['city'],
                      u'OX Cluster Host': cluster['ox_cluster_hostname'],
@@ -127,7 +129,9 @@ def represent_credential():
     res = api_get('license_credential')
     data = []
     for cred in res:
-        data.append({u'Name': cred['name'], u'ID': cred['id']})
+        data.append({u'Name': cred['name'],
+                     u'ID': cred['id'],
+                     u'Public Key': cred['public_key']})
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
