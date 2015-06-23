@@ -42,9 +42,26 @@ def get_file(filename):  # pragma: no cover
 def api_get(req):
     r = requests.get(api_base + req)
     if r.status_code != 200:
+        reason = r.reason
+        if r.json()['message']:
+            reason = r.json()['message']
         raise APIError('There was an issue fetching your data',
-                       r.status_code, r.reason)
+                       r.status_code, reason)
     return r.json()
+
+
+def api_post(req, data):
+    """Function to send post requests to the API
+    @param req (string) the resource name to request
+    @param data (dict) the post form data as a dict from json
+    """
+    r = requests.post(api_base + req, data=data)
+    if r.status_code > 210:
+        reason = r.reason
+        if r.json()['message']:
+            reason = r.json()['message']
+        raise APIError('Could not create a new {0}'.format(req),
+                       r.status_code, reason)
 
 
 @app.route("/")
@@ -74,8 +91,12 @@ def img(filename):
     return redirect(url_for('static', filename="img/{0}".format(filename)))
 
 
-@app.route("/node")
+@app.route("/node", methods=['GET', 'POST'])
 def represent_node():
+    if request.method == 'POST':  # Initiate create new node
+        resp = api_post('node', json.loads(request.data))
+        return Response(json.dumps(resp), 200, mimetype="application/json")
+
     resp = api_get("node")
     data = []
     for node in resp:
@@ -91,8 +112,12 @@ def represent_node():
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
-@app.route("/provider")
+@app.route("/provider", methods=['GET', 'POST'])
 def represent_provider():
+    if request.method == 'POST':  # Add new provider
+        resp = api_post('provider', json.loads(request.data))
+        return Response(json.dumps(resp), 200, mimetype="application/json")
+
     resp = api_get('provider')
     data = [{u'Host Name': provider['hostname'],
              u'Type': provider['type'],
@@ -101,8 +126,12 @@ def represent_provider():
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
-@app.route("/cluster")
+@app.route("/cluster", methods=['GET', 'POST'])
 def represent_cluster():
+    if request.method == 'POST':  # Add a new cluster
+        resp = api_post('cluster', json.loads(request.data))
+        return Response(json.dumps(resp), 200, mimetype="application/json")
+
     resp = api_get('cluster')
     data = [{u'ID': cluster['id'],
              u'Name': cluster['name'],
@@ -117,13 +146,21 @@ def represent_cluster():
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
-@app.route("/license")
+@app.route("/license", methods=['GET', 'POST'])
 def represent_license():
-    pass
+    if request.method == 'POST':  # Add a new license
+        resp = api_post('license', json.loads(request.data))
+        return Response(json.dumps(resp), 200, mimetype="application/json")
+
+    # TODO Add the get response
 
 
-@app.route("/license_credential")
+@app.route("/license_credential", methods=['GET', 'POST'])
 def represent_credential():
+    if request.method == 'POST':  # Add a new credential
+        resp = api_post('license_credential', json.loads(request.data))
+        return Response(json.dumps(resp), 200, mimetype="application/json")
+
     res = api_get('license_credential')
     data = [{u'Name': cred['name'],
              u'ID': cred['id'],
