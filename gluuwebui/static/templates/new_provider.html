@@ -1,22 +1,22 @@
 <form>
-    <div class="form-group" ng-show="editMode">
+    <div class="form-group" ng-if="editMode">
         <label for="id">Provider ID</label>
-        <input class="form-control" name="id" type="text" ng-model="provider.id" disabled>
+        <input class="form-control" name="id" type="text" ng-model="resourceData.id" disabled>
     </div>
     <div class="form-group">
         <label for="hostname">Hostname</label>
-        <input name="hostname" type="text" class="form-control" ng-model="provider.hostname" required>
+        <input name="hostname" type="text" class="form-control" ng-model="resourceData.hostname" required>
         <span class="help-block">Hostname of the provider</span>
     </div>
     <div class="form-group">
         <label for="docker_base_url">URL to Docker API</label>
-        <input name="docker_base_url" class="form-control" type="text" ng-model="provider.docker_base_url" required>
+        <input name="docker_base_url" class="form-control" type="text" ng-model="resourceData.docker_base_url" required>
         <span class="help-block">URL could be unix socket (e.g. unix:///var/run/docker.sock) for localhost or tcp (10.10.10.1:2375) for remote host</span>
     </div>
     <div class="form-group">
         <label for="license_id">License ID</label>
-        <input type="text" name="license_id" class="form-control" ng-model="provider.license_id" required>
-        <span class="help-block">ID of the license. Must be filled for consumer provider.</span>
+        <input type="text" name="license_id" class="form-control" ng-model="resourceData.license_id" required>
+        <span class="help-block">ID of the license. Must be filled for consumer resourceData.</span>
     </div>
     <button class="btn btn-primary" ng-click="submit()">Add provider</button>
 </form>

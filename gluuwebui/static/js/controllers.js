@@ -70,9 +70,10 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         AlertMsg.clear();
 
         $scope.editMode = false;
-        $scope.provider = {};
+        $scope.resourceData = {};
 
         var resource = $routeParams.resource;
+        console.info($routeParams);
 
         if ($routeParams.action == 'edit'){
             if ( typeof $routeParams.id == 'undefined' ){
@@ -82,13 +83,24 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.editMode = true;
             var id = $routeParams.id;
             $http.get( "/" + resource + "/" + id).success( function(data){
-                $scope.provider = data;
+                $scope.resourceData = data;
             });
         }
 
         $scope.submit = function(){
-            var data = $scope.provider;
-            console.log(data.id);
+            var data = $scope.resourceData;
+
+            console.log(data);
+
+            if( $scope.editMode ){
+                $http.post("/" + resource + "/" + data.id, data).success(function(data, status){
+                    // redirect to the overview page with a message that things have been updated
+                });
+            } else {  // new resource has to be created
+                $http.post("/" + resource, data).success(function( data, status){
+                    // redirect to the overview page with a message that new cluster was created
+                });
+            }
         };
 
 }]);
