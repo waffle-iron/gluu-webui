@@ -1,11 +1,15 @@
-<form action="/node" method="post">
+<form>
+    <div class="form-group" ng-if="editMode">
+        <label for="id">ID</label>
+        <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
+    </div>
     <div class="form-group">
         <label for="cluster_id">Cluster ID</label>
-        <input class="form-control" type="text" name="cluster_id" required>
+        <input class="form-control" type="text" name="cluster_id" ng-model="resourceData.cluster_id" required>
     </div>
     <div class="form-group">
         <label for="node_type">Node Type</label>
-        <select id="node_type" name="node_type" class="form-control">
+        <select id="node_type" name="node_type" class="form-control" ng-model="resourceData.node_type">
             <option value="ldap">LDAP</option>
             <option value="oxauth">oxAuth</option>
             <option value="oxTrust">oxTrust</option>
@@ -14,15 +18,15 @@
     </div>
     <div class="form-group">
         <label for="provider_id">Provider ID</label>
-        <input class="form-control" type="text" name="provider_id" required>
+        <input class="form-control" type="text" name="provider_id" ng-model="resourceData.provider_id" required>
     </div>
     <div class="form-group">
         <label for="connect_delay">Delay before connecting node (secs)</label>
-        <input class="form-control" type="number" name="connect_delay" value="10" optional>
+        <input class="form-control" type="number" name="connect_delay" value="10" ng-model="resourceData.connect_delay" optional>
     </div>
     <div class="form-group">
         <label for="exec_delay">Delay before executing (secs)</label>
-        <input class="form-control" type="number" name="exec_delay" value="15" optional>
+        <input class="form-control" type="number" name="exec_delay" value="15" ng-model="resourceData.exec_delay" optional>
     </div>
-    <button type="submit" class="btn btn-primary">Create Node</button>
+    <button ng-click="submit()" class="btn btn-primary">Create Node</button>
 </form>

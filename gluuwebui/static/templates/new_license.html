@@ -1,13 +1,17 @@
-<form action="/license" method="post">
+<form>
+    <div class="form-group" ng-if="editMode">
+        <label for="id">ID</label>
+        <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
+    </div>
     <div class="form-group">
         <label for="code">License code</label>
-        <input type="text" class="form-control" name="code" required>
+        <input type="text" class="form-control" name="code" ng-model="resourceData.code" required>
         <span class="help-block">License code (licenseId) retrieved from https://license.gluu.org</span>
     </div>
     <div class="form-group">
         <label for="credential_id">Credential ID</label>
-        <input type="text" class="form-control" name="credential_id" required>
+        <input type="text" class="form-control" name="credential_id" ng-model="resourceData.credential_id" required>
         <span class="help-block">Credential ID to use (useful for generating metadata)</span>
     </div>
-    <button type="submit" class="btn btn-primary">Add License</button>
+    <button ng-click="submit()" class="btn btn-primary">Add License</button>
 </form>
