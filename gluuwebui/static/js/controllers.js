@@ -63,6 +63,10 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
 
         $scope.deleteResource = function(resource, id){
+            $http.delete("/"+resource+"/"+id).success(function(data){
+                AlertMsg.addMsg("The "+resource+" with the ID: "+id+" was successfully deleted.", "success");
+                return;
+            });
         };
 
 }]);
