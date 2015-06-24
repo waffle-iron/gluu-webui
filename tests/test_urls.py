@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_is_instance
+from nose.tools import assert_equal, assert_is_instance, assert_in
 from mock import MagicMock
 
 import gluuwebui
@@ -93,3 +93,24 @@ def test_resources_post():
     mock_post(400)
     for item in resources:
         yield check_post_error, item
+
+
+##############################################################################
+#   Check for static file redirects
+
+
+def test_static_redirects():
+    statics = ['js', 'css', 'img']
+    for folder in statics:
+        ro = app.get("/{0}/{1}".format(folder, 'somefile.ext'))
+        assert_equal(ro.status_code, 302)
+
+
+def test_templates():
+    ro = app.get("templates/new_provider.html")  # existing file
+    assert_equal(ro.status_code, 200)
+    assert_in('form', ro.data)
+
+    ro = app.get("templates/non_existant_file.html")
+    assert_equal(ro.status_code, 200)
+    assert_in('No such file or directory', ro.data)
