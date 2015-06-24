@@ -94,7 +94,44 @@ def test_resources_post():
     for item in resources:
         yield check_post_error, item
 
+#############################################################################
+# Test for the update requests POST /resource/id from browser and PUT /r/id
+# from the gluu webui to the API server
 
+
+def mock_put(code):
+    requests.put = MagicMock('put')
+    requests.put.return_value.status_code = code
+    if code != 200:
+        requests.put.return_value.json.return_value = {'message': 'MockError'}
+    else:
+        requests.put.return_value.json.return_value = {}
+    requests.put.return_value.reason = "Mock Reason"
+
+
+def check_put_success(item):
+    res = app.post(item + '/some_id', data='{"id":"some_id"}')
+    # currently UPDATE should be allowed only for 2 resources as below
+    if item == '/license_credential' or item == '/provider':
+        assert_equal(res.status_code, 200)
+    else:
+        assert_equal(res.status_code, 400)
+
+
+def check_put_error(item):
+    res = app.post(item + '/some_id', data='{}')
+    assert_equal(res.status_code, 400)
+    assert_is_instance(json.loads(res.data)['message'], unicode)
+
+
+def test_resource_update():
+    mock_put(200)
+    for item in resources:
+        yield check_put_success, item
+
+    mock_put(400)
+    for item in resources:
+        yield check_put_error, item
 ##############################################################################
 #   Check for static file redirects
 

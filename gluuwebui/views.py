@@ -43,7 +43,7 @@ def api_get(req):
     r = requests.get(api_base + req)
     if r.status_code != 200:
         reason = r.reason
-        if r.json()['message']:
+        if 'message' in r.json():
             reason = r.json()['message']
         raise APIError('There was an issue fetching your data',
                        r.status_code, reason)
@@ -58,7 +58,7 @@ def api_post(req, data):
     r = requests.post(api_base + req, data=data)
     if r.status_code > 210:
         reason = r.reason
-        if r.json()['message']:
+        if 'message' in r.json():
             reason = r.json()['message']
         raise APIError('Could not create a new {0}'.format(req),
                        r.status_code, reason)
@@ -188,16 +188,17 @@ def give_resource(resource, id):
     # handling post requests with id => PUT in API
     # For now only provider and license_credential have put requests
     if resource != 'provider' and resource != 'license_credential':
-        return Response(json.dumps({'msg': 'Invalid resource updata'}),
+        return Response(json.dumps({'message': 'Invalid resource updata'}),
                         status=400, mimetype='application/json')
 
     url = api_base + "{0}/{1}".format(resource, id)
     newdata = json.loads(request.data)
-    del newdata['id']
+    if 'id' in newdata.keys():
+        del newdata['id']
     r = requests.put(url, data=newdata)
     if r.status_code != 200:
         reason = r.reason
-        if r.json()['message']:
+        if 'message' in r.json().keys():
             reason = r.json()['message']
         raise APIError("The {0} with ID {1} couldnot be updated".format(
                        resource, id), r.status_code, reason)
