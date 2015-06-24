@@ -61,6 +61,10 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             $scope.headers.splice( $scope.headers.indexOf( 'ID' ), 1);
         });
 
+
+        $scope.deleteResource = function(resource, id){
+        };
+
 }]);
 
 // controller that is used to respond to add/edit actions on resources
@@ -102,5 +106,4 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 });
             }
         };
-
 }]);

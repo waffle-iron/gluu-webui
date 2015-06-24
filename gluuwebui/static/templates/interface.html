@@ -1,16 +1,16 @@
 <!-- Content has two things. 1. list of entites, 2. A new entity form -->
 <div class="row">
-    <h2>{{ currentResource }}
-    <a href="#/new/{{currentResURI}}" class="btn btn-default">New {{currentResource}}</a>
-    <a href="#/edit/{{currentResURI}}/{{currentItemId}}" class="btn btn-info" ng-if="currentResURI=='provider'||currentResURI=='license_credential'" >
-        Edit {{currentResource}}</a></h2>
+    <h2>
+        {{ currentResource }}
+        <a href="#/new/{{currentResURI}}" class="btn btn-default">New {{currentResource}}</a>
+    </h2>
 </div>
 <div id="resourceTable" class="row">
-    <!-- Test bed -->
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
                 <th ng-repeat="item in headers">{{item}}</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -18,6 +18,10 @@
                 <td ng-repeat="item in headers">
                     <span ng-if="item != 'Name' && item != 'Host Name'">{{row[item]}}</span>
                     <span ng-if="item == 'Name' || item == 'Host Name'"><a href="#/view/{{currentResURI}}/{{row['ID']}}">{{row[item]}}</a></span>
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm" href="#/edit/{{currentResURI}}/{{row['ID']}}" ng-if="currentResURI=='provider'||currentResURI=='license_credential'">Edit</a>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource(currentResURI, row['ID'])">Delete</button>
                 </td>
             </tr>
         </tbody>
