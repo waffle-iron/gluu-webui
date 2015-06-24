@@ -102,10 +102,7 @@ def test_resources_post():
 def mock_put(code):
     requests.put = MagicMock('put')
     requests.put.return_value.status_code = code
-    if code != 200:
-        requests.put.return_value.json.return_value = {'message': 'MockError'}
-    else:
-        requests.put.return_value.json.return_value = {}
+    requests.put.return_value.json.return_value = {'message': 'MockError'}
     requests.put.return_value.reason = "Mock Reason"
 
 
@@ -132,6 +129,31 @@ def test_resource_update():
     mock_put(400)
     for item in resources:
         yield check_put_error, item
+
+#############################################################################
+#  Tests for DELETE requests to /resource/id
+
+
+def mock_delete(code):
+    requests.delete = MagicMock('delete')
+    requests.delete.return_value.status_code = code
+    requests.delete.return_value.json.return_value = {'message': 'MockMsg'}
+    requests.delete.return_value.reason = 'Mock Reason'
+
+
+def check_delete(item, code):
+    r = app.delete("{0}/some_id".format(item))
+    assert_equal(r.status_code, code)
+
+
+def test_resource_delete():
+    mock_delete(204)
+    for item in resources:
+        yield check_delete, item, 200
+
+    mock_delete(400)
+    for item in resources:
+        yield check_delete, item, 400
 ##############################################################################
 #   Check for static file redirects
 

@@ -42,11 +42,8 @@ def get_file(filename):  # pragma: no cover
 def api_get(req):
     r = requests.get(api_base + req)
     if r.status_code != 200:
-        reason = r.reason
-        if 'message' in r.json():
-            reason = r.json()['message']
         raise APIError('There was an issue fetching your data',
-                       r.status_code, reason)
+                       r.status_code, reason(r))
     return r.json()
 
 
@@ -57,12 +54,21 @@ def api_post(req, data):
     """
     r = requests.post(api_base + req, data=data)
     if r.status_code > 210:
-        reason = r.reason
-        if 'message' in r.json():
-            reason = r.json()['message']
         raise APIError('Could not create a new {0}'.format(req),
-                       r.status_code, reason)
+                       r.status_code, reason(r))
     return r.json()
+
+
+def reason(res):
+    try:
+        return res.json()['message']
+    except (AttributeError, TypeError):
+        return res.reason
+
+
+def json_response(data, status=200):
+    return Response(json.dumps(data), status=status,
+                    mimetype="application/json")
 
 
 @app.route("/")
@@ -110,28 +116,28 @@ def represent_node():
                      u'Provider': "/".join([provider['type'],
                                            provider['hostname']]),
                      u'Cluster': cluster['name']})
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return json_response(data)
 
 
 @app.route("/provider", methods=['GET', 'POST'])
 def represent_provider():
     if request.method == 'POST':  # Add new provider
         resp = api_post('provider', json.loads(request.data))
-        return Response(json.dumps(resp), 200, mimetype="application/json")
+        return json_response(resp)
 
     resp = api_get('provider')
     data = [{u'Host Name': provider['hostname'],
              u'Type': provider['type'],
              u'ID': provider['id']}
             for provider in resp]
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return json_response(data)
 
 
 @app.route("/cluster", methods=['GET', 'POST'])
 def represent_cluster():
     if request.method == 'POST':  # Add a new cluster
         resp = api_post('cluster', json.loads(request.data))
-        return Response(json.dumps(resp), 200, mimetype="application/json")
+        return json_response(resp)
 
     resp = api_get('cluster')
     data = [{u'ID': cluster['id'],
@@ -144,14 +150,14 @@ def represent_cluster():
              u'OxAuth Nodes': len(cluster['oxauth_nodes']),
              u'OxTrust Nodes': len(cluster['oxtrust_nodes'])}
             for cluster in resp]
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return json_response(data)
 
 
 @app.route("/license", methods=['GET', 'POST'])
 def represent_license():
     if request.method == 'POST':  # Add a new license
         resp = api_post('license', json.loads(request.data))
-        return Response(json.dumps(resp), 200, mimetype="application/json")
+        return json_response(resp)
 
     res = api_get('license')
     data = [{u'ID': lic['id'],
@@ -161,45 +167,48 @@ def represent_license():
              u'Code': lic['code'],
              u'Valid': lic['valid'],
              u'Metadata': lic['metadata']} for lic in res]
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return json_response(data)
 
 
 @app.route("/license_credential", methods=['GET', 'POST'])
 def represent_credential():
     if request.method == 'POST':  # Add a new credential
         resp = api_post('license_credential', json.loads(request.data))
-        return Response(json.dumps(resp), 200, mimetype="application/json")
+        return json_response(resp)
 
     res = api_get('license_credential')
     data = [{u'Name': cred['name'],
              u'ID': cred['id'],
              u'Public Key': cred['public_key']}
             for cred in res]
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return json_response(data)
 
 
-@app.route("/<resource>/<id>", methods=['GET', 'POST'])
+@app.route("/<resource>/<id>", methods=['GET', 'POST', 'DELETE'])
 def give_resource(resource, id):
     if request.method == 'GET':
         resp = api_get("{0}/{1}".format(resource, id))
-        return Response(json.dumps(resp), status=200,
-                        mimetype='application/json')
+        return json_response(resp)
 
-    # handling post requests with id => PUT in API
-    # For now only provider and license_credential have put requests
-    if resource != 'provider' and resource != 'license_credential':
-        return Response(json.dumps({'message': 'Invalid resource updata'}),
-                        status=400, mimetype='application/json')
+    elif request.method == 'POST':
+        # For now only provider and license_credential have put requests
+        if resource != 'provider' and resource != 'license_credential':
+            data = {'message': 'Invalid resoure to update.'}
+            return json_response(data, 400)
 
-    url = api_base + "{0}/{1}".format(resource, id)
-    newdata = json.loads(request.data)
-    if 'id' in newdata.keys():
-        del newdata['id']
-    r = requests.put(url, data=newdata)
-    if r.status_code != 200:
-        reason = r.reason
-        if 'message' in r.json().keys():
-            reason = r.json()['message']
-        raise APIError("The {0} with ID {1} couldnot be updated".format(
-                       resource, id), r.status_code, reason)
-    return Response("Success", status=200)
+        url = api_base + "{0}/{1}".format(resource, id)
+        newdata = json.loads(request.data)
+        if 'id' in newdata.keys():
+            del newdata['id']
+        r = requests.put(url, data=newdata)
+        if r.status_code != 200:
+            raise APIError("The {0} with ID {1} couldnot be updated".format(
+                           resource, id), r.status_code, reason(r))
+        return json_response(r.json())
+
+    elif request.method == 'DELETE':
+        r = requests.delete(api_base + '{0}/{1}'.format(resource, id))
+        if r.status_code != 204:
+            raise APIError("The {0} with id {1} couldn't be deleted.".format(
+                           resource, id), r.status_code, reason(r))
+        return json_response(r.json())
