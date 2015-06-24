@@ -152,7 +152,15 @@ def represent_license():
         resp = api_post('license', json.loads(request.data))
         return Response(json.dumps(resp), 200, mimetype="application/json")
 
-    # TODO Add the get response
+    res = api_get('license')
+    data = [{u'ID': lic['id'],
+             u'Credential Name': api_get("license_credential/" +
+                                         lic['credential_id'])['name'],
+             u'Credential ID': lic['credential_id'],
+             u'Code': lic['code'],
+             u'Valid': lic['valid'],
+             u'Metadata': lic['metadata']} for lic in res]
+    return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
 @app.route("/license_credential", methods=['GET', 'POST'])
