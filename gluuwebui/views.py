@@ -62,6 +62,7 @@ def api_post(req, data):
             reason = r.json()['message']
         raise APIError('Could not create a new {0}'.format(req),
                        r.status_code, reason)
+    return r.json()
 
 
 @app.route("/")
