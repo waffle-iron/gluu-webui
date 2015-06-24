@@ -137,7 +137,8 @@ def test_resource_update():
 def mock_delete(code):
     requests.delete = MagicMock('delete')
     requests.delete.return_value.status_code = code
-    requests.delete.return_value.json.return_value = {'message': 'MockMsg'}
+    if code > 210:
+        requests.delete.return_value.json.return_value = {'message': 'MockMsg'}
     requests.delete.return_value.reason = 'Mock Reason'
 
 

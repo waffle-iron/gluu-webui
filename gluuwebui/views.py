@@ -211,4 +211,5 @@ def give_resource(resource, id):
         if r.status_code != 204:
             raise APIError("The {0} with id {1} couldn't be deleted.".format(
                            resource, id), r.status_code, reason(r))
-        return json_response(r.json())
+        data = {'message': 'Deleted {0} with id {1}'.format(resource, id)}
+        return json_response(data)
