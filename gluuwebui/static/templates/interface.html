@@ -2,7 +2,8 @@
 <div class="row">
     <h2>{{ currentResource }}
     <a href="#/new/{{currentResURI}}" class="btn btn-default">New {{currentResource}}</a>
-    <a href="#/edit/{{currentResURI}}/{{currentItemId}}" class="btn btn-info" >Edit {{currentResource}}</a></h2>
+    <a href="#/edit/{{currentResURI}}/{{currentItemId}}" class="btn btn-info" ng-if="currentResURI=='provider'||currentResURI=='license_credential'" >
+        Edit {{currentResource}}</a></h2>
 </div>
 <div id="resourceTable" class="row">
     <!-- Test bed -->
