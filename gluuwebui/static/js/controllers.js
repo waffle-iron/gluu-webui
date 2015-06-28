@@ -93,6 +93,18 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             });
         };
 
+        /*
+         * Function that loads the reource's native response from the API server and presents in the view
+         */
+        $scope.loadResource = function(resource, id){
+            $http.get('/'+resource+"/"+id).success(function(data){
+                $scope.details = data;
+                $scope.detailKeys = Object.keys(data);
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+        };
+
 }]);
 
 
