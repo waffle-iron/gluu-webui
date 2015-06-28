@@ -39,8 +39,12 @@ webuiControllers.controller('AlertController', ['$scope', 'AlertMsg',
 }]);
 
 function postErrorAlert( Alert, data ){
-    if( typeof data.message == 'string' ){
-        Alert.addMsg( data.message, "danger" );
+    try{
+        if( typeof data.message == 'string' ){
+            Alert.addMsg( data.message, "danger" );
+        }
+    }catch(e){
+        Alert.addMsg( "Could not reach the server. Make sure the WEB UI server is running and connected", 'danger');
     }
 }
 
