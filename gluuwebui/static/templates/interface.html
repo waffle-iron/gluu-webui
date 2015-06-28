@@ -10,7 +10,7 @@
         <thead>
             <tr>
                 <th ng-repeat="item in headers">{{item}}</th>
-                <th>Actions</th>
+                <th ng-if="headers.length > 0">Actions</th>
             </tr>
         </thead>
         <tbody>
