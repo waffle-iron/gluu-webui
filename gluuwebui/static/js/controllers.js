@@ -38,6 +38,12 @@ webuiControllers.controller('AlertController', ['$scope', 'AlertMsg',
         };
 }]);
 
+function postErrorAlert( Alert, data ){
+    if( typeof data.message == 'string' ){
+        Alert.addMsg( data.message, "danger" );
+    }
+}
+
 // Controller to load resources when requested
 webuiControllers.controller('OverviewController', ['$scope', '$http', '$routeParams', 'AlertMsg',
     function($scope, $http, $routeParams, AlertMsg){
@@ -59,9 +65,14 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             $scope.headers = Object.keys( data[0] );
             // ID is not to be displayed, serves no purpose
             $scope.headers.splice( $scope.headers.indexOf( 'ID' ), 1);
+        }).error(function(data){
+            postErrorAlert(AlertMsg, data);
         });
 
 
+        /*
+         * Fucntion to delete a resource. This is called whenever a delete button is clicked in the overview UI
+         */
         $scope.deleteResource = function(resource, id){
             $http.delete("/"+resource+"/"+id).success(function(data){
                 // remove the resource from the view
@@ -76,9 +87,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 AlertMsg.addMsg("The "+resource+" with the ID: "+id+" was successfully deleted.", "success");
                 return;
             }).error(function(data){
-                if ( typeof data.message == 'string' ){
-                    AlertMsg.addMsg(data.msg, 'danger');
-                }
+                postErrorAlert(AlertMsg, data);
             });
         };
 
@@ -94,9 +103,10 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         $scope.editMode = false;
         $scope.resourceData = {};
 
+        /*
+         *  Upon initializing the form check whether it is in edit mode or create mode and add data accordingly
+         */
         var resource = $routeParams.resource;
-        console.info($routeParams);
-
         if ($routeParams.action == 'edit'){
             if ( typeof $routeParams.id == 'undefined' ){
                 AlertMsg.addMsg( "The resource id is empty! Make sure you selected a resource before clicking Edit", "danger" );
@@ -106,9 +116,16 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             var id = $routeParams.id;
             $http.get( "/" + resource + "/" + id).success( function(data){
                 $scope.resourceData = data;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
             });
         }
 
+        /*
+         *  Funtion that handles the New Resource and Edit Resource form submissions
+         *  This fucntion is called whent the 'Add Resource' button is clicked in the form
+         *
+         */
         $scope.submit = function(){
             var data = $scope.resourceData;
 
@@ -116,15 +133,15 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 $http.post("/" + resource + "/" + data.id, data).success(function(data, status){
                     // redirect to the overview page with a message that things have been updated
                     $location.path('/view/'+resource);
+                }).error(function(data){
+                    postErrorAlert(AlertMsg, data);
                 });
-            } else {  // new resource has to be created
+            } else {  // Not in Edit Mode == New Resource
                 $http.post("/" + resource, data).success(function( data, status){
                     // redirect to the overview page with a message that new cluster was created
                     $location.path('/view/'+resource);
                 }).error(function( data ){
-                    if ( typeof data.message == 'string'){
-                        AlertMsg.addMsg(data.message, 'danger');
-                    }
+                    postErrorAlert(AlertMsg, data);
                 });
             }
         };
