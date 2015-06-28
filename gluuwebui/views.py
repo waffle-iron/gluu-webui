@@ -105,17 +105,19 @@ def represent_node():
         return Response(json.dumps(resp), 200, mimetype="application/json")
 
     resp = api_get("node")
-    data = []
+    data = {}
+    data['headers'] = ['Name', 'Type', 'IP', 'Provider', 'Cluster']
+    data['contents'] = []
     for node in resp:
         provider = api_get('provider/{0}'.format(node['provider_id']))
         cluster = api_get('cluster/{0}'.format(node['cluster_id']))
-        data.append({u'ID': node['id'],
-                     u'Name': node['name'],
-                     u'Type': node['type'],
-                     u'IP': node['ip'],
-                     u'Provider': "/".join([provider['type'],
-                                           provider['hostname']]),
-                     u'Cluster': cluster['name']})
+        data['contents'].append({u'ID': node['id'],
+                                 u'Name': node['name'],
+                                 u'Type': node['type'],
+                                 u'IP': node['ip'],
+                                 u'Provider': "/".join([provider['type'],
+                                                       provider['hostname']]),
+                                 u'Cluster': cluster['name']})
     return json_response(data)
 
 
@@ -126,10 +128,12 @@ def represent_provider():
         return json_response(resp)
 
     resp = api_get('provider')
-    data = [{u'Host Name': provider['hostname'],
-             u'Type': provider['type'],
-             u'ID': provider['id']}
-            for provider in resp]
+    data = {}
+    data['headers'] = ['Host Name', 'Type']
+    data['contents'] = [{u'Host Name': provider['hostname'],
+                         u'Type': provider['type'],
+                         u'ID': provider['id']}
+                        for provider in resp]
     return json_response(data)
 
 
@@ -140,16 +144,20 @@ def represent_cluster():
         return json_response(resp)
 
     resp = api_get('cluster')
-    data = [{u'ID': cluster['id'],
-             u'Name': cluster['name'],
-             u'Organization': cluster['org_short_name'],
-             u'City': cluster['city'],
-             u'OX Cluster Host': cluster['ox_cluster_hostname'],
-             u'Httpd Nodes': len(cluster['httpd_nodes']),
-             u'LDAP Nodes': len(cluster['ldap_nodes']),
-             u'OxAuth Nodes': len(cluster['oxauth_nodes']),
-             u'OxTrust Nodes': len(cluster['oxtrust_nodes'])}
-            for cluster in resp]
+    data = {}
+    data['headers'] = ['Name', 'Organization', 'City', 'Ox Cluster Host',
+                       'Httpd Nodes', 'LDAP Nodes', 'OxAuth Nodes',
+                       'OxTrust Nodes']
+    data['contents'] = [{u'ID': cluster['id'],
+                         u'Name': cluster['name'],
+                         u'Organization': cluster['org_short_name'],
+                         u'City': cluster['city'],
+                         u'Ox Cluster Host': cluster['ox_cluster_hostname'],
+                         u'Httpd Nodes': len(cluster['httpd_nodes']),
+                         u'LDAP Nodes': len(cluster['ldap_nodes']),
+                         u'OxAuth Nodes': len(cluster['oxauth_nodes']),
+                         u'OxTrust Nodes': len(cluster['oxtrust_nodes'])}
+                        for cluster in resp]
     return json_response(data)
 
 
@@ -160,13 +168,17 @@ def represent_license():
         return json_response(resp)
 
     res = api_get('license')
-    data = [{u'ID': lic['id'],
-             u'Credential Name': api_get("license_credential/" +
-                                         lic['credential_id'])['name'],
-             u'Credential ID': lic['credential_id'],
-             u'Code': lic['code'],
-             u'Valid': lic['valid'],
-             u'Metadata': lic['metadata']} for lic in res]
+    data = {}
+    data['headers'] = ['Credential Name', 'Credential ID', 'Code', 'Valid',
+                       'Metadata']
+    data['contents'] = [{u'ID': lic['id'],
+                         u'Credential Name':
+                         api_get("license_credential/" +
+                                 lic['credential_id'])['name'],
+                         u'Credential ID': lic['credential_id'],
+                         u'Code': lic['code'],
+                         u'Valid': lic['valid'],
+                         u'Metadata': lic['metadata']} for lic in res]
     return json_response(data)
 
 
@@ -177,10 +189,12 @@ def represent_credential():
         return json_response(resp)
 
     res = api_get('license_credential')
-    data = [{u'Name': cred['name'],
-             u'ID': cred['id'],
-             u'Public Key': cred['public_key']}
-            for cred in res]
+    data = {}
+    data['headers'] = ['Name', 'Public Key']
+    data['contents'] = [{u'Name': cred['name'],
+                         u'ID': cred['id'],
+                         u'Public Key': cred['public_key']}
+                        for cred in res]
     return json_response(data)
 
 
