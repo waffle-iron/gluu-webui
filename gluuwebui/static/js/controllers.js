@@ -71,9 +71,10 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
 }]);
 
+
 // controller that is used to respond to add/edit actions on resources
-webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routeParams', 'AlertMsg',
-    function($scope, $http, $routeParams, AlertMsg){
+webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$location',
+    function($scope, $http, $routeParams, AlertMsg, $location){
         // Clear all alert messages
         AlertMsg.clear();
 
@@ -98,15 +99,19 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         $scope.submit = function(){
             var data = $scope.resourceData;
 
-            console.log(data);
-
             if( $scope.editMode ){
                 $http.post("/" + resource + "/" + data.id, data).success(function(data, status){
                     // redirect to the overview page with a message that things have been updated
+                    $location.path('/view/'+resource);
                 });
             } else {  // new resource has to be created
                 $http.post("/" + resource, data).success(function( data, status){
                     // redirect to the overview page with a message that new cluster was created
+                    $location.path('/view/'+resource);
+                }).error(function( data ){
+                    if ( typeof data.message == 'string'){
+                        AlertMsg.addMsg(data.message, 'danger');
+                    }
                 });
             }
         };
