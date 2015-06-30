@@ -5,11 +5,13 @@
     </div>
     <div class="form-group">
         <label for="cluster_id">Cluster ID</label>
-        <input class="form-control" type="text" name="cluster_id" ng-model="resourceData.cluster_id" required>
+        <select class="form-control" name="cluster_id" ng-model="resourceData.cluster_id" required>
+            <option value="{{cluster.id}}" ng-repeat="cluster in clusters">{{cluster.name}}</option>
+        </select>
     </div>
     <div class="form-group">
         <label for="node_type">Node Type</label>
-        <select id="node_type" name="node_type" class="form-control" ng-model="resourceData.node_type">
+        <select id="node_type" name="node_type" class="form-control" ng-model="resourceData.node_type" required>
             <option value="ldap">LDAP</option>
             <option value="oxauth">oxAuth</option>
             <option value="oxTrust">oxTrust</option>
@@ -18,7 +20,9 @@
     </div>
     <div class="form-group">
         <label for="provider_id">Provider ID</label>
-        <input class="form-control" type="text" name="provider_id" ng-model="resourceData.provider_id" required>
+        <select class="form-control" name="provider_id" ng-model="resourceData.provider_id" required>
+            <option value="{{provider.id}}" ng-repeat="provider in providers">{{provider.name}}</option>
+        </select>
     </div>
     <div class="form-group">
         <label for="connect_delay">Delay before connecting node (secs)</label>

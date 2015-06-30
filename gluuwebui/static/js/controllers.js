@@ -136,6 +136,30 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         }
 
         /*
+         *  If the resource is a node add the list of ids for cluster and provider as a dropdown
+         */
+        if( resource == 'nodes' ){
+            $scope.clusters = [];
+            $scope.providers = [];
+
+            $http.get("/clusters").success(function(data){
+                for (var i=0; i < data.contents.length; i++ ){
+                    $scope.clusters.push({'id' : data.contents[i]['ID'], 'name': data.contents[i]['Name']});
+                }
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+
+            $http.get("/providers").success(function(data){
+                for( var i=0; i < data.contents.length; i++ ){
+                    $scope.providers.push({'id' : data.contents[i]['ID'], 'name': data.contents[i]['Host Name']});
+                }
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+        }
+
+        /*
          *  Funtion that handles the New Resource and Edit Resource form submissions
          *  This fucntion is called whent the 'Add Resource' button is clicked in the form
          *
