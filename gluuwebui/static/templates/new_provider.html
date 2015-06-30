@@ -15,8 +15,23 @@
     </div>
     <div class="form-group">
         <label for="license_id">License ID</label>
-        <input type="text" name="license_id" class="form-control" ng-model="resourceData.license_id" required>
+        <input type="text" name="license_id" class="form-control" ng-model="resourceData.license_id">
         <span class="help-block">ID of the license. Must be filled for consumer.</span>
+    </div>
+    <div class="form-group">
+        <label for="ssl_key">SSL Key</label>
+        <input class="form-control" type="text" name="ssl_key" ng-model="resourceData.ssl_key">
+        <span class="help-block">The contents of SSL client key file</span>
+    </div>
+    <div class="form-group">
+        <label for="ssl_cert">SSL Cert</label>
+        <input class="form-control" type="text" name="ssl_cert" ng-model="resourceData.ssl_cert">
+        <span class="help-block">The contents of SSL client cert file</span>
+    </div>
+    <div class="form-group">
+        <label for="ca_cert">CA Cert</label>
+        <input class="form-control" type="text" name="ca_cert" ng-model="resourceData.ca_cert">
+        <span class="help-block">The contents of SSL CA cert file</span>
     </div>
     <button class="btn btn-primary" ng-click="submit()">Add provider</button>
 </form>
