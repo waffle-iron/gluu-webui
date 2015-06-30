@@ -98,19 +98,19 @@ def img(filename):
     return redirect(url_for('static', filename="img/{0}".format(filename)))
 
 
-@app.route("/node", methods=['GET', 'POST'])
+@app.route("/nodes", methods=['GET', 'POST'])
 def represent_node():
     if request.method == 'POST':  # Initiate create new node
-        resp = api_post('node', json.loads(request.data))
+        resp = api_post('nodes', json.loads(request.data))
         return Response(json.dumps(resp), 200, mimetype="application/json")
 
-    resp = api_get("node")
+    resp = api_get("nodes")
     data = {}
     data['headers'] = ['Name', 'Type', 'IP', 'Provider', 'Cluster']
     data['contents'] = []
     for node in resp:
-        provider = api_get('provider/{0}'.format(node['provider_id']))
-        cluster = api_get('cluster/{0}'.format(node['cluster_id']))
+        provider = api_get('providers/{0}'.format(node['provider_id']))
+        cluster = api_get('clusters/{0}'.format(node['cluster_id']))
         data['contents'].append({u'ID': node['id'],
                                  u'Name': node['name'],
                                  u'Type': node['type'],
@@ -121,13 +121,13 @@ def represent_node():
     return json_response(data)
 
 
-@app.route("/provider", methods=['GET', 'POST'])
+@app.route("/providers", methods=['GET', 'POST'])
 def represent_provider():
     if request.method == 'POST':  # Add new provider
-        resp = api_post('provider', json.loads(request.data))
+        resp = api_post('providers', json.loads(request.data))
         return json_response(resp)
 
-    resp = api_get('provider')
+    resp = api_get('providers')
     data = {}
     data['headers'] = ['Host Name', 'Type']
     data['contents'] = [{u'Host Name': provider['hostname'],
@@ -137,13 +137,13 @@ def represent_provider():
     return json_response(data)
 
 
-@app.route("/cluster", methods=['GET', 'POST'])
+@app.route("/clusters", methods=['GET', 'POST'])
 def represent_cluster():
     if request.method == 'POST':  # Add a new cluster
-        resp = api_post('cluster', json.loads(request.data))
+        resp = api_post('clusters', json.loads(request.data))
         return json_response(resp)
 
-    resp = api_get('cluster')
+    resp = api_get('clusters')
     data = {}
     data['headers'] = ['Name', 'Organization', 'City', 'Ox Cluster Host',
                        'Httpd Nodes', 'LDAP Nodes', 'OxAuth Nodes',
@@ -161,13 +161,13 @@ def represent_cluster():
     return json_response(data)
 
 
-@app.route("/license", methods=['GET', 'POST'])
+@app.route("/licenses", methods=['GET', 'POST'])
 def represent_license():
     if request.method == 'POST':  # Add a new license
-        resp = api_post('license', json.loads(request.data))
+        resp = api_post('licenses', json.loads(request.data))
         return json_response(resp)
 
-    res = api_get('license')
+    res = api_get('licenses')
     data = {}
     data['headers'] = ['Credential Name', 'Credential ID', 'Code', 'Valid',
                        'Metadata']
@@ -182,13 +182,13 @@ def represent_license():
     return json_response(data)
 
 
-@app.route("/license_credential", methods=['GET', 'POST'])
+@app.route("/license_credentials", methods=['GET', 'POST'])
 def represent_credential():
     if request.method == 'POST':  # Add a new credential
-        resp = api_post('license_credential', json.loads(request.data))
+        resp = api_post('license_credentials', json.loads(request.data))
         return json_response(resp)
 
-    res = api_get('license_credential')
+    res = api_get('license_credentials')
     data = {}
     data['headers'] = ['Name', 'Public Key']
     data['contents'] = [{u'Name': cred['name'],
@@ -206,7 +206,7 @@ def give_resource(resource, id):
 
     elif request.method == 'POST':
         # For now only provider and license_credential have put requests
-        if resource != 'provider' and resource != 'license_credential':
+        if resource != 'providers' and resource != 'license_credentials':
             data = {'message': 'Invalid resoure to update.'}
             return json_response(data, 400)
 

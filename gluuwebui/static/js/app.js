@@ -7,15 +7,15 @@ gluuwebui.getTemplate = function(params) {
     var resource = params.resource;
     var template = "";
     switch( resource ){
-        case 'license_credential': template = 'templates/new_license_credential.html';
+        case 'license_credentials': template = 'templates/new_license_credential.html';
                                    break;
-        case 'license': template = 'templates/new_license.html';
+        case 'licenses': template = 'templates/new_license.html';
                         break;
-        case 'provider': template = 'templates/new_provider.html';
+        case 'providers': template = 'templates/new_provider.html';
                          break;
-        case 'cluster': template = 'templates/new_cluster.html';
+        case 'clusters': template = 'templates/new_cluster.html';
                         break;
-        case 'node': template = 'templates/new_node.html';
+        case 'nodes': template = 'templates/new_node.html';
                      break;
         default: template = 'templates/error.html';
     }
