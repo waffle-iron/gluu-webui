@@ -16,8 +16,17 @@
         <tbody>
             <tr ng-repeat="row in contents track by $index">
                 <td ng-repeat="item in headers">
-                    <span ng-if="item != 'Name' && item != 'Host Name'">{{row[item]}}</span>
+                    <!-- For showing the links on Names -->
+                    <span ng-if="item != 'Name' && item != 'Host Name' && item != 'State'">{{row[item]}}</span>
                     <span ng-if="item == 'Name' || item == 'Host Name'"><a href='#/view/{{currentResURI}}' ng-click="loadResource(currentResURI, row['ID'])">{{row[item]}}</a></span>
+
+                    <!-- For showing node status -->
+                    <span ng-if="currentResURI == 'nodes' && item == 'State'">
+                        <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" ng-if="row[item] == 'SUCCESS'" title="{{row[item]}}"></span>
+                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" ng-if="row[item] == 'FAILED'" title="{{row[item]}}"></span>
+                        <span class="glyphicon glyphicon-ban-circle" aria-hidden="true" ng-if="row[item] == 'DISABLED'" title="{{row[item]}}"></span>
+                        <span class="glyphicon glyphicon-time" aria-hidden="true" ng-if="row[item] == 'IN_PROGRESS'" title="{{row[item]}}"></span>
+                    </span>
                 </td>
                 <td>
                     <a class="btn btn-info btn-sm" href="#/edit/{{currentResURI}}/{{row['ID']}}" ng-if="currentResURI=='providers'||currentResURI=='license_credentials'">Edit</a>

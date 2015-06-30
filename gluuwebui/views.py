@@ -106,13 +106,17 @@ def represent_node():
 
     resp = api_get("nodes")
     data = {}
-    data['headers'] = ['Name', 'Type', 'IP', 'Provider', 'Cluster']
+    data['headers'] = ['Name', 'State', 'Type', 'IP', 'Provider', 'Cluster']
     data['contents'] = []
     for node in resp:
         provider = api_get('providers/{0}'.format(node['provider_id']))
         cluster = api_get('clusters/{0}'.format(node['cluster_id']))
-        data['contents'].append({u'ID': node['id'],
+        node_id = node['id']
+        if not node_id:  # In cases where nodes are initialized but has no ID
+            node_id = node['name']
+        data['contents'].append({u'ID': node_id,
                                  u'Name': node['name'],
+                                 u'State': node['state'],
                                  u'Type': node['type'],
                                  u'IP': node['ip'],
                                  u'Provider': "/".join([provider['type'],
