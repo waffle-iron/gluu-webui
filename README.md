@@ -21,9 +21,10 @@ The Web UI should now be available at http://127.0.0.1:5000/
 ## Deployment
 
 __Apache2 with mod_wsgi__:
-Install Apache and mod_wsgi
+
+Install required tools
 ```
-apt-get install apache2 python-setuptools libapache2-mod-wsgi
+apt-get install apache2 python-setuptools libapache2-mod-wsgi git python-virtualenv
 ```
 
 Get the app source and set up its run environment
@@ -38,6 +39,8 @@ pip install -r requirements.txt
 
 Add the Apache2 configuration file and activate the site
 ```
-cp config/gluuwebui_apache.conf /etc/apache2/sites_available/gluuwebui.conf
+cp config/gluuwebui_apache.conf /etc/apache2/sites-available/gluuwebui.conf
 a2ensite gluuwebui
+a2dissite 000-default
+service apache2 reload
 ```
