@@ -18,3 +18,6 @@ python run.py
 
 The Web UI should now be available at http://127.0.0.1:5000/
 
+## Deployment
+
+__For Apache with mod_wsgi__: Edit the paths in gluuwebui.wsgi use it as the starting script.
