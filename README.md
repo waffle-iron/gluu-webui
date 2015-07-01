@@ -37,7 +37,7 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-Add the Apache2 configuration file and activate the site
+Open the apache configuration file `config/gluuwebui_apache.conf` and change th `ServerAdmin` and `ServerName` values.
 ```
 cp config/gluuwebui_apache.conf /etc/apache2/sites-available/gluuwebui.conf
 a2ensite gluuwebui
