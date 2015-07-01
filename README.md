@@ -10,7 +10,7 @@ Start the development server using the following commands.
 ```
 git clone https://github.com/GluuFederation/gluu-webui
 cd gluu-webui
-vitualenv env
+virtualenv env
 source env/bin/activate
 pip install -r requirements.txt
 python run.py
@@ -20,4 +20,24 @@ The Web UI should now be available at http://127.0.0.1:5000/
 
 ## Deployment
 
-__For Apache with mod_wsgi__: Edit the paths in gluuwebui.wsgi use it as the starting script.
+__Apache2 with mod_wsgi__:
+Install Apache and mod_wsgi
+```
+apt-get install apache2 python-setuptools libapache2-mod-wsgi
+```
+
+Get the app source and set up its run environment
+```
+cd /var/www/
+git clone https://github.com/GluuFederation/gluu-webui
+cd gluu-webui
+virtualenv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+Add the Apache2 configuration file and activate the site
+```
+cp config/gluuwebui_apache.conf /etc/apache2/sites_available/gluuwebui.conf
+a2ensite gluuwebui
+```

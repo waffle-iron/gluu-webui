@@ -1,8 +1,8 @@
-activate_this = '/path/to/env/bin/activate_this.py'
+activate_this = '/var/www/gluu-webui/env/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 import sys
-path = '/path/to/gluu-webui/'
+path = '/var/www/gluu-webui/'
 if path not in sys.path:
     sys.path.insert(0, path)
 
