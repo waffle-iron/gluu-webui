@@ -19,13 +19,13 @@ setup(
         include_package_data=True,
         zip_safe=False,
         install_requires=[
-            "Flask==0.10.1",
-            "itsdangerous==0.24",
-            "Jinja2==2.7.3",
-            "MarkupSafe==0.23",
-            "mccabe==0.3",
-            "requests==2.7.0",
-            "Werkzeug==0.10.4"
+            "Flask",
+            "itsdangerous",
+            "Jinja2",
+            "MarkupSafe",
+            "mccabe",
+            "requests",
+            "Werkzeug"
             ],
         classifiers=[
             "Development Status :: 2 - Pre-Alpha",
