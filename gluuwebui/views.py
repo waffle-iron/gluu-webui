@@ -40,11 +40,14 @@ def get_file(filename):  # pragma: no cover
 
 
 def api_get(req):
-    r = requests.get(api_base + req)
-    if r.status_code != 200:
-        raise APIError('There was an issue fetching your data',
-                       r.status_code, reason(r))
-    return r.json()
+    try:
+        r = requests.get(api_base + req)
+        if r.status_code != 200:
+            raise APIError('There was an issue fetching your data',
+                           r.status_code, reason(r))
+        return r.json()
+    except requests.ConnectionError:
+        raise APIError('No response from API Server', 500, 'Connection Error')
 
 
 def api_post(req, data):
