@@ -1,4 +1,4 @@
-<form>
+<form ng-submit="submit()">
     <div class="form-group" ng-if="editMode">
         <label for="id">ID</label>
         <input class="form-control" name="id" type="text" ng-model="resourceData.id" disabled>
@@ -33,6 +33,6 @@
         <input class="form-control" type="text" name="ca_cert" ng-model="resourceData.ca_cert">
         <span class="help-block">The contents of SSL CA cert file</span>
     </div>
-    <button class="btn btn-primary" ng-click="submit()">Add provider</button>
+    <button class="btn btn-primary" type="submit">Add provider</button>
 </form>
 

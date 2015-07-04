@@ -1,4 +1,4 @@
-<form>
+<form ng-submit="submit()">
     <div class="form-group" ng-if="editMode">
         <label for="id">ID</label>
         <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
@@ -13,5 +13,5 @@
         <input type="text" class="form-control" name="credential_id" ng-model="resourceData.credential_id" required>
         <span class="help-block">Credential ID to use (useful for generating metadata)</span>
     </div>
-    <button ng-click="submit()" class="btn btn-primary">Add License</button>
+    <button class="btn btn-primary" type="submit">Add License</button>
 </form>

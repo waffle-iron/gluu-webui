@@ -1,4 +1,4 @@
-<form>
+<form ng-submit="submit()">
     <div class="form-group" ng-if="editMode">
         <label for="id">ID</label>
         <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
@@ -58,5 +58,5 @@
         <input class="form-control" type="text" name="weave_ip_network" ng-model="resourceData.weave_ip_network" required>
         <span class="help-block">The IP address for weave network, e.g. 10.20.10.0/24</span>
     </div>
-    <button class="btn btn-primary" ng-click="submit()">Create Cluster</button>
+    <button class="btn btn-primary" type="submit">Create Cluster</button>
 </form>
