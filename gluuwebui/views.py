@@ -180,7 +180,7 @@ def represent_license():
                        'Metadata']
     data['contents'] = [{u'ID': lic['id'],
                          u'Credential Name':
-                         api_get("license_credential/" +
+                         api_get("license_credentials/" +
                                  lic['credential_id'])['name'],
                          u'Credential ID': lic['credential_id'],
                          u'Code': lic['code'],
