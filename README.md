@@ -20,27 +20,4 @@ The Web UI should now be available at http://127.0.0.1:5000/
 
 ## Deployment
 
-__Apache2 with mod_wsgi__:
-
-Install required tools
-```
-apt-get install apache2 python-setuptools libapache2-mod-wsgi git python-virtualenv
-```
-
-Get the app source and set up its run environment
-```
-cd /var/www/
-git clone https://github.com/GluuFederation/gluu-webui
-cd gluu-webui
-virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
-```
-
-Open the apache configuration file `config/gluuwebui_apache.conf` and change th `ServerAdmin` and `ServerName` values.
-```
-cp config/gluuwebui_apache.conf /etc/apache2/sites-available/gluuwebui.conf
-a2ensite gluuwebui
-a2dissite 000-default
-service apache2 reload
-```
+Refer installation docs at [Gluu Cluster Docs](http://www.gluu.org/docs-cluster/admin-guide/webui/#installation)
