@@ -84,3 +84,9 @@ body {
     margin-top: 0;
 }
 
+/**
+ * Alert more easier to read
+ */
+.alert{
+    font-weight: 400;
+}

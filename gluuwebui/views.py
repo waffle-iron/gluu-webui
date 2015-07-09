@@ -10,15 +10,16 @@ api_base = app.config["API_SERVER_URL"]
 
 class APIError(Exception):
     """Raise an exception whenever the API returns an error code"""
-    def __init__(self, msg, code, reason):
+    def __init__(self, msg, code, reason, params=""):
         Exception.__init__(self)
         self.msg = msg
         self.code = code
         self.reason = reason
+        self.params = params  # a dict of invalid parameters from API response
 
     def __str__(self):
-        return "{0} API server returned Code: {1} Reason: {2}".format(
-            self.msg, self.code, self.reason)
+        return "{0} API server returned Code: {1} Reason: {2} {3}".format(
+            self.msg, self.code, self.reason, self.params)
 
 
 @app.errorhandler(APIError)
@@ -57,8 +58,14 @@ def api_post(req, data):
     """
     r = requests.post(api_base + req, data=data)
     if r.status_code > 210:
+        try:
+            params = r.json()['params']
+            invalidParams = "=>  "+"    ".join("{0}: {1}".format(k, v)
+                                               for k, v in params.items())
+        except KeyError:
+            invalidParams = ""
         raise APIError('Could not create a new {0}'.format(req),
-                       r.status_code, reason(r))
+                       r.status_code, reason(r), invalidParams)
     return r.json()
 
 
