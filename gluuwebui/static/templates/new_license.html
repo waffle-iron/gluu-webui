@@ -4,14 +4,9 @@
         <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
     </div>
     <div class="form-group">
-        <label for="code">License code</label>
-        <input type="text" class="form-control" name="code" ng-model="resourceData.code" required>
-        <span class="help-block">License code (licenseId) retrieved from https://license.gluu.org</span>
-    </div>
-    <div class="form-group">
-        <label for="credential_id">Credential ID</label>
-        <input type="text" class="form-control" name="credential_id" ng-model="resourceData.credential_id" required>
-        <span class="help-block">Credential ID to use (useful for generating metadata)</span>
+        <label for="credential_id">License Key ID</label>
+        <input type="text" class="form-control" name="license_key_id" ng-model="resourceData.license_key_id" required>
+        <span class="help-block">License Key ID to use (useful for generating metadata)</span>
     </div>
     <button class="btn btn-primary" type="submit">Add License</button>
 </form>

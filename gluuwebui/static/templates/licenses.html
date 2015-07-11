@@ -1,0 +1,42 @@
+<div class="row">
+    <h2>
+        Licenses  <a href="#/new/licenses" class="btn btn-default">New License</a>
+    </h2>
+</div>
+<div id="resourceTable" class="row">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Key ID</th>
+                <th>Code</th>
+                <th>Valid</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/view/licenses" ng-click="loadResource('licenses', row.id)">{{row.id}}</a></td>
+                <td>{{row.code}}</td>
+                <td>
+                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.valid"></span>
+                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="!row.valid"></span>
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('licenses', row.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default" ng-if='details'>
+    <div class="panel-heading">
+        License Details
+    </div>
+
+    <table class="table">
+        <tr ng-repeat='item in detailKeys'>
+            <td><strong>{{item}}</strong></td>
+            <td>{{details[item]}}</td>
+        </tr>
+    </table>
+</div>

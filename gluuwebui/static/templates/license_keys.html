@@ -1,0 +1,40 @@
+<div class="row">
+    <h2>
+        License Keys  <a href="#/new/license_keys" class="btn btn-default">New License Key</a>
+    </h2>
+</div>
+<div id="resourceTable" class="row">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Public Key</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/view/license_keys" ng-click="loadResource('license_keys', row.id)">{{row.name}}</a></td>
+                <td>{{row.public_key}}</td>
+                <td>
+                    <a class="btn btn-info btn-sm" href="#/edit/license_keys/{{row.id}}">Edit</a>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('license_keys', row.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default" ng-if='details'>
+    <div class="panel-heading">
+        License Key Details : {{details.name}}
+    </div>
+
+    <table class="table">
+        <tr ng-repeat='item in detailKeys'>
+            <td><strong>{{item}}</strong></td>
+            <td>{{details[item]}}</td>
+        </tr>
+    </table>
+</div>
+

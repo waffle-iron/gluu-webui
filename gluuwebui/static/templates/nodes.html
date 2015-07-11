@@ -1,0 +1,52 @@
+<div class="row">
+    <h2>
+        Nodes  <a href="#/new/nodes" class="btn btn-default">New Node</a>
+    </h2>
+</div>
+<div id="resourceTable" class="row">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>State</th>
+                <th>IP</th>
+                <th>Type</th>
+                <th>Cluster</th>
+                <th>Provider</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/view/nodes" ng-click="loadResource('nodes', row.name)">{{row.name}}</a></td>
+                <td>
+                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.state == 'SUCCESS'"></span>
+                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="row.state == 'FAILED'"></span>
+                    <span class="glyphicon glyphicon-ban-circle text-warning" aria-hidden="true" ng-if="row.state == 'DISABLED'"></span>
+                    <span class="glyphicon glyphicon-time text-info" aria-hidden="true" ng-if="row.state == 'IN_PROGRESS'"></span>
+                    <small>{{row.state}}</small>
+                </td>
+                <td>{{row.ip}}</td>
+                <td>{{row.type}}</td>
+                <td>{{row.cluster_id}}</td>
+                <td>{{row.provider_id}}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default" ng-if='details'>
+    <div class="panel-heading">
+        Node Details : {{details.name}}
+    </div>
+
+    <table class="table">
+        <tr ng-repeat='item in detailKeys'>
+            <td><strong>{{item}}</strong></td>
+            <td>{{details[item]}}</td>
+        </tr>
+    </table>
+</div>
+

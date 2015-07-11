@@ -1,0 +1,50 @@
+
+<div class="row">
+    <h2>
+        Clusters  <a href="#/new/clusters" class="btn btn-default">New Cluster</a>
+    </h2>
+</div>
+<div id="resourceTable" class="row">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Organization</th>
+                <th>City</th>
+                <th>Ox Cluster Host</th>
+                <th>Httpd Nodes</th>
+                <th>LDAP Nodes</th>
+                <th>OxAuth Nodes</th>
+                <th>OxTrust Nodes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/view/clusters" ng-click="loadResource('clusters', row.id)">{{row.name}}</a></td>
+                <td>{{row.org_name}}</td>
+                <td>{{row.city}}</td>
+                <td>{{row.ox_cluster_hostname}}</td>
+                <td>{{row.httpd_nodes.length}}</td>
+                <td>{{row.ldap_nodes.length}}</td>
+                <td>{{row.oxauth_nodes.length}}</td>
+                <td>{{row.oxtrust_nodes.length}}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('clusters', row.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default" ng-if='details'>
+    <div class="panel-heading">
+        Cluster Details : {{details.name}}
+    </div>
+
+    <table class="table">
+        <tr ng-repeat='item in detailKeys'>
+            <td><strong>{{item}}</strong></td>
+            <td>{{details[item]}}</td>
+        </tr>
+    </table>
+</div>

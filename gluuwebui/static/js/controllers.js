@@ -60,13 +60,11 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
         // get the overview table and update the headers and rows
         $http.get('/'+resource).success( function( data ){
-            if( !data.contents.length ){
+            if( !data.length ){
                 AlertMsg.addMsg( "The are no " + $scope.currentResource +"s available in the Gluu Cluster. Create a new one.", "warning" );
                 return;
             }
-            // we have a data array
-            $scope.contents = data.contents;
-            $scope.headers = data.headers;
+            $scope.contents = data;
         }).error(function(data){
             postErrorAlert(AlertMsg, data);
         });

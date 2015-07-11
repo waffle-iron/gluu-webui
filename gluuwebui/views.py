@@ -115,24 +115,7 @@ def represent_node():
         return Response(json.dumps(resp), 200, mimetype="application/json")
 
     resp = api_get("nodes")
-    data = {}
-    data['headers'] = ['Name', 'State', 'Type', 'IP', 'Provider', 'Cluster']
-    data['contents'] = []
-    for node in resp:
-        provider = api_get('providers/{0}'.format(node['provider_id']))
-        cluster = api_get('clusters/{0}'.format(node['cluster_id']))
-        node_id = node['id']
-        if not node_id:  # In cases where nodes are initialized but has no ID
-            node_id = node['name']
-        data['contents'].append({u'ID': node_id,
-                                 u'Name': node['name'],
-                                 u'State': node['state'],
-                                 u'Type': node['type'],
-                                 u'IP': node['ip'],
-                                 u'Provider': "/".join([provider['type'],
-                                                       provider['hostname']]),
-                                 u'Cluster': cluster['name']})
-    return json_response(data)
+    return json_response(resp)
 
 
 @app.route("/providers", methods=['GET', 'POST'])
@@ -142,13 +125,7 @@ def represent_provider():
         return json_response(resp)
 
     resp = api_get('providers')
-    data = {}
-    data['headers'] = ['Host Name', 'Type']
-    data['contents'] = [{u'Host Name': provider['hostname'],
-                         u'Type': provider['type'],
-                         u'ID': provider['id']}
-                        for provider in resp]
-    return json_response(data)
+    return json_response(resp)
 
 
 @app.route("/clusters", methods=['GET', 'POST'])
@@ -158,21 +135,7 @@ def represent_cluster():
         return json_response(resp)
 
     resp = api_get('clusters')
-    data = {}
-    data['headers'] = ['Name', 'Organization', 'City', 'Ox Cluster Host',
-                       'Httpd Nodes', 'LDAP Nodes', 'OxAuth Nodes',
-                       'OxTrust Nodes']
-    data['contents'] = [{u'ID': cluster['id'],
-                         u'Name': cluster['name'],
-                         u'Organization': cluster['org_short_name'],
-                         u'City': cluster['city'],
-                         u'Ox Cluster Host': cluster['ox_cluster_hostname'],
-                         u'Httpd Nodes': len(cluster['httpd_nodes']),
-                         u'LDAP Nodes': len(cluster['ldap_nodes']),
-                         u'OxAuth Nodes': len(cluster['oxauth_nodes']),
-                         u'OxTrust Nodes': len(cluster['oxtrust_nodes'])}
-                        for cluster in resp]
-    return json_response(data)
+    return json_response(resp)
 
 
 @app.route("/licenses", methods=['GET', 'POST'])
@@ -182,34 +145,17 @@ def represent_license():
         return json_response(resp)
 
     res = api_get('licenses')
-    data = {}
-    data['headers'] = ['Credential Name', 'Credential ID', 'Code', 'Valid',
-                       'Metadata']
-    data['contents'] = [{u'ID': lic['id'],
-                         u'Credential Name':
-                         api_get("license_credentials/" +
-                                 lic['credential_id'])['name'],
-                         u'Credential ID': lic['credential_id'],
-                         u'Code': lic['code'],
-                         u'Valid': lic['valid'],
-                         u'Metadata': lic['metadata']} for lic in res]
-    return json_response(data)
+    return json_response(res)
 
 
-@app.route("/license_credentials", methods=['GET', 'POST'])
-def represent_credential():
+@app.route("/license_keys", methods=['GET', 'POST'])
+def represent_keys():
     if request.method == 'POST':  # Add a new credential
-        resp = api_post('license_credentials', json.loads(request.data))
+        resp = api_post('license_keys', json.loads(request.data))
         return json_response(resp)
 
-    res = api_get('license_credentials')
-    data = {}
-    data['headers'] = ['Name', 'Public Key']
-    data['contents'] = [{u'Name': cred['name'],
-                         u'ID': cred['id'],
-                         u'Public Key': cred['public_key']}
-                        for cred in res]
-    return json_response(data)
+    res = api_get('license_keys')
+    return json_response(res)
 
 
 @app.route("/<resource>/<id>", methods=['GET', 'POST', 'DELETE'])
@@ -220,7 +166,7 @@ def give_resource(resource, id):
 
     elif request.method == 'POST':
         # For now only provider and license_credential have put requests
-        if resource != 'providers' and resource != 'license_credentials':
+        if resource != 'providers' and resource != 'license_keys':
             data = {'message': 'Invalid resoure to update.'}
             return json_response(data, 400)
 

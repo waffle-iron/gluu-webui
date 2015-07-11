@@ -9,7 +9,7 @@ gluuwebui.app.config['TESTING'] = True
 app = gluuwebui.app.test_client()
 
 resources = ['/providers', '/clusters', '/nodes', '/licenses',
-             '/license_credentials']
+             '/license_keys']
 
 ##############################################################################
 #   Handling GET requests and ensuring all /resource /resource/id are answered
@@ -109,7 +109,7 @@ def mock_put(code):
 def check_put_success(item):
     res = app.post(item + '/some_id', data='{"id":"some_id"}')
     # currently UPDATE should be allowed only for 2 resources as below
-    if item == '/license_credentials' or item == '/providers':
+    if item == '/license_keys' or item == '/providers':
         assert_equal(res.status_code, 200)
     else:
         assert_equal(res.status_code, 400)
