@@ -78,9 +78,13 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 // remove the resource from the view
                 var contents = $scope.contents;
                 for(var i=0; i < contents.length; i++){
-                    if( contents[i].ID == id ){
+                    if( contents[i].id == id ){
                         contents.splice(i,1);
                         $scope.contents = contents;
+                        // check and remove the details view also
+                        if( $scope.details.id == id ){
+                            $scope.details = undefined;
+                        }
                         break;
                     }
                 }
