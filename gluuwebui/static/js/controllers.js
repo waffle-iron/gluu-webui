@@ -145,16 +145,16 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.providers = [];
 
             $http.get("/clusters").success(function(data){
-                for (var i=0; i < data.contents.length; i++ ){
-                    $scope.clusters.push({'id' : data.contents[i]['ID'], 'name': data.contents[i]['Name']});
+                for (var i=0; i < data.length; i++ ){
+                    $scope.clusters.push({'id' : data[i].id, 'name': data[i].name});
                 }
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
 
             $http.get("/providers").success(function(data){
-                for( var i=0; i < data.contents.length; i++ ){
-                    $scope.providers.push({'id' : data.contents[i]['ID'], 'name': data.contents[i]['Host Name']});
+                for( var i=0; i < data.length; i++ ){
+                    $scope.providers.push({'id' : data[i].id, 'name': data[i].hostname});
                 }
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
