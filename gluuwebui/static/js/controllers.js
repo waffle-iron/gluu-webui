@@ -120,12 +120,12 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
          *  Upon initializing the form check whether it is in edit mode or create mode and add data accordingly
          */
         var resource = $routeParams.resource;
-        if ($routeParams.action == 'edit'){
+        if ($routeParams.action === 'edit'){
+            $scope.editMode = true;
             if ( typeof $routeParams.id == 'undefined' ){
                 AlertMsg.addMsg( "The resource id is empty! Make sure you selected a resource before clicking Edit", "danger" );
                 return;
             }
-            $scope.editMode = true;
             var id = $routeParams.id;
             $http.get( "/" + resource + "/" + id).success( function(data){
                 $scope.resourceData = data;
