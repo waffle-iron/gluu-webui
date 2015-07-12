@@ -81,10 +81,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                     if( contents[i].id == id ){
                         contents.splice(i,1);
                         $scope.contents = contents;
-                        // check and remove the details view also
-                        if( $scope.details.id == id ){
-                            $scope.details = undefined;
-                        }
+                        $scope.details = undefined;
                         break;
                     }
                 }

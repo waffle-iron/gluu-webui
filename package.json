@@ -1,0 +1,35 @@
+{
+  "name": "gluu-webui",
+  "version": "1.0.0",
+  "description": "The Web UI for the Gluu Cluster REST API",
+  "main": "run.py",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.37",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6"
+  },
+  "scripts": {
+    "start": "python run.py",
+    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --log-level debug --single-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GluuFederation/gluu-webui.git"
+  },
+  "keywords": [
+    "flask",
+    "angularjs",
+    "gluu"
+  ],
+  "author": "Gluu Federation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GluuFederation/gluu-webui/issues"
+  },
+  "homepage": "https://github.com/GluuFederation/gluu-webui"
+}
