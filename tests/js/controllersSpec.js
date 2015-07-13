@@ -107,6 +107,24 @@ describe('Controllers', function(){
                 expect($rootScope.contents.length).toEqual(3);
                 expect(AlertMsg.alerts.length).toEqual(1);
             });
+
+            it('should remove the details if the id mataches', function(){
+                $httpBackend.expectDELETE('/providers/test-id1').respond(200, 'OK');
+                $rootScope.details = {id: 'test-id1'};
+                expect($rootScope.details).toEqual({id: 'test-id1'});
+                $rootScope.deleteResource('providers', 'test-id1');
+                $httpBackend.flush();
+                expect($rootScope.details).toBe(undefined);
+            });
+
+            it('should NOT remove the details if the id doesnt match', function(){
+                $httpBackend.expectDELETE('/providers/test-id3').respond(200, 'OK');
+                $rootScope.details = {id: 'test-id1'};
+                expect($rootScope.details).toEqual({id: 'test-id1'});
+                $rootScope.deleteResource('providers', 'test-id3');
+                $httpBackend.flush();
+                expect($rootScope.details).not.toBe(undefined);
+            });
         });
     });
 

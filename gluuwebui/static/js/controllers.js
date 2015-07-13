@@ -81,7 +81,10 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                     if( contents[i].id == id ){
                         contents.splice(i,1);
                         $scope.contents = contents;
-                        $scope.details = undefined;
+                        if( typeof $scope.details !== 'undefined'){
+                            if( $scope.details.id === id )
+                                $scope.details = undefined;
+                        }
                         break;
                     }
                 }
