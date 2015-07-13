@@ -32,5 +32,15 @@
         <label for="exec_delay">Delay before executing (secs)</label>
         <input class="form-control" type="number" name="exec_delay" value="15" ng-model="resourceData.exec_delay" optional>
     </div>
+    <div class="form-group" ng-if="resourceData.node_type == 'httpd'">
+        <label for="oxauth_node_id">OxAuth Node ID</label>
+        <input class="form-control" type="text" name="oxauth_node_id" ng-model="resourceData.oxauth_node_id" required>
+        <span class="help-block">ID of oxauth node (required when deploying httpd node).</span>
+    </div>
+    <div class="form-group" ng-if="resourceData.node_type == 'httpd'">
+        <label for="oxtrust_node_id">OxTrust Node ID</label>
+        <input class="form-control" type="text" name="oxtrust_node_id" ng-model="resourceData.oxtrust_node_id" required>
+        <span class="help-block">ID of oxtrust node (required when deploying httpd node).</span>
+    </div>
     <button class="btn btn-primary" type="submit">Create Node</button>
 </form>
