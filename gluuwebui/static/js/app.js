@@ -6,11 +6,17 @@ var gluuwebui = angular.module('gluuwebui', [
 gluuwebui.getTemplate = function(params) {
     var resource = params.resource;
     var action = params.action;
+    var template = '';
     if (action == 'new' || action == 'edit') {
-        return gluuwebui.newTemplates[resource];
-    } else {
-        return gluuwebui.viewTemplates[resource];
+        template = gluuwebui.newTemplates[resource];
+    } else if( typeof action === 'undefined' ){
+        template = gluuwebui.viewTemplates[resource];
     }
+    // if the url resource doesn't match anything from the objects
+    if( template === '' || typeof template === 'undefined' ){
+        template = 'templates/404.html';
+    }
+    return template;
 };
 
 gluuwebui.newTemplates = {
@@ -31,7 +37,10 @@ gluuwebui.viewTemplates = {
 
 gluuwebui.config(['$routeProvider', function($routeProvider){
     $routeProvider.
-        when('/view/:resource', {
+        when('/', {
+            templateUrl: 'templates/dashboard.html'
+        }).
+        when('/:resource', {
             templateUrl: gluuwebui.getTemplate,
             controller: 'OverviewController'
         }).
@@ -40,6 +49,6 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             controller: 'ResourceController'
         }).
         otherwise({
-            redirectTo: '/'
+            templateUrl: 'templates/404.html'
         });
 }]);

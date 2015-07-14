@@ -18,7 +18,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/view/nodes" ng-click="loadResource('nodes', row.name)">{{row.name}}</a></td>
+                <td><a href="#/nodes" ng-click="loadResource('nodes', row.name)">{{row.name}}</a></td>
                 <td>
                     <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.state == 'SUCCESS'"></span>
                     <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="row.state == 'FAILED'"></span>

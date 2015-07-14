@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/view/license_keys" ng-click="loadResource('license_keys', row.id)">{{row.name}}</a></td>
+                <td><a href="#/license_keys" ng-click="loadResource('license_keys', row.id)">{{row.name}}</a></td>
                 <td>{{row.public_key}}</td>
                 <td>
                     <a class="btn btn-info btn-sm" href="#/edit/license_keys/{{row.id}}">Edit</a>

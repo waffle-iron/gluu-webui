@@ -14,10 +14,10 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/view/providers" ng-click="loadResource('providers', row.id)">{{row.hostname}}</a></td>
+                <td><a href="#/providers" ng-click="loadResource('providers', row.id)">{{row.hostname}}</a></td>
                 <td>{{row.type}}</td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="#/edit/providers/{{row['ID']}}">Edit</a>
+                    <a class="btn btn-info btn-sm" href="#/edit/providers/{{row.id}}">Edit</a>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('providers', row.id)">Delete</button>
                 </td>
             </tr>

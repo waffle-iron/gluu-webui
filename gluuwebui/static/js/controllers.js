@@ -172,14 +172,14 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             if( $scope.editMode ){
                 $http.post("/" + resource + "/" + data.id, data).success(function(data, status){
                     // redirect to the overview page with a message that things have been updated
-                    $location.path('/view/'+resource);
+                    $location.path('/'+resource);
                 }).error(function(data){
                     postErrorAlert(AlertMsg, data);
                 });
             } else {  // Not in Edit Mode == New Resource
                 $http.post("/" + resource, data).success(function( data, status){
                     // redirect to the overview page with a message that new cluster was created
-                    $location.path('/view/'+resource);
+                    $location.path('/'+resource);
                 }).error(function( data ){
                     postErrorAlert(AlertMsg, data);
                 });

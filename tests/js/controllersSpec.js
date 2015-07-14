@@ -207,11 +207,11 @@ describe('Controllers', function(){
                 $rootScope.submit();
                 $httpBackend.flush();
             });
-            it('should redirect to /view/resource upon post success', function(){
+            it('should redirect to /resource upon post success', function(){
                 $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
                 $rootScope.submit();
                 $httpBackend.flush();
-                expect($location.path()).toEqual('/view/providers');
+                expect($location.path()).toEqual('/providers');
             });
             it('should post an alert on post failure', function(){
                 $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});

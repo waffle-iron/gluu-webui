@@ -21,7 +21,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/view/clusters" ng-click="loadResource('clusters', row.id)">{{row.name}}</a></td>
+                <td><a href="#/clusters" ng-click="loadResource('clusters', row.id)">{{row.name}}</a></td>
                 <td>{{row.org_name}}</td>
                 <td>{{row.city}}</td>
                 <td>{{row.ox_cluster_hostname}}</td>

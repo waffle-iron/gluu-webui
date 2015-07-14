@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/view/licenses" ng-click="loadResource('licenses', row.id)">{{row.id}}</a></td>
+                <td><a href="#/licenses" ng-click="loadResource('licenses', row.id)">{{row.id}}</a></td>
                 <td>{{row.code}}</td>
                 <td>
                     <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.valid"></span>
