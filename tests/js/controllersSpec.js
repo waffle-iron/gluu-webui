@@ -1,6 +1,6 @@
 describe('Controllers', function(){
 
-    var $httpBackend, $rootScope, createController, AlertMsg, $routeParams;
+    var $httpBackend, $rootScope, createController, AlertMsg, $routeParams, $location;
     beforeEach(module('webuiControllers'));
 
     // Inject the stuff required
@@ -9,10 +9,15 @@ describe('Controllers', function(){
         $httpBackend = $injector.get('$httpBackend');
         $rootScope = $injector.get('$rootScope');
         AlertMsg = $injector.get('AlertMsg');
+        $location = $injector.get('$location');
         $routeParams = {resource: 'providers', id: 'some-id'};
         var $controller = $injector.get('$controller');
         createController = function( name ){
-            return $controller(name, {'$scope': $rootScope, 'AlertMsg': AlertMsg, '$routeParams': $routeParams});
+            var deps = {'$scope': $rootScope, 'AlertMsg': AlertMsg, '$routeParams': $routeParams};
+            if( name === 'ResourceController' ){
+                    deps.$location = $location;
+            }
+            return $controller(name, deps);
         };
 
     }));
@@ -198,14 +203,18 @@ describe('Controllers', function(){
             });
             it('should post data to /resource in new mode', function(){
                 $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $rootScope.editMode = false;
                 $rootScope.submit();
                 $httpBackend.flush();
             });
             it('should redirect to /view/resource upon post success', function(){
+                $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $rootScope.submit();
+                $httpBackend.flush();
+                expect($location.path()).toEqual('/view/providers');
             });
             it('should post an alert on post failure', function(){
                 $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
-
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $rootScope.submit();
                 $httpBackend.flush();
