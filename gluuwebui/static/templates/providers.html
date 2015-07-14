@@ -3,10 +3,10 @@
         Providers  <a href="#/new/providers" class="btn btn-default">New Provider</a>
     </h2>
 </div>
-<div id="resourceTable" class="row">
+<div id="resourceTable" class="row" ng-if="contents.length">
     <table class="table table-bordered table-hover">
         <thead>
-            <tr>
+            <tr class="active">
                 <th>Host Name</th>
                 <th>Type</th>
                 <th>Actions</th>

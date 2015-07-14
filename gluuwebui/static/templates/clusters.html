@@ -4,10 +4,10 @@
         Clusters  <a href="#/new/clusters" class="btn btn-default">New Cluster</a>
     </h2>
 </div>
-<div id="resourceTable" class="row">
+<div id="resourceTable" class="row" ng-if="contents.length">
     <table class="table table-bordered table-hover">
         <thead>
-            <tr>
+            <tr class="active">
                 <th>Name</th>
                 <th>Organization</th>
                 <th>City</th>
@@ -16,6 +16,7 @@
                 <th>LDAP Nodes</th>
                 <th>OxAuth Nodes</th>
                 <th>OxTrust Nodes</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>

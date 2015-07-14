@@ -3,10 +3,10 @@
         License Keys  <a href="#/new/license_keys" class="btn btn-default" ng-if="!contents.length">New License Key</a>
     </h2>
 </div>
-<div id="resourceTable" class="row">
+<div id="resourceTable" class="row" ng-if="contents.length">
     <table class="table table-bordered table-hover">
         <thead>
-            <tr>
+            <tr class="active">
                 <th>Name</th>
                 <th>Public Key</th>
                 <th>Actions</th>

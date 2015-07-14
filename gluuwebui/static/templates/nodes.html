@@ -3,16 +3,17 @@
         Nodes  <a href="#/new/nodes" class="btn btn-default">New Node</a>
     </h2>
 </div>
-<div id="resourceTable" class="row">
+<div id="resourceTable" class="row" ng-if="contents.length">
     <table class="table table-bordered table-hover">
         <thead>
-            <tr>
+            <tr class="active">
                 <th>Name</th>
                 <th>State</th>
                 <th>IP</th>
                 <th>Type</th>
                 <th>Cluster</th>
                 <th>Provider</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
