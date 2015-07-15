@@ -11,11 +11,13 @@
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.37",
     "karma-firefox-launcher": "^0.1.6",
-    "karma-jasmine": "^0.3.6"
+    "karma-jasmine": "^0.3.6",
+    "protractor": "^2.1.0"
   },
   "scripts": {
     "start": "python run.py",
-    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --log-level debug --single-run"
+    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --log-level debug --single-run",
+    "e2e": "./node_modules/protractor/bin/protractor tests/protractor.conf.js"
   },
   "repository": {
     "type": "git",
