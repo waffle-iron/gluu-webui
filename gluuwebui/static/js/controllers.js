@@ -140,14 +140,17 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         /*
          *  If the resource is a node add the list of ids for cluster and provider as a dropdown
          */
-        if( resource == 'nodes' ){
+        if( resource === 'nodes' ){
             $scope.clusters = [];
             $scope.providers = [];
+            $scope.oxauth_nodes = [];
+            $scope.oxtrust_nodes = [];
 
             $http.get("/clusters").success(function(data){
                 for (var i=0; i < data.length; i++ ){
                     $scope.clusters.push({'id' : data[i].id, 'name': data[i].name});
                 }
+                $scope.resourceData.cluster_id = data[0].id;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
@@ -156,6 +159,33 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 for( var i=0; i < data.length; i++ ){
                     $scope.providers.push({'id' : data[i].id, 'name': data[i].hostname});
                 }
+                $scope.resourceData.provider_id = data[0].id;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+
+            $http.get("/nodes").success(function(data){
+                for(var i=0; i < data.length; i++){
+                    if( data[i].type === 'oxtrust' ){
+                        $scope.oxtrust_nodes.push({'id': data[i].id, 'name': data[i].name});
+                    } else if( data[i].type === 'oxauth' ){
+                        $scope.oxauth_nodes.push({'id': data[i].id, 'name': data[i].name});
+                    }
+                }
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+        }
+
+        /*
+         *  If the resource is a provider load the licenses
+         */
+        if( resource === 'providers' ){
+            $scope.license = {};
+            $http.get('/licenses').success(function(data){
+                var lic = data[0];
+                $scope.license.id = lic.id
+                $scope.license.name = lic.metadata.license_name;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });

@@ -16,7 +16,9 @@
     </div>
     <div class="form-group">
         <label for="license_id">License ID</label>
-        <input type="text" name="license_id" class="form-control" ng-model="resourceData.license_id">
+        <select id="license_id" name="license_id" class="form-control" ng-model="resourceData.license_id">
+            <option value="{{license.id}}">{{license.name}}</option>
+        </select>
         <span class="help-block">ID of the license. Must be filled for consumer.</span>
     </div>
     <div class="form-group">
