@@ -177,6 +177,9 @@ describe('Controllers', function(){
                 expect($rootScope.resourceData).toEqual({});
             });
 
+            /*
+             *  Tests to verfiy NEW NODE form specific actions
+             */
             it('should get the list of clusters, providers and nodes for Node form', function(){
                 $routeParams = {resource: 'nodes'};
                 $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
@@ -202,6 +205,52 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect($rootScope.oxtrust_nodes.length).toEqual(2);
                 expect($rootScope.oxauth_nodes.length).toEqual(1);
+            });
+
+            it('should post alerts when dependency fetching fails for New Node', function(){
+                $routeParams = {resource: 'nodes'};
+                $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
+                $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
+                $httpBackend.expectGET('/nodes').respond(400, {message: 'NOT OK'});
+                expect(AlertMsg.alerts.length).toEqual(0);
+                var controller = createController('ResourceController');
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(3);
+            });
+
+            /*
+             *  Test to verify NEW PROVIDER specific actions
+             *
+             */
+
+            describe('when resource is PROVIDER', function(){
+                beforeEach(function(){
+                    $routeParams = {resource: 'providers'};
+                });
+
+                it('should load the licenses to scope', function(){
+                    $httpBackend.expectGET('/licenses').respond(200, [{id: 'id', metadata:{ license_name: 'some license'}}]);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect($rootScope.license).toEqual({id: 'id', name: 'some license'});
+                    expect($rootScope.license).toBeTruthy(); // for UI feedback
+                });
+
+                it('should add an alert if it cannot GET /licenses', function(){
+                    $httpBackend.expectGET('/licenses').respond(400, {message: 'no license'});
+                    expect(AlertMsg.alerts.length).toEqual(0);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect(AlertMsg.alerts.length).toEqual(1);
+                    expect($rootScope.license).toBeFalsy();
+                });
+
+                it('should set scope.license value to falsy so UI feedback can be done', function(){
+                    $httpBackend.expectGET('/licenses').respond(200, []);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect($rootScope.license).toBeFalsy();
+                });
             });
         });
 
@@ -230,12 +279,20 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect($location.path()).toEqual('/resource');
             });
-            it('should post an alert on post failure', function(){
+            it('should add an alert on POST failure in both Edit and Create', function(){
                 $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
                 expect(AlertMsg.alerts.length).toEqual(0);
+                // Create Mode
+                $rootScope.editMode = false;
                 $rootScope.submit();
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(1);
+                // Edit Mode
+                $httpBackend.expectPOST('/resource/some-id', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
+                $rootScope.editMode = true;
+                $rootScope.submit();
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(2);
             });
         });
     });

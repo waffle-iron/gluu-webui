@@ -219,15 +219,16 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.resourceData.license_id = '';
 
             $http.get('/licenses').success(function(data){
-                if( data.length === 1){
-                    var lic = data[0];
+                if(!data.length){
+                    $scope.license = null;
+                } else {
+                    var lic = data[0]; // NOTE: hardcoding first license value as currently only one license is allowed
                     $scope.license.id = lic.id;
                     $scope.license.name = lic.metadata.license_name;
-                } else {
-                    $scope.license = null;
                 }
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
+                $scope.license = null;
             });
         }
 
