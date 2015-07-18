@@ -58,3 +58,4 @@ target/
 
 # NodeJS modules - JS testing
 node_modules/
+tests/coverage/
