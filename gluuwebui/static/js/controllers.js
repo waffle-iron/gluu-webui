@@ -174,6 +174,11 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.oxauth_nodes = [];
             $scope.oxtrust_nodes = [];
 
+            // Initialize deafult for <select> to avoid empty angular item
+            $scope.resourceData.type = '';
+            $scope.resourceData.oxtrust_node_id = '';
+            $scope.resourceData.oxauth_node_id = '';
+
             $http.get("/clusters").success(function(data){
                 for (var i=0; i < data.length; i++ ){
                     $scope.clusters.push({'id' : data[i].id, 'name': data[i].name});
@@ -210,6 +215,9 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
          */
         if( resource === 'providers' ){
             $scope.license = {};
+            // deafults for dropdown
+            $scope.resourceData.license_id = '';
+
             $http.get('/licenses').success(function(data){
                 if( data.length === 1){
                     var lic = data[0];

@@ -13,6 +13,7 @@
     <div class="form-group">
         <label for="node_type">Node Type</label>
         <select id="node_type" name="node_type" class="form-control" ng-model="resourceData.node_type" required>
+            <option value="">Select a Node Type</option>
             <option value="ldap">LDAP</option>
             <option value="oxauth">oxAuth</option>
             <option value="oxtrust">oxTrust</option>
@@ -33,16 +34,20 @@
         <label for="exec_delay">Delay before executing (secs)</label>
         <input class="form-control" type="number" name="exec_delay" value="15" ng-model="resourceData.exec_delay" optional>
     </div>
-    <div class="form-group" ng-if="resourceData.node_type == 'httpd'">
-        <label for="oxauth_node_id">OxAuth Node ID</label>
+    <div class="form-group" ng-if="resourceData.node_type == 'httpd'" ng-class="{'has-error': !oxauth_nodes.length}">
+        <label for="oxauth_node_id" class="control-label">OxAuth Node ID</label>
         <select id="oxauth_node_id"  name="oxauth_node_id" class="form-control" ng-model="resourceData.oxauth_node_id" required>
+            <option value="" ng-if="!oxauth_nodes.length">No OxAuth nodes present</option>
+            <option value="" ng-if="oxauth_nodes.length">Select an OxAuth node</option>
             <option value="{{node.id}}" ng-repeat="node in oxauth_nodes">{{node.name}}</option>
         </select>
         <span class="help-block">ID of oxauth node (required when deploying httpd node).</span>
     </div>
-    <div class="form-group" ng-if="resourceData.node_type == 'httpd'">
-        <label for="oxtrust_node_id">OxTrust Node ID</label>
+    <div class="form-group" ng-if="resourceData.node_type == 'httpd'" ng-class="{'has-error': !oxtrust_nodes.length}">
+        <label for="oxtrust_node_id" class="control-label">OxTrust Node ID</label>
         <select id="oxtrust_node_id"  name="oxtrust_node_id" class="form-control" ng-model="resourceData.oxtrust_node_id" required>
+            <option value="" ng-if="!oxtrust_nodes.length">No OxTrust nodes present</option>
+            <option value="" ng-if="oxtrust_nodes.length">Select an OxTrust node</option>
             <option value="{{node.id}}" ng-repeat="node in oxtrust_nodes">{{node.name}}</option>
         </select>
         <span class="help-block">ID of oxtrust node (required when deploying httpd node).</span>
