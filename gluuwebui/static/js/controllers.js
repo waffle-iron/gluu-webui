@@ -69,6 +69,35 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             postErrorAlert(AlertMsg, data);
         });
 
+        /*
+         * If it is a node, fetch the list of clusters and providers for listing against each node
+         */
+        if( resource === 'nodes' ){
+            $http.get('/clusters').success( function(data){
+                $scope.clusters = data;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+
+            $http.get('/providers').success( function(data){
+                $scope.providers = data;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+        }
+
+        $scope.getResourceName = function( list, id ){
+            for( var i=0; i < list.length; i++ ){
+                if( list[i].id === id ){
+                    // providers donot have name -- they have hostname
+                    if('hostname' in list[i]){
+                        return list[i].hostname;
+                    }
+                    return list[i].name;
+                }
+            }
+        };
+
 
         /*
          * Fucntion to delete a resource. This is called whenever a delete button is clicked in the overview UI

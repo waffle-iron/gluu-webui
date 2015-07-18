@@ -28,8 +28,8 @@
                 </td>
                 <td>{{row.ip}}</td>
                 <td>{{row.type}}</td>
-                <td>{{row.cluster_id}}</td>
-                <td>{{row.provider_id}}</td>
+                <td>{{getResourceName( clusters, row.cluster_id )}}</td>
+                <td>{{getResourceName( providers, row.provider_id )}}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.id)">Delete</button>
                 </td>
