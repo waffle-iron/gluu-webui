@@ -101,7 +101,6 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.loadResource = function(resource, id){
             $http.get('/'+resource+"/"+id).success(function(data){
                 $scope.details = data;
-                $scope.detailKeys = Object.keys(data);
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
@@ -183,9 +182,13 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         if( resource === 'providers' ){
             $scope.license = {};
             $http.get('/licenses').success(function(data){
-                var lic = data[0];
-                $scope.license.id = lic.id
-                $scope.license.name = lic.metadata.license_name;
+                if( data.length === 1){
+                    var lic = data[0];
+                    $scope.license.id = lic.id;
+                    $scope.license.name = lic.metadata.license_name;
+                } else {
+                    $scope.license = null;
+                }
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });

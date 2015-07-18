@@ -7,19 +7,17 @@
     <table class="table table-bordered table-hover">
         <thead>
             <tr class="active">
-                <th>Key ID</th>
-                <th>Code</th>
+                <th>Name</th>
                 <th>Valid</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/licenses" ng-click="loadResource('licenses', row.id)">{{row.id}}</a></td>
-                <td>{{row.code}}</td>
+                <td><a href="#/licenses" ng-click="loadResource('licenses', row.id)">{{row.metadata.name}}</a></td>
                 <td>
-                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.valid"></span>
-                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="!row.valid"></span>
+                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.valid">VALID</span>
+                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="!row.valid">INVALID</span>
                 </td>
                 <td>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('licenses', row.id)">Delete</button>
@@ -35,9 +33,16 @@
     </div>
 
     <table class="table">
-        <tr ng-repeat='item in detailKeys'>
-            <td><strong>{{item}}</strong></td>
-            <td>{{details[item]}}</td>
+        <tr ng-repeat='(key, value) in details' ng-if="key !== 'metadata'">
+            <td><strong>{{key}}</strong></td>
+            <td>{{value}}</td>
+        </tr>
+        <tr>
+            <td colspan=2><strong>Metadata</strong></td>
+        </tr>
+        <tr ng-repeat='(mkey, mvalue) in details.metadata'>
+            <td><strong>{{mkey}}</strong></td>
+            <td>{{mvalue}}</td>
         </tr>
     </table>
 </div>

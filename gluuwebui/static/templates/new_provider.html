@@ -14,12 +14,14 @@
         <input name="docker_base_url" class="form-control" type="text" ng-model="resourceData.docker_base_url" required>
         <span class="help-block">URL could be unix socket (e.g. unix:///var/run/docker.sock) for localhost or tcp (10.10.10.1:2375) for remote host</span>
     </div>
-    <div class="form-group">
-        <label for="license_id">License ID</label>
+    <div class="form-group" ng-class="{'has-error': !license}">
+        <label for="license_id" class="control-label">License ID</label>
         <select id="license_id" name="license_id" class="form-control" ng-model="resourceData.license_id">
             <option value="{{license.id}}">{{license.name}}</option>
         </select>
-        <span class="help-block">ID of the license. Must be filled for consumer.</span>
+        <span class="help-block" ng-if="license">ID of the license. Must be filled for consumer.</span>
+        <span class="help-block" ng-if="!license">You have no licenses added. License ID Must be filled for consumer.</span>
+
     </div>
     <div class="form-group">
         <label for="ssl_key">SSL Key</label>

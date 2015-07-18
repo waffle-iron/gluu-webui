@@ -43,9 +43,9 @@
     </div>
 
     <table class="table">
-        <tr ng-repeat='item in detailKeys'>
-            <td><strong>{{item}}</strong></td>
-            <td>{{details[item]}}</td>
+        <tr ng-repeat='(key, value) in details'>
+            <td><strong>{{key}}</strong></td>
+            <td>{{value}}</td>
         </tr>
     </table>
 </div>
