@@ -136,23 +136,23 @@ describe('Controllers', function(){
     describe('ResourceController', function(){
         describe('intialization code', function(){
             it('should set edit mode to false if action=new', function(){
-                $routeParams = {resource: 'providers', action: 'new'};
+                $routeParams = {resource: 'resource', action: 'new'};
                 var controller = createController('ResourceController');
                 expect($rootScope.editMode).toEqual(false);
                 expect($routeParams.action).toEqual('new');
             });
 
             it('should set edit mode to true if action=edit', function(){
-                $routeParams = {resource: 'providers', action: 'edit'};
+                $routeParams = {resource: 'resource', action: 'edit'};
                 var controller = createController('ResourceController');
                 expect($rootScope.editMode).toEqual(true);
                 expect($routeParams.action).toEqual('edit');
             });
 
             it('should get resourceData using id in editmode', function(){
-                $routeParams = {resource: 'providers', action: 'edit', id: 'some-id'};
+                $routeParams = {resource: 'resource', action: 'edit', id: 'some-id'};
                 var data = {id: 'some-id', data: 'some-data'};
-                $httpBackend.expectGET('/providers/some-id').respond(200, data);
+                $httpBackend.expectGET('/resource/some-id').respond(200, data);
                 var controller = createController('ResourceController');
                 expect($rootScope.resourceData).toEqual({});
                 $httpBackend.flush();
@@ -161,8 +161,8 @@ describe('Controllers', function(){
 
             it('should post an alert if it cant get data in edit mode', function(){
                 expect(AlertMsg.alerts.length).toEqual(0);
-                $routeParams = {resource: 'providers', action: 'edit', id: 'some-id'};
-                $httpBackend.expectGET('/providers/some-id').respond(400, {message: 'no data'});
+                $routeParams = {resource: 'resource', action: 'edit', id: 'some-id'};
+                $httpBackend.expectGET('/resource/some-id').respond(400, {message: 'no data'});
                 var controller = createController('ResourceController');
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(1);
@@ -171,50 +171,67 @@ describe('Controllers', function(){
 
             it('should add an alert when ID is not supplied for editing', function(){
                 expect(AlertMsg.alerts.length).toEqual(0);
-                $routeParams = {resource: 'providers', action: 'edit'};
+                $routeParams = {resource: 'resource', action: 'edit'};
                 var controller = createController('ResourceController');
                 expect(AlertMsg.alerts.length).toEqual(1);
                 expect($rootScope.resourceData).toEqual({});
             });
 
-            it('should get the list of clusters and providers for Node form', function(){
+            it('should get the list of clusters, providers and nodes for Node form', function(){
                 $routeParams = {resource: 'nodes'};
                 $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
                 $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
+                $httpBackend.expectGET('/nodes').respond(200, [{id: 'id3', name: 'node1'}]);
                 var controller = createController('ResourceController');
                 $httpBackend.flush();
                 expect($rootScope.clusters.length).toEqual(1);
                 expect($rootScope.providers.length).toEqual(1);
+                expect($rootScope.oxauth_nodes.length).toEqual(0);
+                expect($rootScope.oxtrust_nodes.length).toEqual(0);
+            });
+
+            it('should load the oxauth & oxtrust id and names for selection in New Node form', function(){
+                $routeParams = {resource: 'nodes'};
+                $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
+                $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
+                var nodes = [{type: 'ldap', id: 'id1', name: 'node1'}, {type: 'oxtrust', id: 'id2', name: 'node2'},
+                             {type: 'oxauth', id: 'id3', name: 'node3'}, {type: 'httpd', id: 'id4', name: 'node4'},
+                             {type: 'oxtrust', id: 'id5', name: 'node5'}];
+                $httpBackend.expectGET('/nodes').respond(200, nodes);
+                var controller = createController('ResourceController');
+                $httpBackend.flush();
+                expect($rootScope.oxtrust_nodes.length).toEqual(2);
+                expect($rootScope.oxauth_nodes.length).toEqual(1);
             });
         });
 
         describe('$scope.submit', function(){
             beforeEach(function(){
-                $routeParams = {resource: 'providers'};
+                $routeParams = {resource: 'resource'};
                 var controller = createController('ResourceController');
                 $rootScope.resourceData = {id: 'some-id', name: 'some name'};
             });
 
             it('should post data to /resource/id in edit mode', function(){
-                $httpBackend.expectPOST('/providers/some-id', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $httpBackend.expectPOST('/resource/some-id', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
                 $rootScope.editMode = true;
                 $rootScope.submit();
                 $httpBackend.flush();
             });
             it('should post data to /resource in new mode', function(){
-                $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
                 $rootScope.editMode = false;
                 $rootScope.submit();
                 $httpBackend.flush();
             });
             it('should redirect to /resource upon post success', function(){
-                $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
                 $rootScope.submit();
                 $httpBackend.flush();
-                expect($location.path()).toEqual('/providers');
+                expect($location.path()).toEqual('/resource');
             });
             it('should post an alert on post failure', function(){
-                $httpBackend.expectPOST('/providers', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
+                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $rootScope.submit();
                 $httpBackend.flush();
