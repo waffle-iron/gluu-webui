@@ -4,8 +4,9 @@ webuiControllers.service('AlertMsg', ['$rootScope', function( $rootScope ){
     var service = {
         alerts : [],
         addMsg: function( message, type ){
-            if( typeof message == 'undefined' || typeof type == 'undefined' ){
-                console.error('An alert with insufficient parameters was passed. Requires (message, type)' );
+            if( typeof message !== 'string' || typeof type !== 'string' ){
+                console.error('Invalid params passed. Requires (message<string>, type<string>). You passed (message<'+
+                        typeof message+'>, type<'+typeof type+'>).' );
                 return false;
             }
             var item = { msg: message, type: type };
@@ -14,6 +15,15 @@ webuiControllers.service('AlertMsg', ['$rootScope', function( $rootScope ){
             return index;
         },
         removeMsg: function( index ){
+            if( typeof index !== 'number' ){
+                console.error('Invalid variable type of index. Expected integer but recieved ' + typeof index);
+                return;
+            }
+
+            if( index >= service.alerts.length ){
+                console.error('Cannot remove message at ' + index + '. Exceeds available number of alerts.');
+                return;
+            }
             service.alerts.splice( index, 1 );
             $rootScope.$broadcast( 'alerts.update' );
         },
@@ -34,7 +44,11 @@ webuiControllers.controller('AlertController', ['$scope', 'AlertMsg',
         $scope.alerts = AlertMsg.alerts;
 
         $scope.closeAlert = function(index){
-            AlertMsg.removeMsg(index);
+            if( typeof index === 'number' ){
+                AlertMsg.removeMsg(index);
+            } else {
+                console.error('Function closeAlert(index) accepts only numbers. You passed ' + typeof index);
+            }
         };
 }]);
 

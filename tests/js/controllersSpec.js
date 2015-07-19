@@ -281,7 +281,7 @@ describe('Controllers', function(){
                     expect(AlertMsg.alerts.length).toEqual(3);
                 });
             });
-           
+
             /*
              *  Test to verify NEW PROVIDER specific actions
              *
@@ -390,6 +390,138 @@ describe('Controllers', function(){
             postErrorAlert(AlertMsg, {});
             expect(AlertMsg.alerts.length).toEqual(2);
             expect(console.log).toHaveBeenCalled();
+        });
+    });
+
+    describe('AlertController', function(){
+        it('should load all alerts of AlertMsg to scope', function(){
+            postErrorAlert(AlertMsg, {message: 'some message'});
+            var controller = createController('AlertController');
+            expect( $rootScope.alerts ).toEqual( AlertMsg.alerts );
+        });
+
+        it('should update the scope.alerts whenever AlertMsg changes', function(){
+            postErrorAlert(AlertMsg, {message: 'some message'});
+            var controller = createController('AlertController');
+            expect( $rootScope.alerts ).toEqual( AlertMsg.alerts );
+            postErrorAlert(AlertMsg, {message: 'more message'});
+            expect( $rootScope.alerts ).toEqual( AlertMsg.alerts );
+            postErrorAlert(AlertMsg, {message: 'final message'});
+            expect( $rootScope.alerts ).toEqual( AlertMsg.alerts );
+        });
+
+        describe('$scope.closeAlert', function(){
+            beforeEach(function(){
+                postErrorAlert(AlertMsg, {message: 'some message'});
+                postErrorAlert(AlertMsg, {message: 'more message'});
+                postErrorAlert(AlertMsg, {message: 'final message'});
+                var controller = createController('AlertController');
+            });
+            it('should remove the alert in the given index', function(){
+                expect(AlertMsg.alerts.length).toEqual(3);
+                $rootScope.closeAlert(2);
+                expect(AlertMsg.alerts.length).toEqual(2);
+                $rootScope.closeAlert(0);
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+
+            it('should not remove anything if index is invalid', function(){
+                expect(AlertMsg.alerts.length).toEqual(3);
+
+                $rootScope.closeAlert(10);
+                expect(AlertMsg.alerts.length).toEqual(3);
+
+                $rootScope.closeAlert('myname');
+                expect(AlertMsg.alerts.length).toEqual(3);
+            });
+
+            it('should log an error if the index is not a number', function(){
+                spyOn(console, 'error');
+                $rootScope.closeAlert('myname');
+                expect(AlertMsg.alerts.length).toEqual(3);
+                expect(console.error).toHaveBeenCalled();
+
+                $rootScope.closeAlert([]);
+                expect(AlertMsg.alerts.length).toEqual(3);
+                expect(console.error).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('AlertMsg Service', function(){
+        beforeEach(function(){
+                AlertMsg.alerts = [];
+        });
+        describe('function addMsg', function(){
+            it('should add message,type if they are strings', function(){
+                expect(AlertMsg.alerts.length).toEqual(0);
+                AlertMsg.addMsg('message', 'type');
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+
+            it('should not add but log an error if the message, type is not a string', function(){
+                spyOn(console, 'error');
+                expect(AlertMsg.alerts.length).toEqual(0);
+
+                // undefined type
+                AlertMsg.addMsg('message');
+                expect(AlertMsg.alerts.length).toEqual(0);
+                expect(console.error).toHaveBeenCalled();
+
+                // improper type
+                AlertMsg.addMsg('message', {});
+                expect(AlertMsg.alerts.length).toEqual(0);
+                expect(console.error).toHaveBeenCalled();
+
+                // undefined message
+                AlertMsg.addMsg(undefined, 'type');
+                expect(AlertMsg.alerts.length).toEqual(0);
+                expect(console.error).toHaveBeenCalled();
+
+                // improper message
+                AlertMsg.addMsg([], 'type');
+                expect(AlertMsg.alerts.length).toEqual(0);
+                expect(console.error).toHaveBeenCalled();
+            });
+        });
+
+        describe('function removeMsg', function(){
+            beforeEach(function(){
+                AlertMsg.addMsg('message1', 'type1');
+                AlertMsg.addMsg('message2', 'type2');
+                AlertMsg.addMsg('message3', 'type3');
+            });
+            it('should remove the message from alerts if index is valid', function(){
+                expect(AlertMsg.alerts.length).toEqual(3);
+                AlertMsg.removeMsg(2);
+                expect(AlertMsg.alerts.length).toEqual(2);
+                AlertMsg.removeMsg(0);
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+
+            it('should not remove but log an error if index is invalid', function(){
+                spyOn(console, 'error');
+                expect(AlertMsg.alerts.length).toEqual(3);
+
+                AlertMsg.removeMsg(8);
+                expect(console.error).toHaveBeenCalled();
+                expect(AlertMsg.alerts.length).toEqual(3);
+
+                AlertMsg.removeMsg("random thing");
+                expect(console.error).toHaveBeenCalled();
+                expect(AlertMsg.alerts.length).toEqual(3);
+            });
+        });
+
+        describe('function clear', function(){
+            it('should empty the alerts when called', function(){
+                expect(AlertMsg.alerts.length).toEqual(0);
+                AlertMsg.addMsg('message1', 'type1');
+                AlertMsg.addMsg('message2', 'type2');
+                expect(AlertMsg.alerts.length).toEqual(2);
+                AlertMsg.clear();
+                expect(AlertMsg.alerts.length).toEqual(0);
+            });
         });
     });
 });
