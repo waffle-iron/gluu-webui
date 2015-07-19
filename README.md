@@ -1,4 +1,7 @@
 # gluu-webui
+
+[![Build Status](https://travis-ci.org/GluuFederation/gluu-webui.svg?branch=master)](https://travis-ci.org/GluuFederation/gluu-webui)
+
 The Web UI for the Gluu Cluster REST API
 
 > This should be run on the same server as [gluu-flask](https://github.com/GluuFederation/gluu-flask)
