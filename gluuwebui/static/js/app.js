@@ -3,14 +3,15 @@ var gluuwebui = angular.module('gluuwebui', [
         'webuiControllers'
         ]);
 
-gluuwebui.getTemplate = function(params) {
+var templateMaker = {};
+templateMaker.getTemplate = function(params) {
     var resource = params.resource;
     var action = params.action;
     var template = '';
     if (action == 'new' || action == 'edit') {
-        template = gluuwebui.newTemplates[resource];
+        template = templateMaker.newTemplates[resource];
     } else if( typeof action === 'undefined' ){
-        template = gluuwebui.viewTemplates[resource];
+        template = templateMaker.viewTemplates[resource];
     }
     // if the url resource doesn't match anything from the objects
     if( template === '' || typeof template === 'undefined' ){
@@ -19,7 +20,7 @@ gluuwebui.getTemplate = function(params) {
     return template;
 };
 
-gluuwebui.newTemplates = {
+templateMaker.newTemplates = {
          'license_keys': 'templates/new_license_key.html',
          'licenses': 'templates/new_license.html',
          'providers': 'templates/new_provider.html',
@@ -27,7 +28,7 @@ gluuwebui.newTemplates = {
          'nodes': 'templates/new_node.html',
 };
 
-gluuwebui.viewTemplates = {
+templateMaker.viewTemplates = {
          'providers':  'templates/providers.html',
          'licenses':  'templates/licenses.html',
          'license_keys':  'templates/license_keys.html',
@@ -41,11 +42,11 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: 'templates/dashboard.html'
         }).
         when('/:resource', {
-            templateUrl: gluuwebui.getTemplate,
+            templateUrl: templateMaker.getTemplate,
             controller: 'OverviewController'
         }).
         when('/:action/:resource/:id?', {
-            templateUrl: gluuwebui.getTemplate,
+            templateUrl: templateMaker.getTemplate,
             controller: 'ResourceController'
         }).
         otherwise({
