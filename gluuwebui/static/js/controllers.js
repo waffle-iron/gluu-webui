@@ -43,6 +43,10 @@ function postErrorAlert( Alert, data ){
         if( typeof data.message == 'string' ){
             Alert.addMsg( data.message, "danger" );
         }
+        else{
+            Alert.addMsg(JSON.stringify(data), "danger");
+            console.log('Somebody is sending non standard error data: '+JSON.stringify(data));
+        }
     }catch(e){
         Alert.addMsg( "Could not reach the server. Make sure the WEB UI server is running and connected", 'danger');
     }

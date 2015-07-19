@@ -138,6 +138,7 @@ describe('Controllers', function(){
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
             });
+
             it('should return cluster name for cluster id', function(){
                 var list = [{id: 'id1', name: 'cluster1'}, {id: 'id2', name: 'cluster2'}];
                 expect($rootScope.getResourceName(list, 'id1')).toMatch('cluster1');
@@ -159,6 +160,38 @@ describe('Controllers', function(){
                 expect($rootScope.getResourceName(list, 'id3')).toMatch('id3');
                 expect($rootScope.getResourceName(list, 'random-id')).toMatch('random-id');
             });
+        });
+
+        describe('when resource is NODE', function(){
+            beforeEach(function(){
+                $routeParams = {resource: 'nodes'};
+            });
+            it('should load list of clusters and providers to the scope', function(){
+                $httpBackend.expectGET('/nodes').respond(200, []);
+                $httpBackend.expectGET('/clusters').respond(200, []);
+                $httpBackend.expectGET('/providers').respond(200, []);
+
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+
+                expect($rootScope.providers).toEqual([]);
+                expect($rootScope.clusters).toEqual([]);
+            });
+
+            it('should post an alert if it can\'t fetch data', function(){
+                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid'}]);
+                $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
+                $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
+
+                expect(AlertMsg.alerts.length).toEqual(0);
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+
+                expect($rootScope.providers).toBe(undefined);
+                expect($rootScope.clusters).toBe(undefined);
+                expect(AlertMsg.alerts.length).toEqual(2);
+            });
+
         });
     });
 
@@ -325,6 +358,38 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(2);
             });
+        });
+    });
+
+    describe('function postErrorAlert', function(){
+        it('should add the message to the AlertMsg', function(){
+            var msg = {message: 'message'};
+            expect(AlertMsg.alerts.length).toEqual(0);
+            postErrorAlert(AlertMsg, msg);
+            expect(AlertMsg.alerts.length).toEqual(1);
+            postErrorAlert(AlertMsg, msg);
+            expect(AlertMsg.alerts.length).toEqual(2);
+            postErrorAlert(AlertMsg, msg);
+            expect(AlertMsg.alerts.length).toEqual(3);
+        });
+
+        it('should add an alert when there is no data sent to it', function(){
+            expect(AlertMsg.alerts.length).toEqual(0);
+            postErrorAlert(AlertMsg);
+            expect(AlertMsg.alerts.length).toEqual(1);
+            postErrorAlert(AlertMsg);
+            expect(AlertMsg.alerts.length).toEqual(2);
+        });
+
+        it('should log an error to console when the data is invalid', function(){
+            spyOn(console, 'log');
+            expect(AlertMsg.alerts.length).toEqual(0);
+            postErrorAlert(AlertMsg, 23);
+            expect(console.log).toHaveBeenCalled();
+            expect(AlertMsg.alerts.length).toEqual(1);
+            postErrorAlert(AlertMsg, {});
+            expect(AlertMsg.alerts.length).toEqual(2);
+            expect(console.log).toHaveBeenCalled();
         });
     });
 });
