@@ -86,6 +86,9 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             });
         }
 
+        /*
+         * Utility function to search and return resource names from ids
+         */
         $scope.getResourceName = function( list, id ){
             for( var i=0; i < list.length; i++ ){
                 if( list[i].id === id ){
@@ -96,6 +99,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                     return list[i].name;
                 }
             }
+            return id;
         };
 
 

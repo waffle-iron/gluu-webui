@@ -131,6 +131,35 @@ describe('Controllers', function(){
                 expect($rootScope.details).not.toBe(undefined);
             });
         });
+
+        describe('$scope.getResourceName', function(){
+            beforeEach(function(){
+                $httpBackend.when('GET', '/providers').respond(200, []);
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+            });
+            it('should return cluster name for cluster id', function(){
+                var list = [{id: 'id1', name: 'cluster1'}, {id: 'id2', name: 'cluster2'}];
+                expect($rootScope.getResourceName(list, 'id1')).toMatch('cluster1');
+                expect($rootScope.getResourceName(list, 'id2')).toMatch('cluster2');
+            });
+
+            it('should return provider hostname for provider id', function(){
+                var list = [{id: 'id1', hostname: 'provider1'}, {id: 'id2', hostname: 'provider2'}];
+                expect($rootScope.getResourceName(list, 'id1')).toMatch('provider1');
+                expect($rootScope.getResourceName(list, 'id2')).toMatch('provider2');
+            });
+
+            it('should return the id if the id doesn\'t match anything', function(){
+                var list = [{id: 'id1', hostname: 'provider2'}, {id: 'id2', hostname: 'provider2'}];
+                expect($rootScope.getResourceName(list, 'id3')).toMatch('id3');
+                expect($rootScope.getResourceName(list, 'random-id')).toMatch('random-id');
+
+                list = [{id: 'id1', name: 'cluster1'}, {id: 'id2', name: 'cluster2'}];
+                expect($rootScope.getResourceName(list, 'id3')).toMatch('id3');
+                expect($rootScope.getResourceName(list, 'random-id')).toMatch('random-id');
+            });
+        });
     });
 
     describe('ResourceController', function(){
@@ -180,44 +209,46 @@ describe('Controllers', function(){
             /*
              *  Tests to verfiy NEW NODE form specific actions
              */
-            it('should get the list of clusters, providers and nodes for Node form', function(){
-                $routeParams = {resource: 'nodes'};
-                $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
-                $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
-                $httpBackend.expectGET('/nodes').respond(200, [{id: 'id3', name: 'node1'}]);
-                var controller = createController('ResourceController');
-                $httpBackend.flush();
-                expect($rootScope.clusters.length).toEqual(1);
-                expect($rootScope.providers.length).toEqual(1);
-                expect($rootScope.oxauth_nodes.length).toEqual(0);
-                expect($rootScope.oxtrust_nodes.length).toEqual(0);
-            });
+            describe('when resource is NODE', function(){
+                it('should get the list of clusters, providers and nodes for Node form', function(){
+                    $routeParams = {resource: 'nodes'};
+                    $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
+                    $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
+                    $httpBackend.expectGET('/nodes').respond(200, [{id: 'id3', name: 'node1'}]);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect($rootScope.clusters.length).toEqual(1);
+                    expect($rootScope.providers.length).toEqual(1);
+                    expect($rootScope.oxauth_nodes.length).toEqual(0);
+                    expect($rootScope.oxtrust_nodes.length).toEqual(0);
+                });
 
-            it('should load the oxauth & oxtrust id and names for selection in New Node form', function(){
-                $routeParams = {resource: 'nodes'};
-                $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
-                $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
-                var nodes = [{type: 'ldap', id: 'id1', name: 'node1'}, {type: 'oxtrust', id: 'id2', name: 'node2'},
-                             {type: 'oxauth', id: 'id3', name: 'node3'}, {type: 'httpd', id: 'id4', name: 'node4'},
-                             {type: 'oxtrust', id: 'id5', name: 'node5'}];
-                $httpBackend.expectGET('/nodes').respond(200, nodes);
-                var controller = createController('ResourceController');
-                $httpBackend.flush();
-                expect($rootScope.oxtrust_nodes.length).toEqual(2);
-                expect($rootScope.oxauth_nodes.length).toEqual(1);
-            });
+                it('should load the oxauth & oxtrust id and names for selection in New Node form', function(){
+                    $routeParams = {resource: 'nodes'};
+                    $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
+                    $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
+                    var nodes = [{type: 'ldap', id: 'id1', name: 'node1'}, {type: 'oxtrust', id: 'id2', name: 'node2'},
+                                 {type: 'oxauth', id: 'id3', name: 'node3'}, {type: 'httpd', id: 'id4', name: 'node4'},
+                                 {type: 'oxtrust', id: 'id5', name: 'node5'}];
+                    $httpBackend.expectGET('/nodes').respond(200, nodes);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect($rootScope.oxtrust_nodes.length).toEqual(2);
+                    expect($rootScope.oxauth_nodes.length).toEqual(1);
+                });
 
-            it('should post alerts when dependency fetching fails for New Node', function(){
-                $routeParams = {resource: 'nodes'};
-                $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
-                $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
-                $httpBackend.expectGET('/nodes').respond(400, {message: 'NOT OK'});
-                expect(AlertMsg.alerts.length).toEqual(0);
-                var controller = createController('ResourceController');
-                $httpBackend.flush();
-                expect(AlertMsg.alerts.length).toEqual(3);
+                it('should post alerts when dependency fetching fails for New Node', function(){
+                    $routeParams = {resource: 'nodes'};
+                    $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
+                    $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
+                    $httpBackend.expectGET('/nodes').respond(400, {message: 'NOT OK'});
+                    expect(AlertMsg.alerts.length).toEqual(0);
+                    var controller = createController('ResourceController');
+                    $httpBackend.flush();
+                    expect(AlertMsg.alerts.length).toEqual(3);
+                });
             });
-
+           
             /*
              *  Test to verify NEW PROVIDER specific actions
              *
