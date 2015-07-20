@@ -13,5 +13,5 @@ before_script:
     - sh -e /etc/init.d/xvfb start
 
 script:
-    - nosetests --with-coverage --coverage-module=gluuwebui
+    - nosetests --with-coverage --cover-package=gluuwebui
     - npm test
