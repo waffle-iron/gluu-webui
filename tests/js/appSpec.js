@@ -9,6 +9,7 @@ describe('Gluu Web UI', function(){
 
         it('should route / to dashboard', function(){
             expect($route.routes['/'].templateUrl).toMatch('templates/dashboard.html');
+            expect($route.routes['/'].controller).toMatch('DashboardController');
         });
 
         it('should have OverviewController for /resource', function(){

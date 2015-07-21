@@ -524,6 +524,26 @@ describe('Controllers', function(){
             });
         });
     });
+
+    describe('Dashboard Controller', function(){
+        it('should get dashboard data from the server and load', function(){
+            var data = {nodes: 0, clusters: 2, providers: 1};
+            $httpBackend.expectGET('/dashboard').respond(200, data);
+
+            var controller = createController('DashboardController');
+            $httpBackend.flush();
+            expect($rootScope.data).toEqual(data);
+        });
+
+        it('should post an alert if it did not get any alert', function(){
+            $httpBackend.expectGET('/dashboard').respond(400, {message: 'NOTHING'});
+            expect(AlertMsg.alerts.length).toEqual(0);
+
+            var controller = createController('DashboardController');
+            $httpBackend.flush();
+            expect(AlertMsg.alerts.length).toEqual(1);
+        });
+    });
 });
 
 
