@@ -56,6 +56,16 @@ describe('Controllers', function(){
                 expect(AlertMsg.alerts.length).toEqual(1);
             });
 
+            it('should not request data if resource is invalid', function(){
+                $routeParams.resource = 'clusters'; // maybe this assertion needs to be done for every valid resource
+                $httpBackend.expectGET('/clusters').respond(200, []);
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+
+                $routeParams.resource = 'random string';
+                controller = createController('OverviewController');
+                // TODO improve this test. this passes but lacks any sort of assertion
+            });
         });
 
         describe('$scope.loadResource', function(){

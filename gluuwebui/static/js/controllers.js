@@ -76,6 +76,13 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.currentResURI = resource;
         $scope.currentResource = resource.charAt(0).toUpperCase() + resource.slice(1).replace("_", " ");
 
+        var resources = ['clusters', 'providers', 'nodes', 'licenses', 'license_keys'];
+        if(resources.indexOf(resource) === -1){
+            // if it doesnot match it means some random url has been typed out
+            // prevent the default http request
+            return false;
+        }
+
         // get the overview table and update the headers and rows
         $http.get('/'+resource).success( function( data ){
             if( !data.length ){
