@@ -39,7 +39,8 @@ templateMaker.viewTemplates = {
 gluuwebui.config(['$routeProvider', function($routeProvider){
     $routeProvider.
         when('/', {
-            templateUrl: 'templates/dashboard.html'
+            templateUrl: 'templates/dashboard.html',
+            controller: 'DashboardController'
         }).
         when('/:resource', {
             templateUrl: templateMaker.getTemplate,

@@ -279,3 +279,14 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             }
         };
 }]);
+
+// controller for the Dashboard page
+webuiControllers.controller( 'DashboardController', ['$scope', '$http', '$routeParams', 'AlertMsg',
+    function($scope, $http, $routeParams, AlertMsg){
+        AlertMsg.clear();
+        $http.get('/dashboard').success(function(data){
+            $scope.data = data;
+        }).error(function(data){
+            postErrorAlert(AlertMsg, data);
+        });
+}]);
