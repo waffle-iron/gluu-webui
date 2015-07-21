@@ -174,3 +174,23 @@ def test_templates():
     ro = app.get("templates/non_existant_file.html")
     assert_equal(ro.status_code, 200)
     assert_in('No such file or directory', ro.data)
+
+
+#############################################################################
+#   Test for GET from dashboard
+
+
+def test_dashboard_response():
+    # Mock requests.get for API calls
+    requests.get = MagicMock('get')
+    requests.get.return_value.status_code = 200
+    requests.get.return_value.json.return_value = []
+
+    response = app.get('/dashboard')
+    assert_equal(response.status_code, 200)
+
+    requests.get.return_value.status_code = 500
+    requests.get.return_value.json.return_value = {'message': 'MockError'}
+
+    response = app.get('/dashboard')
+    assert_equal(response.status_code, 400)

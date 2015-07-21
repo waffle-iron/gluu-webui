@@ -187,3 +187,24 @@ def give_resource(resource, id):
                            resource, id), r.status_code, reason(r))
         data = {'message': 'Deleted {0} with id {1}'.format(resource, id)}
         return json_response(data)
+
+
+@app.route('/dashboard')
+def dashboard_data():
+    # this request should process all the cluster information and send the
+    # relevant data to the frontend
+    #
+    # 1. count of clusters, providers and nodes
+    # 2. Status of the nodes
+    # 3. License information: Invalid or Valid and the type of the license
+    clusterData = api_get('clusters')
+    nodeData = api_get('nodes')
+    providerData = api_get('providers')
+    licenseData = api_get('licenses')
+
+    dashboardData = {'clusters': len(clusterData),
+                     'nodes': len(nodeData),
+                     'providers': len(providerData),
+                     'licenses': len(licenseData)
+                     }
+    return json_response(dashboardData)

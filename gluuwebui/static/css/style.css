@@ -90,3 +90,21 @@ body {
 .alert{
     font-weight: 400;
 }
+
+/**
+ *  Dashboard Styles
+ */
+.dashbox{
+    text-align: center;
+    border-radius: 3%;
+    border: 1px solid #BBB;
+    margin-bottom: 10px;
+}
+
+.dashbox > h2 {
+    border-bottom: 1px solid #BBB;
+    color: #666;
+}
+.dashcount{
+    font-size: 400%;
+}
