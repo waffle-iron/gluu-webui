@@ -224,13 +224,24 @@ def dashboard_data():
         if node['state'] == 'DISABLED':
             nodestate['DISABLED'] += 1
 
+    # Process and collec the providers data
+    providertypes = {'master': 0, 'consumer': 0}
+    for provider in providerData:
+        if provider['type'] == 'master':
+            providertypes['master'] += 1
+        if provider['type'] == 'consumer':
+            providertypes['consumer'] += 1
+
     dashboardData = {'clusters': len(clusterData),
                      'nodes': {
                          'count': len(nodeData),
                          'type': nodetypes,
                          'state': nodestate
                          },
-                     'providers': len(providerData),
+                     'providers': {
+                         'count':  len(providerData),
+                         'type': providertypes
+                         },
                      'licenses': len(licenseData)
                      }
     return json_response(dashboardData)
