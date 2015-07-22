@@ -18,23 +18,23 @@
         <div class="panel-body">
             <p>Available: {{data.providers.count}}</p>
         </div>
-            <table class="table">
-                <thead>
-                    <tr class="bg-info" colspan=2 ng-click='showProviderTypes=!showProviderTypes' ng-init="showProviderTypes=false">
-                        <td colspan=2><strong>Provider Types</strong><span class="caret pull-right"></td>
-                    </tr>
-                </thead>
-                <tbody ng-show="showProviderTypes">
-                    <tr>
-                        <td>Master</td>
-                        <td>{{data.providers.type.master}}</td>
-                    </tr>
-                    <tr>
-                        <td>Consumer</td>
-                        <td>{{data.providers.type.consumer}}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="table">
+            <thead>
+                <tr class="bg-info" colspan=2 ng-click='showProviderTypes=!showProviderTypes' ng-init="showProviderTypes=false">
+                    <td colspan=2><strong>Provider Types</strong><span class="caret pull-right"></td>
+                </tr>
+            </thead>
+            <tbody ng-show="showProviderTypes">
+                <tr>
+                    <td>Master</td>
+                    <td>{{data.providers.type.master}}</td>
+                </tr>
+                <tr>
+                    <td>Consumer</td>
+                    <td>{{data.providers.type.consumer}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     </div>
 </div>
@@ -105,8 +105,20 @@
             Licenses
         </div>
         <div class="panel-body">
-            <p>Available: {{data.licenses}}</p>
+            <p>Available: {{data.licenses.count}}</p>
         </div>
+        <table class="table">
+            <tbody>
+                <tr class="bg-success text-success">
+                    <td>Valid</td>
+                    <td>{{data.licenses.type.valid}}</td>
+                </tr>
+                <tr class="bg-danger text-danger">
+                    <td>Invalid</td>
+                    <td>{{data.licenses.type.invalid}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     </div>
 </div>

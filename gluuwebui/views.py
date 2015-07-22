@@ -232,6 +232,14 @@ def dashboard_data():
         if provider['type'] == 'consumer':
             providertypes['consumer'] += 1
 
+    # process and collect license data
+    licensetypes = {'valid': 0, 'invalid': 0}
+    for license in licenseData:
+        if license['valid']:
+            licensetypes['valid'] += 1
+        else:
+            licensetypes['invalid'] += 1
+
     dashboardData = {'clusters': len(clusterData),
                      'nodes': {
                          'count': len(nodeData),
@@ -242,6 +250,9 @@ def dashboard_data():
                          'count':  len(providerData),
                          'type': providertypes
                          },
-                     'licenses': len(licenseData)
+                     'licenses': {
+                         'count': len(licenseData),
+                         'type': licensetypes
+                         }
                      }
     return json_response(dashboardData)
