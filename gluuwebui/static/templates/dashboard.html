@@ -1,21 +1,95 @@
 
 <div class="row">
-    <div class="col-md-5 dashbox">
-        <h2><a href="#/clusters">Clusters</a></h2>
-        <p class="dashcount">{{data.clusters}}</p>
+    <div class="col-md-5">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Clusters
+        </div>
+        <div class="panel-body">
+            <p>Available: {{data.clusters}}</p>
+        </div>
     </div>
-    <div class="col-md-5 col-md-offset-1 dashbox">
-        <h2><a href="#/providers">Providers</a></h2>
-        <p class="dashcount">{{data.providers}}</p>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Providers
+        </div>
+        <div class="panel-body">
+            <p>Available: {{data.providers}}</p>
+        </div>
+    </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-5 dashbox">
-        <h2><a href="#/nodes">Nodes</a></h2>
-        <p class="dashcount">{{data.nodes}}</p>
+    <div class="col-md-5">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Nodes
+        </div>
+        <div class="panel-body">
+            <p>Available: {{data.nodes.count}}</p>
+        </div>
+        <table class="table">
+            <thead>
+            <tr class="bg-info" ng-click='showtypes=!showtypes' ng-init='showtypes=false'>
+                <td colspan=2><strong>Node Types</strong><span class="caret pull-right"></td>
+            </tr>
+            </thead>
+            <tbody ng-show='showtypes'>
+            <tr>
+                <td>LDAP</td>
+                <td>{{data.nodes.type.ldap}}</td>
+            </tr>
+            <tr>
+                <td>oxTrust</td>
+                <td>{{data.nodes.type.oxtrust}}</td>
+            </tr>
+            <tr>
+                <td>oxAuth</td>
+                <td>{{data.nodes.type.oxauth}}</td>
+            </tr>
+            <tr>
+                <td>Httpd</td>
+                <td>{{data.nodes.type.httpd}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="table">
+            <thead>
+            <tr class="bg-warning" ng-click='showstate=!showstate' ng-init='showstate=false'>
+                <td colspan=2><strong>Node States</strong><span class="caret pull-right"></span></td>
+            </tr>
+            </thead>
+            <tbody ng-show='showstate'>
+            <tr class="text-success">
+                <td>Success</td>
+                <td>{{data.nodes.state.SUCCESS}}</td>
+            </tr>
+            <tr class="text-info">
+                <td>In Progress</td>
+                <td>{{data.nodes.state.IN_PROGRESS}}</td>
+            </tr>
+            <tr class="text-danger">
+                <td>Failed</td>
+                <td>{{data.nodes.state.FAILED}}</td>
+            </tr>
+            <tr class="text-warning">
+                <td>Disabled</td>
+                <td>{{data.nodes.state.DISABLED}}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="col-md-5 col-md-offset-1 dashbox">
-        <h2><a href="#/licenses">Licenses</a></h2>
-        <p class="dashcount">{{data.licenses}}</p>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Licenses
+        </div>
+        <div class="panel-body">
+            <p>Available: {{data.licenses}}</p>
+        </div>
+    </div>
     </div>
 </div>

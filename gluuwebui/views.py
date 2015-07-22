@@ -202,8 +202,34 @@ def dashboard_data():
     providerData = api_get('providers')
     licenseData = api_get('licenses')
 
+    # process and collect the nodes data
+    nodetypes = {'ldap': 0, 'oxauth': 0, 'oxtrust': 0, 'httpd': 0}
+    nodestate = {'SUCCESS': 0, 'IN_PROGRESS': 0, 'FAILED': 0, 'DISABLED': 0}
+    for node in nodeData:
+        if node['type'] == 'ldap':
+            nodetypes['ldap'] += 1
+        if node['type'] == 'oxauth':
+            nodetypes['oxauth'] += 1
+        if node['type'] == 'oxtrust':
+            nodetypes['oxtrust'] += 1
+        if node['type'] == 'httpd':
+            nodetypes['httpd'] += 1
+
+        if node['state'] == 'SUCCESS':
+            nodestate['SUCCESS'] += 1
+        if node['state'] == 'IN_PROGRESS':
+            nodestate['IN_PROGRESS'] += 1
+        if node['state'] == 'FAILED':
+            nodestate['FAILED'] += 1
+        if node['state'] == 'DISABLED':
+            nodestate['DISABLED'] += 1
+
     dashboardData = {'clusters': len(clusterData),
-                     'nodes': len(nodeData),
+                     'nodes': {
+                         'count': len(nodeData),
+                         'type': nodetypes,
+                         'state': nodestate
+                         },
                      'providers': len(providerData),
                      'licenses': len(licenseData)
                      }
