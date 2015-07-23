@@ -191,12 +191,8 @@ def give_resource(resource, id):
 
 @app.route('/dashboard')
 def dashboard_data():
-    # this request should process all the cluster information and send the
-    # relevant data to the frontend
-    #
-    # 1. count of clusters, providers and nodes
-    # 2. Status of the nodes
-    # 3. License information: Invalid or Valid and the type of the license
+    """View that processess the cluster information and sends key metrics for
+    the dashboard"""
     clusterData = api_get('clusters')
     nodeData = api_get('nodes')
     providerData = api_get('providers')
