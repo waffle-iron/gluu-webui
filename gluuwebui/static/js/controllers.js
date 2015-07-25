@@ -4,18 +4,18 @@ webuiControllers.service('AlertMsg', ['$rootScope', function( $rootScope ){
     var service = {
         alerts : [],
         addMsg: function( message, type ){
-            if( typeof message !== 'string' || typeof type !== 'string' ){
-                console.error('Invalid params passed. Requires (message<string>, type<string>). You passed (message<'+
-                        typeof message+'>, type<'+typeof type+'>).' );
-                return false;
+            if( angular.isString(message) && angular.isString(type) ){
+                var item = { msg: message, type: type };
+                var index = service.alerts.push( item ) - 1;
+                $rootScope.$broadcast( 'alerts.update' );
+                return index;
             }
-            var item = { msg: message, type: type };
-            var index = service.alerts.push( item ) - 1;
-            $rootScope.$broadcast( 'alerts.update' );
-            return index;
+            console.error('Invalid params passed. Requires (message<string>, type<string>). You passed (message<'+
+                    typeof message+'>, type<'+typeof type+'>).' );
+            return false;
         },
         removeMsg: function( index ){
-            if( typeof index !== 'number' ){
+            if( ! angular.isNumber(index) ){
                 console.error('Invalid variable type of index. Expected integer but recieved ' + typeof index);
                 return;
             }
@@ -44,7 +44,7 @@ webuiControllers.controller('AlertController', ['$scope', 'AlertMsg',
         $scope.alerts = AlertMsg.alerts;
 
         $scope.closeAlert = function(index){
-            if( typeof index === 'number' ){
+            if( angular.isNumber(index) ){
                 AlertMsg.removeMsg(index);
             } else {
                 console.error('Function closeAlert(index) accepts only numbers. You passed ' + typeof index);
@@ -54,7 +54,7 @@ webuiControllers.controller('AlertController', ['$scope', 'AlertMsg',
 
 function postErrorAlert( Alert, data ){
     try{
-        if( typeof data.message == 'string' ){
+        if( angular.isString(data.message) ){
             Alert.addMsg( data.message, "danger" );
         }
         else{
@@ -115,16 +115,19 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          * Utility function to search and return resource names from ids
          */
         $scope.getResourceName = function( list, id ){
-            for( var i=0; i < list.length; i++ ){
-                if( list[i].id === id ){
+            var name = id;
+            angular.forEach(list, function(item){
+                if( item.id === id ){
                     // providers donot have name -- they have hostname
-                    if('hostname' in list[i]){
-                        return list[i].hostname;
+                    if('hostname' in item){
+                        name = item.hostname;
+                        return;
                     }
-                    return list[i].name;
+                    name = item.name;
+                    return;
                 }
-            }
-            return id;
+            });
+            return name;
         };
 
 
@@ -134,17 +137,17 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.deleteResource = function(resource, id){
             $http.delete("/"+resource+"/"+id).success(function(data){
                 // remove the resource from the view
-                var contents = $scope.contents;
-                for(var i=0; i < contents.length; i++){
-                    if( contents[i].id == id ){
-                        contents.splice(i,1);
-                        $scope.contents = contents;
-                        if( typeof $scope.details !== 'undefined'){
-                            if( $scope.details.id === id )
-                                $scope.details = undefined;
-                        }
-                        break;
+                angular.forEach($scope.contents, function(item, index){
+                    if( item.id === id ){
+                        $scope.contents.splice(index, 1);
+                        return;
                     }
+                });
+                // also remove the details view if present for the same id
+                // XXX expected regression for nodes without ids
+                if( angular.isDefined($scope.details) ){
+                    if( $scope.details.id === id )
+                        $scope.details = undefined;
                 }
                 AlertMsg.addMsg("The "+resource+" with the ID: "+id+" was successfully deleted.", "success");
                 return;
@@ -182,7 +185,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         var resource = $routeParams.resource;
         if ($routeParams.action === 'edit'){
             $scope.editMode = true;
-            if ( typeof $routeParams.id == 'undefined' ){
+            if ( !angular.isDefined($routeParams.id) ){
                 AlertMsg.addMsg( "The resource id is empty! Make sure you selected a resource before clicking Edit", "danger" );
                 return;
             }
@@ -209,31 +212,31 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.resourceData.oxauth_node_id = '';
 
             $http.get("/clusters").success(function(data){
-                for (var i=0; i < data.length; i++ ){
-                    $scope.clusters.push({'id' : data[i].id, 'name': data[i].name});
-                }
+                angular.forEach(data, function(item){
+                    $scope.clusters.push({'id' : item.id, 'name': item.name});
+                });
                 $scope.resourceData.cluster_id = data[0].id;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
 
             $http.get("/providers").success(function(data){
-                for( var i=0; i < data.length; i++ ){
-                    $scope.providers.push({'id' : data[i].id, 'name': data[i].hostname});
-                }
+                angular.forEach(data, function(item){
+                    $scope.providers.push({'id' : item.id, 'name': item.hostname});
+                });
                 $scope.resourceData.provider_id = data[0].id;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
 
             $http.get("/nodes").success(function(data){
-                for(var i=0; i < data.length; i++){
-                    if( data[i].type === 'oxtrust' ){
-                        $scope.oxtrust_nodes.push({'id': data[i].id, 'name': data[i].name});
-                    } else if( data[i].type === 'oxauth' ){
-                        $scope.oxauth_nodes.push({'id': data[i].id, 'name': data[i].name});
+                angular.forEach(data, function(item){
+                    if( item.type === 'oxtrust' ){
+                        $scope.oxtrust_nodes.push({'id': item.id, 'name': item.name});
+                    } else if( item.type === 'oxauth' ){
+                        $scope.oxauth_nodes.push({'id': item.id, 'name': item.name});
                     }
-                }
+                });
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
