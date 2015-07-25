@@ -85,7 +85,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
         // get the overview table and update the headers and rows
         $http.get('/'+resource).success( function( data ){
-            if( !data.length ){
+            if( data.length === 0 ){
                 AlertMsg.addMsg( "The are no " + $scope.currentResource +"s available in the Gluu Cluster. Create a new one.", "warning" );
                 return;
             }
@@ -144,11 +144,14 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                     }
                 });
                 // also remove the details view if present for the same id
-                // XXX expected regression for nodes without ids
                 if( angular.isDefined($scope.details) ){
-                    if( $scope.details.id === id )
-                        $scope.details = undefined;
+                    // nodes mightnot have ids, instead use their names
+                    if( (resource === 'nodes' && $scope.details.id === '' && $scope.details.name == id) ||
+                        $scope.details.id === id ) {
+                            $scope.details = undefined;
+                    }
                 }
+                // if it is node without an id yet
                 AlertMsg.addMsg("The "+resource+" with the ID: "+id+" was successfully deleted.", "success");
                 return;
             }).error(function(data){
@@ -185,7 +188,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         var resource = $routeParams.resource;
         if ($routeParams.action === 'edit'){
             $scope.editMode = true;
-            if ( !angular.isDefined($routeParams.id) ){
+            if ( angular.isUndefined($routeParams.id) ){
                 AlertMsg.addMsg( "The resource id is empty! Make sure you selected a resource before clicking Edit", "danger" );
                 return;
             }
@@ -251,7 +254,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             $scope.resourceData.license_id = '';
 
             $http.get('/licenses').success(function(data){
-                if(!data.length){
+                if( data.length === 0 ){
                     $scope.license = null;
                 } else {
                     var lic = data[0]; // NOTE: hardcoding first license value as currently only one license is allowed
