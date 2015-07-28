@@ -8,8 +8,7 @@ import json
 gluuwebui.app.config['TESTING'] = True
 app = gluuwebui.app.test_client()
 
-resources = ['/providers', '/clusters', '/nodes', '/licenses',
-             '/license_keys']
+resources = ['/providers', '/clusters', '/nodes', '/license_keys']
 
 ##############################################################################
 #   Handling GET requests and ensuring all /resource /resource/id are answered

@@ -138,16 +138,6 @@ def represent_cluster():
     return json_response(resp)
 
 
-@app.route("/licenses", methods=['GET', 'POST'])
-def represent_license():
-    if request.method == 'POST':  # Add a new license
-        resp = api_post('licenses', json.loads(request.data))
-        return json_response(resp)
-
-    res = api_get('licenses')
-    return json_response(res)
-
-
 @app.route("/license_keys", methods=['GET', 'POST'])
 def represent_keys():
     if request.method == 'POST':  # Add a new credential
