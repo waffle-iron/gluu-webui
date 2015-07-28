@@ -22,7 +22,7 @@ describe('Gluu Web UI', function(){
     });
 
     describe('templateMaker', function(){
-        var resources = ['license_keys', 'licenses', 'providers', 'clusters', 'nodes'];
+        var resources = ['license_keys', 'providers', 'clusters', 'nodes'];
         describe('function getTemplate', function(){
             it('should return a valid template for /resource', function(){
                 for( var i in resources ){

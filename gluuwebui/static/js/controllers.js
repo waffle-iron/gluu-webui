@@ -76,7 +76,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.currentResURI = resource;
         $scope.currentResource = resource.charAt(0).toUpperCase() + resource.slice(1).replace("_", " ");
 
-        var resources = ['clusters', 'providers', 'nodes', 'licenses', 'license_keys'];
+        var resources = ['clusters', 'providers', 'nodes', 'license_keys'];
         if(resources.indexOf(resource) === -1){
             // if it doesnot match it means some random url has been typed out
             // prevent the default http request
@@ -242,28 +242,6 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 });
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
-            });
-        }
-
-        /*
-         *  If the resource is a provider load the licenses
-         */
-        if( resource === 'providers' ){
-            $scope.license = {};
-            // deafults for dropdown
-            $scope.resourceData.license_id = '';
-
-            $http.get('/licenses').success(function(data){
-                if( data.length === 0 ){
-                    $scope.license = null;
-                } else {
-                    var lic = data[0]; // NOTE: hardcoding first license value as currently only one license is allowed
-                    $scope.license.id = lic.id;
-                    $scope.license.name = lic.metadata.license_name;
-                }
-            }).error(function(data){
-                postErrorAlert(AlertMsg, data);
-                $scope.license = null;
             });
         }
 

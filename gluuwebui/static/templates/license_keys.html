@@ -31,9 +31,16 @@
     </div>
 
     <table class="table">
-        <tr ng-repeat='(key, value) in details'>
+        <tr ng-repeat='(key, value) in details' ng-if="key !== 'metadata'">
             <td><strong>{{key}}</strong></td>
             <td>{{value}}</td>
+        </tr>
+        <tr>
+            <td colspan=2><strong>Metadata</strong></td>
+        </tr>
+        <tr ng-repeat='(mkey, mvalue) in details.metadata'>
+            <td><strong>{{mkey}}</strong></td>
+            <td>{{mvalue}}</td>
         </tr>
     </table>
 </div>

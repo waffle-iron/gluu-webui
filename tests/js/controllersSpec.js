@@ -292,40 +292,6 @@ describe('Controllers', function(){
                 });
             });
 
-            /*
-             *  Test to verify NEW PROVIDER specific actions
-             *
-             */
-
-            describe('when resource is PROVIDER', function(){
-                beforeEach(function(){
-                    $routeParams = {resource: 'providers'};
-                });
-
-                it('should load the licenses to scope', function(){
-                    $httpBackend.expectGET('/licenses').respond(200, [{id: 'id', metadata:{ license_name: 'some license'}}]);
-                    var controller = createController('ResourceController');
-                    $httpBackend.flush();
-                    expect($rootScope.license).toEqual({id: 'id', name: 'some license'});
-                    expect($rootScope.license).toBeTruthy(); // for UI feedback
-                });
-
-                it('should add an alert if it cannot GET /licenses', function(){
-                    $httpBackend.expectGET('/licenses').respond(400, {message: 'no license'});
-                    expect(AlertMsg.alerts.length).toEqual(0);
-                    var controller = createController('ResourceController');
-                    $httpBackend.flush();
-                    expect(AlertMsg.alerts.length).toEqual(1);
-                    expect($rootScope.license).toBeFalsy();
-                });
-
-                it('should set scope.license value to falsy so UI feedback can be done', function(){
-                    $httpBackend.expectGET('/licenses').respond(200, []);
-                    var controller = createController('ResourceController');
-                    $httpBackend.flush();
-                    expect($rootScope.license).toBeFalsy();
-                });
-            });
         });
 
         describe('$scope.submit', function(){

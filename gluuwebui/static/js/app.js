@@ -22,7 +22,6 @@ templateMaker.getTemplate = function(params) {
 
 templateMaker.newTemplates = {
          'license_keys': 'templates/new_license_key.html',
-         'licenses': 'templates/new_license.html',
          'providers': 'templates/new_provider.html',
          'clusters': 'templates/new_cluster.html',
          'nodes': 'templates/new_node.html',
@@ -30,7 +29,6 @@ templateMaker.newTemplates = {
 
 templateMaker.viewTemplates = {
          'providers':  'templates/providers.html',
-         'licenses':  'templates/licenses.html',
          'license_keys':  'templates/license_keys.html',
          'clusters':  'templates/clusters.html',
          'nodes':  'templates/nodes.html'

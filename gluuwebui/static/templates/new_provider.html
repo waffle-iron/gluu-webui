@@ -14,15 +14,6 @@
         <input name="docker_base_url" class="form-control" type="text" ng-model="resourceData.docker_base_url" required>
         <span class="help-block">URL could be unix socket (e.g. unix:///var/run/docker.sock) for localhost or tcp (10.10.10.1:2375) for remote host</span>
     </div>
-    <div class="form-group" ng-class="{'has-error': !license}">
-        <label for="license_id" class="control-label">License ID</label>
-        <select id="license_id" name="license_id" class="form-control" ng-model="resourceData.license_id">
-            <option value="" ng-if="license">Select a license for consumer</option>
-            <option value="" ng-if="!license">No licenses present</option>
-            <option value="{{license.id}}">{{license.name}}</option>
-        </select>
-        <span class="help-block">ID of the license. Must be filled for consumer.</span>
-    </div>
     <div class="form-group">
         <label for="ssl_key">SSL Key</label>
         <textarea class="form-control" type="text" name="ssl_key" ng-model="resourceData.ssl_key"></textarea>
