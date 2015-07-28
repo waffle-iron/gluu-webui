@@ -186,7 +186,7 @@ def dashboard_data():
     clusterData = api_get('clusters')
     nodeData = api_get('nodes')
     providerData = api_get('providers')
-    licenseData = api_get('licenses')
+    licenseData = api_get('license_keys')
 
     # process and collect the nodes data
     nodetypes = {'ldap': 0, 'oxauth': 0, 'oxtrust': 0, 'httpd': 0}
@@ -236,7 +236,7 @@ def dashboard_data():
                          'count':  len(providerData),
                          'type': providertypes
                          },
-                     'licenses': {
+                     'license_keys': {
                          'count': len(licenseData),
                          'type': licensetypes
                          }

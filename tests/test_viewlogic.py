@@ -7,8 +7,7 @@ import json
 gluuwebui.app.config['TESTING'] = True
 app = gluuwebui.app.test_client()
 
-resources = ['/providers', '/clusters', '/nodes', '/licenses',
-             '/license_keys']
+resources = ['/providers', '/clusters', '/nodes', '/license_keys']
 
 ##############################################################################
 # Test for app.get(/dashboard)
@@ -29,7 +28,7 @@ def test_dashboard_get():
     clusterData = [{}, {}, {}]
 
     returnData = {'nodes': nodeData, 'providers': providerData,
-                  'licenses': licenseData, 'clusters': clusterData}
+                  'license_keys': licenseData, 'clusters': clusterData}
 
     def choose_return_data(url):
         return returnData[url.split('/')[-1]]
@@ -50,7 +49,7 @@ def test_dashboard_get():
     assert_equal(res['providers'], {'count': 3,
                                     'type': {'master': 1, 'consumer': 2}})
     # check License data
-    assert_equal(res['licenses'], {'count': 3, 'type': {'valid': 2,
+    assert_equal(res['license_keys'], {'count': 3, 'type': {'valid': 2,
                                                         'invalid': 1}})
     # check cluster data
     assert_equal(res['clusters'], 3)

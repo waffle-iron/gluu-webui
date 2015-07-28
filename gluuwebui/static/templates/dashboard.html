@@ -102,20 +102,20 @@
     <div class="col-md-5 col-md-offset-1">
     <div class="panel panel-primary">
         <div class="panel-heading">
-            Licenses
+            License Keys
         </div>
         <div class="panel-body">
-            <p>Available: {{data.licenses.count}}</p>
+            <p>Available: {{data.license_keys.count}}</p>
         </div>
         <table class="table">
             <tbody>
                 <tr class="bg-success text-success">
                     <td>Valid</td>
-                    <td>{{data.licenses.type.valid}}</td>
+                    <td>{{data.license_keys.type.valid}}</td>
                 </tr>
                 <tr class="bg-danger text-danger">
                     <td>Invalid</td>
-                    <td>{{data.licenses.type.invalid}}</td>
+                    <td>{{data.license_keys.type.invalid}}</td>
                 </tr>
             </tbody>
         </table>
