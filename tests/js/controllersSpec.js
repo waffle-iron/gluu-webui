@@ -100,46 +100,61 @@ describe('Controllers', function(){
                 $httpBackend.flush();
             });
 
-            it('should remove the resource from contents upon request success', function(){
+            it('should not initiate delete action if confirmation is cancelled', function(){
+                spyOn(window, 'confirm').and.returnValue(false);
                 expect($rootScope.contents.length).toEqual(3);
-                $httpBackend.expectDELETE('/providers/test-id1').respond(200, {});
                 $rootScope.deleteResource( 'providers', 'test-id1');
-                $httpBackend.flush();
-                expect($rootScope.contents.length).toEqual(2);
-                // twice
-                $httpBackend.expectDELETE('/providers/test-id3').respond(200, {});
-                $rootScope.deleteResource('providers', 'test-id3');
-                $httpBackend.flush();
-                expect($rootScope.contents.length).toEqual(1);
-            });
-
-            it('should add an alert if the delete action is a failure', function(){
-                expect(AlertMsg.alerts.length).toEqual(0);
-                $httpBackend.expectDELETE('/providers/test-id4').respond(400, {message: 'not removed'});
-                $rootScope.deleteResource('providers', 'test-id4');
+                expect(window.confirm).toHaveBeenCalled();
                 expect($rootScope.contents.length).toEqual(3);
-                $httpBackend.flush();
-                expect($rootScope.contents.length).toEqual(3);
-                expect(AlertMsg.alerts.length).toEqual(1);
             });
 
-            it('should remove the details if the id mataches', function(){
-                $httpBackend.expectDELETE('/providers/test-id1').respond(200, 'OK');
-                $rootScope.details = {id: 'test-id1'};
-                expect($rootScope.details).toEqual({id: 'test-id1'});
-                $rootScope.deleteResource('providers', 'test-id1');
-                $httpBackend.flush();
-                expect($rootScope.details).toBe(undefined);
+            describe('when the user confirms deletion', function(){
+                beforeEach(function(){
+                    spyOn(window, 'confirm').and.returnValue(true);
+                });
+
+                it('should remove the resource from contents upon request success', function(){
+                    expect($rootScope.contents.length).toEqual(3);
+                    $httpBackend.expectDELETE('/providers/test-id1').respond(200, {});
+                    $rootScope.deleteResource( 'providers', 'test-id1');
+                    $httpBackend.flush();
+                    expect($rootScope.contents.length).toEqual(2);
+                    // twice
+                    $httpBackend.expectDELETE('/providers/test-id3').respond(200, {});
+                    $rootScope.deleteResource('providers', 'test-id3');
+                    $httpBackend.flush();
+                    expect($rootScope.contents.length).toEqual(1);
+                });
+
+                it('should add an alert if the delete action is a failure', function(){
+                    expect(AlertMsg.alerts.length).toEqual(0);
+                    $httpBackend.expectDELETE('/providers/test-id4').respond(400, {message: 'not removed'});
+                    $rootScope.deleteResource('providers', 'test-id4');
+                    expect($rootScope.contents.length).toEqual(3);
+                    $httpBackend.flush();
+                    expect($rootScope.contents.length).toEqual(3);
+                    expect(AlertMsg.alerts.length).toEqual(1);
+                });
+
+                it('should remove the details if the id mataches', function(){
+                    $httpBackend.expectDELETE('/providers/test-id1').respond(200, 'OK');
+                    $rootScope.details = {id: 'test-id1'};
+                    expect($rootScope.details).toEqual({id: 'test-id1'});
+                    $rootScope.deleteResource('providers', 'test-id1');
+                    $httpBackend.flush();
+                    expect($rootScope.details).toBe(undefined);
+                });
+
+                it('should NOT remove the details if the id doesnt match', function(){
+                    $httpBackend.expectDELETE('/providers/test-id3').respond(200, 'OK');
+                    $rootScope.details = {id: 'test-id1'};
+                    expect($rootScope.details).toEqual({id: 'test-id1'});
+                    $rootScope.deleteResource('providers', 'test-id3');
+                    $httpBackend.flush();
+                    expect($rootScope.details).not.toBe(undefined);
+                });
             });
 
-            it('should NOT remove the details if the id doesnt match', function(){
-                $httpBackend.expectDELETE('/providers/test-id3').respond(200, 'OK');
-                $rootScope.details = {id: 'test-id1'};
-                expect($rootScope.details).toEqual({id: 'test-id1'});
-                $rootScope.deleteResource('providers', 'test-id3');
-                $httpBackend.flush();
-                expect($rootScope.details).not.toBe(undefined);
-            });
         });
 
         describe('$scope.getResourceName', function(){

@@ -1,4 +1,4 @@
-var webuiControllers = angular.module('webuiControllers', ['ui.bootstrap']);
+ webuiControllers = angular.module('webuiControllers', ['ui.bootstrap']);
 
 webuiControllers.service('AlertMsg', ['$rootScope', function( $rootScope ){
     var service = {
@@ -135,6 +135,9 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          * Fucntion to delete a resource. This is called whenever a delete button is clicked in the overview UI
          */
         $scope.deleteResource = function(resource, id){
+            if (!window.confirm('Are you sure you want to delete the resource?\nThis action cannot be undone.')){
+                return;
+            }
             $http.delete("/"+resource+"/"+id).success(function(data){
                 // remove the resource from the view
                 angular.forEach($scope.contents, function(item, index){
