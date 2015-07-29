@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_multi_line_equal
+from nose.tools import assert_equal, assert_multi_line_equal, assert_false
 from mock import MagicMock
 
 import gluuwebui
@@ -72,10 +72,5 @@ def test_get_node_log():
     expected = """another dummy log here for Node 2\nNothing fancy.\n"""
     assert_multi_line_equal(log, expected)
 
-    log = get_node('node_name_3')
-    expected = 'Could not find logfile for: node_name_3'
-    assert_equal(log, expected)
-
-    log = get_node('non existant node')
-    expected = 'Could not find logfile for: non existant node'
-    assert_equal(log, expected)
+    assert_false(get_node('node_name_3'))
+    assert_false(get_node('non existant node'))

@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_is_instance, assert_in
-from mock import MagicMock
+from mock import MagicMock, patch
 
 import gluuwebui
 import requests
@@ -199,3 +199,19 @@ def test_dashboard_response():
 
     response = app.get('/dashboard')
     assert_equal(response.status_code, 400)
+
+
+#############################################################################
+# Test for GET /node/log/node_name
+
+
+@patch('gluuwebui.views.get_node_log')
+def test_get_deployment(get_node_log):
+    get_node_log.return_value = 'There exists a log'
+
+    response = app.get('/node/log/node_name1')
+    assert_equal(response.status_code, 200)
+
+    get_node_log.return_value = False
+    response = app.get('/node/log/node_name3')
+    assert_equal(response.status_code, 404)

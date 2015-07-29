@@ -77,7 +77,7 @@ def get_node_log(name):
         with open(logfile, 'r') as l:
             return ''.join(l.readlines())
     except IOError:
-        return 'Could not find logfile for: {0}'.format(name)
+        return False
 
 
 def api_get(req):
@@ -287,3 +287,14 @@ def dashboard_data():
                          }
                      }
     return json_response(dashboardData)
+
+
+@app.route('/node/log/<node_name>')
+def get_deployment_log(node_name):
+    """returns the log data for a node with node_name"""
+    log = get_node_log(node_name)
+    if log:
+        return Response(log, 200, mimetype='text/plain')
+    else:
+        return Response('No log available or log is not readable.', 404,
+                        mimetype='text/plain')
