@@ -61,6 +61,10 @@ def mock_post(code):
     """Mocks API server POST response"""
     requests.post = MagicMock(name='post')
     requests.post.return_value.status_code = code
+
+    # also mock the save node log funtion to avoid unnecessary writes
+    gluuwebui.views.save_node_log = MagicMock(name='save_node_log')
+    gluuwebui.views.save_node_log.return_value = True
     if code == 204:
         requests.post.return_value.json.return_value = {'id': 'mock_id',
                                                         'name': 'mock_name',

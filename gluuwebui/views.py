@@ -47,7 +47,18 @@ def save_node_log(name, logfile):
     @param name - name of the node being deployed
     @param logfile - location of the log file returned by the API post request
     """
-    pass
+    nodelogs = app.config['NODE_LOG_LIST']
+    name = name.strip()
+    logfile = logfile.strip()
+    if len(name) == 0 or len(logfile) == 0:
+        return False
+
+    try:
+        with open(nodelogs, 'a') as w:
+            w.write("{0},{1}\n".format(name, logfile))
+        return True
+    except IOError:
+        return False
 
 
 def get_node_log(name):

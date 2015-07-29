@@ -59,13 +59,6 @@ def test_dashboard_get():
 ##############################################################################
 #   Tests related to the node deploy log handling
 
-
-def test_save_node_log():
-    """Tests for the save_node_log function which saves the deployment log to
-    NODE_LOG_LIST csv file"""
-    pass
-
-
 def test_get_node_log():
     """Tests for the get_node_log function that will return the proper logfile
     contents for the given nodename or a NOT found error msg"""
