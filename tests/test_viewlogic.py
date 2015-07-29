@@ -1,10 +1,11 @@
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_multi_line_equal
 from mock import MagicMock
 
 import gluuwebui
 import json
 
 gluuwebui.app.config['TESTING'] = True
+gluuwebui.app.config['NODE_LOG_LIST'] = './tests/data/nodelogs_sample.csv'
 app = gluuwebui.app.test_client()
 
 resources = ['/providers', '/clusters', '/nodes', '/license_keys']
@@ -50,6 +51,38 @@ def test_dashboard_get():
                                     'type': {'master': 1, 'consumer': 2}})
     # check License data
     assert_equal(res['license_keys'], {'count': 3, 'type': {'valid': 2,
-                                                        'invalid': 1}})
-    # check cluster data
+                                                            'invalid': 1}})
+    # check cluster dat a
     assert_equal(res['clusters'], 3)
+
+
+##############################################################################
+#   Tests related to the node deploy log handling
+
+
+def test_save_node_log():
+    """Tests for the save_node_log function which saves the deployment log to
+    NODE_LOG_LIST csv file"""
+    pass
+
+
+def test_get_node_log():
+    """Tests for the get_node_log function that will return the proper logfile
+    contents for the given nodename or a NOT found error msg"""
+
+    get_node = gluuwebui.views.get_node_log
+
+    log = get_node('node_name_1')
+    assert_equal(log, 'INFO: Node name: node_name_1\n')
+
+    log = get_node('node_name_2')
+    expected = """another dummy log here for Node 2\nNothing fancy.\n"""
+    assert_multi_line_equal(log, expected)
+
+    log = get_node('node_name_3')
+    expected = 'Could not find logfile for: node_name_3'
+    assert_equal(log, expected)
+
+    log = get_node('non existant node')
+    expected = 'Could not find logfile for: non existant node'
+    assert_equal(log, expected)

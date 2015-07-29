@@ -1,0 +1,2 @@
+another dummy log here for Node 2
+Nothing fancy.

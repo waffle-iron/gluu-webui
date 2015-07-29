@@ -63,7 +63,9 @@ def mock_post(code):
     requests.post.return_value.status_code = code
     if code == 204:
         requests.post.return_value.json.return_value = {'id': 'mock_id',
+                                                        'name': 'mock_name',
                                                         'log': '/tmp/mock.log'}
+        requests.post.return_value.headers = {'X-Deploy-Log': '/log/location'}
     else:
         requests.post.return_value.json.return_value = {'message': 'MockError'}
     requests.post.return_value.reason = "Mock Reason"

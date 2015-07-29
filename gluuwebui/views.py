@@ -40,6 +40,35 @@ def get_file(filename):  # pragma: no cover
         return str(exc)
 
 
+def save_node_log(name, logfile):
+    """Function to save the name of the node and the deploy log filename to
+    a text file, so logs can be accessed later
+
+    @param name - name of the node being deployed
+    @param logfile - location of the log file returned by the API post request
+    """
+    pass
+
+
+def get_node_log(name):
+    """Fucntion to return the text of the logfile for the given node name
+
+    @param  name - name of the node whose log is required
+    """
+    nodelogs = app.config['NODE_LOG_LIST']
+    logfile = ''
+    with open(nodelogs, 'r') as n:
+        for line in n:
+            if name in line:
+                logfile = line.split(',')[-1].strip()
+
+    try:
+        with open(logfile, 'r') as l:
+            return ''.join(l.readlines())
+    except IOError:
+        return 'Could not find logfile for: {0}'.format(name)
+
+
 def api_get(req):
     try:
         r = requests.get(api_base + req)
@@ -66,6 +95,11 @@ def api_post(req, data):
             invalidParams = ""
         raise APIError('Could not create a new {0}'.format(req),
                        r.status_code, reason(r), invalidParams)
+    if 'nodes' == req:
+        # Get the deploy log filename from the headers and save it
+        node_name = r.json()['name']
+        node_log = r.headers['X-Deploy-Log']
+        save_node_log(node_name, node_log)
     return r.json()
 
 
