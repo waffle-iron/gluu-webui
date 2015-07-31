@@ -218,7 +218,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 angular.forEach(data, function(item){
                     $scope.clusters.push({'id' : item.id, 'name': item.name});
                 });
-                $scope.resourceData.cluster_id = data[0].id;
+                $scope.resourceData.cluster_id = data.length > 0 ? data[0].id : '';
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
@@ -227,7 +227,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 angular.forEach(data, function(item){
                     $scope.providers.push({'id' : item.id, 'name': item.hostname});
                 });
-                $scope.resourceData.provider_id = data[0].id;
+                $scope.resourceData.provider_id = data.length > 0 ? data[0].id : '';
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
@@ -262,8 +262,13 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 });
             } else {  // Not in Edit Mode == New Resource
                 $http.post("/" + resource, data).success(function( data, status){
-                    // redirect to the overview page with a message that new cluster was created
-                    $location.path('/'+resource);
+                    if( resource === 'nodes' ){
+                        // redirect to node deploy log page
+                        $location.path('/node/log/'+data.name);
+                    } else {
+                        // redirect to the overview page with a message that new cluster was created
+                        $location.path('/'+resource);
+                    }
                 }).error(function( data ){
                     postErrorAlert(AlertMsg, data);
                 });
@@ -279,5 +284,53 @@ webuiControllers.controller( 'DashboardController', ['$scope', '$http', '$routeP
             $scope.data = data;
         }).error(function(data){
             postErrorAlert(AlertMsg, data);
+        });
+}]);
+
+
+// controller for the Node Log loader page
+webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$interval',
+    function($scope, $http, $routeParams, AlertMsg, $interval){
+
+        // Initialization code
+        var stop;
+        AlertMsg.clear();
+
+        $http.get('/nodes/'+$routeParams.node_name).success(function(data){
+            if(angular.isDefined(data.state) && data.state === 'IN_PROGRESS'){
+                // update the status every 3 seconds
+                stop = $interval($scope.loadLog, 3000);
+            } else {
+                $scope.loadLog();
+            }
+        }).error(function(data){
+            postErrorAlert(AlertMsg, data);
+        });
+
+        $scope.loadLog = function(){
+            $http.get('/node/log/'+$routeParams.node_name).success(function(data){
+                $scope.logText = data;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+                $scope.stopLog();
+            });
+
+            $http.get('/nodes/'+$routeParams.node_name).success(function(data){
+                if(data.state !== 'IN_PROGRESS') {
+                    $scope.stopLog();
+                }
+            });
+        };
+
+        $scope.stopLog = function(){
+            if(angular.isDefined(stop)){
+                $interval.cancel(stop);
+                stop = undefined;
+            }
+        };
+
+        $scope.$on('$destroy', function() {
+            // Make sure that the interval is destroyed too
+            $scope.stopLog();
         });
 }]);

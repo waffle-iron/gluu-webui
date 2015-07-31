@@ -296,5 +296,6 @@ def get_deployment_log(node_name):
     if log:
         return Response(log, 200, mimetype='text/plain')
     else:
-        return Response('No log available or log is not readable.', 404,
-                        mimetype='text/plain')
+        error = {'message': 'No log available or log is not readable.'}
+        return Response(json.dumps(error), 404,
+                        mimetype='application/json')

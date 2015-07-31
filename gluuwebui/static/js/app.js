@@ -48,6 +48,10 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: templateMaker.getTemplate,
             controller: 'ResourceController'
         }).
+        when('/node/log/:node_name', {
+            templateUrl: '/template/node_log.html',
+            controller: 'NodeLogController'
+        }).
         otherwise({
             templateUrl: 'templates/404.html'
         });
