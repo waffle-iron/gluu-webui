@@ -40,6 +40,10 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: 'templates/dashboard.html',
             controller: 'DashboardController'
         }).
+        when('/node/log/:node_name', {
+            templateUrl: 'templates/node_log.html',
+            controller: 'NodeLogController'
+        }).
         when('/:resource', {
             templateUrl: templateMaker.getTemplate,
             controller: 'OverviewController'
@@ -47,10 +51,6 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
         when('/:action/:resource/:id?', {
             templateUrl: templateMaker.getTemplate,
             controller: 'ResourceController'
-        }).
-        when('/node/log/:node_name', {
-            templateUrl: '/template/node_log.html',
-            controller: 'NodeLogController'
         }).
         otherwise({
             templateUrl: 'templates/404.html'

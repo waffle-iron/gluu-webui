@@ -296,12 +296,17 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
         var stop;
         AlertMsg.clear();
 
+        $scope.node_name = $routeParams.node_name;
+
         $http.get('/nodes/'+$routeParams.node_name).success(function(data){
-            if(angular.isDefined(data.state) && data.state === 'IN_PROGRESS'){
-                // update the status every 3 seconds
-                stop = $interval($scope.loadLog, 3000);
-            } else {
-                $scope.loadLog();
+            if (angular.isDefined(data.state)) {
+                $scope.node_state = data.state;
+                if (data.state === 'IN_PROGRESS'){
+                    // update the status every 3 seconds
+                    stop = $interval($scope.loadLog, 3000);
+                } else {
+                    $scope.loadLog();
+                }
             }
         }).error(function(data){
             postErrorAlert(AlertMsg, data);
@@ -316,6 +321,7 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
             });
 
             $http.get('/nodes/'+$routeParams.node_name).success(function(data){
+                $scope.node_state = data.state;
                 if(data.state !== 'IN_PROGRESS') {
                     $scope.stopLog();
                 }
