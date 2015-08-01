@@ -1,6 +1,7 @@
 describe('Controllers', function(){
 
     var $httpBackend, $rootScope, createController, AlertMsg, $routeParams, $location;
+    var $interval;
     beforeEach(module('webuiControllers'));
 
     // Inject the stuff required
@@ -11,11 +12,15 @@ describe('Controllers', function(){
         AlertMsg = $injector.get('AlertMsg');
         $location = $injector.get('$location');
         $routeParams = {resource: 'providers', id: 'some-id'};
+        $interval = jasmine.createSpy( '$interval', $injector.get('$interval') ).and.callThrough();
         var $controller = $injector.get('$controller');
         createController = function( name ){
             var deps = {'$scope': $rootScope, 'AlertMsg': AlertMsg, '$routeParams': $routeParams};
-            if( name === 'ResourceController' ){
-                    deps.$location = $location;
+            switch (name) {
+                case 'ResourceController': deps.$location = $location;
+                                           break;
+                case 'NodeLogController': deps.$interval = $interval;
+                                          break;
             }
             return $controller(name, deps);
         };
@@ -342,6 +347,18 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect($location.path()).toEqual('/resource');
             });
+            it('should redirect to /node/log/node_name upon successful POST for Nodes', function(){
+                $routeParams = {resource: 'nodes'};
+                var controller = createController('ResourceController');
+                $rootScope.resourceData = {};
+                $httpBackend.expectGET('/clusters').respond(200, []);
+                $httpBackend.expectGET('/providers').respond(200, []);
+                $httpBackend.expectGET('/nodes').respond(200, []);
+                $httpBackend.expectPOST('/nodes', {}).respond(200, {name: 'node_name'});
+                $rootScope.submit();
+                $httpBackend.flush();
+                expect($location.path()).toEqual('/node/log/node_name');
+            });
             it('should add an alert on POST failure in both Edit and Create', function(){
                 $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
                 expect(AlertMsg.alerts.length).toEqual(0);
@@ -541,6 +558,70 @@ describe('Controllers', function(){
             var controller = createController('DashboardController');
             $httpBackend.flush();
             expect(AlertMsg.alerts.length).toEqual(1);
+        });
+    });
+
+    describe('NodeLogController', function(){
+        beforeEach(function(){
+            $routeParams = {node_name: 'node1'};
+        });
+        describe('Initialization', function(){
+            it('should setup a timer to GET /node/log at intervals', function(){
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                var controller = createController('NodeLogController');
+                $httpBackend.flush();
+                expect($interval).toHaveBeenCalled();
+            });
+
+            it('should load log without timer when state isn\'t IN_PROGRESS', function(){
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'FAILED'});
+                var controller = createController('NodeLogController');
+                spyOn($rootScope, 'loadLog');
+                $httpBackend.flush();
+                expect($rootScope.loadLog).toHaveBeenCalled();
+            });
+
+            it('should post an alert if the node detail req fails', function(){
+                $httpBackend.expectGET('/nodes/node1').respond(404, {message: 'FAILED'});
+                var controller = createController('NodeLogController');
+                expect(AlertMsg.alerts.length).toEqual(0);
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+        });
+
+        describe('$scope.loadLog', function(){
+            beforeEach(function(){
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                var controller = createController('NodeLogController');
+                $httpBackend.flush();
+            });
+            it('should load the log data to scope', function(){
+                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG TEXT');
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                $rootScope.loadLog();
+                $httpBackend.flush();
+                expect($rootScope.logText).toEqual('LOG TEXT');
+            });
+            it('should add an alert and stop the timer upon GET error', function(){
+                spyOn($interval, 'cancel');
+                $httpBackend.expectGET('/node/log/node1').respond(404, {message: 'NO DATA'});
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                expect(AlertMsg.alerts.length).toEqual(0);
+                $rootScope.loadLog();
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(1);
+                expect($interval.cancel).toHaveBeenCalled();
+            });
+
+            it('should stop the timer if state is not IN_PROGRESS', function(){
+                spyOn($interval, 'cancel');
+                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG DONE');
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'SUCCESS'});
+                $rootScope.loadLog();
+                $httpBackend.flush();
+                expect($interval.cancel).toHaveBeenCalled();
+            });
         });
     });
 });

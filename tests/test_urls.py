@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_is_instance, assert_in
-from mock import MagicMock
+from mock import MagicMock, patch
 
 import gluuwebui
 import requests
@@ -61,9 +61,15 @@ def mock_post(code):
     """Mocks API server POST response"""
     requests.post = MagicMock(name='post')
     requests.post.return_value.status_code = code
+
+    # also mock the save node log funtion to avoid unnecessary writes
+    gluuwebui.views.save_node_log = MagicMock(name='save_node_log')
+    gluuwebui.views.save_node_log.return_value = True
     if code == 204:
         requests.post.return_value.json.return_value = {'id': 'mock_id',
+                                                        'name': 'mock_name',
                                                         'log': '/tmp/mock.log'}
+        requests.post.return_value.headers = {'X-Deploy-Log': '/log/location'}
     else:
         requests.post.return_value.json.return_value = {'message': 'MockError'}
     requests.post.return_value.reason = "Mock Reason"
@@ -193,3 +199,19 @@ def test_dashboard_response():
 
     response = app.get('/dashboard')
     assert_equal(response.status_code, 400)
+
+
+#############################################################################
+# Test for GET /node/log/node_name
+
+
+@patch('gluuwebui.views.get_node_log')
+def test_get_deployment(get_node_log):
+    get_node_log.return_value = 'There exists a log'
+
+    response = app.get('/node/log/node_name1')
+    assert_equal(response.status_code, 200)
+
+    get_node_log.return_value = False
+    response = app.get('/node/log/node_name3')
+    assert_equal(response.status_code, 404)

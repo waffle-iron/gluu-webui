@@ -40,6 +40,10 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: 'templates/dashboard.html',
             controller: 'DashboardController'
         }).
+        when('/node/log/:node_name', {
+            templateUrl: 'templates/node_log.html',
+            controller: 'NodeLogController'
+        }).
         when('/:resource', {
             templateUrl: templateMaker.getTemplate,
             controller: 'OverviewController'
