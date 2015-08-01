@@ -145,6 +145,14 @@ describe('Controllers', function(){
                     expect($rootScope.details).toBe(undefined);
                 });
 
+                it('should remove the details if the id is empty using the name for NODES', function(){
+                    $httpBackend.expectDELETE('/nodes/test-id1').respond(200, 'OK');
+                    $rootScope.details = {id: '', name: 'test-id1'};
+                    $rootScope.deleteResource('nodes', 'test-id1');
+                    $httpBackend.flush();
+                    expect($rootScope.details).toBe(undefined);
+                });
+
                 it('should NOT remove the details if the id doesnt match', function(){
                     $httpBackend.expectDELETE('/providers/test-id3').respond(200, 'OK');
                     $rootScope.details = {id: 'test-id1'};
