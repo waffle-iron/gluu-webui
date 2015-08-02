@@ -596,7 +596,7 @@ describe('Controllers', function(){
             });
 
             it('should alert the user if the data does not define a state for the node', function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, {});
+                $httpBackend.expectGET('/nodes/node1').respond(200, 'Data without State');
                 var controller = createController('NodeLogController');
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $httpBackend.flush();
@@ -634,6 +634,25 @@ describe('Controllers', function(){
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'SUCCESS'});
                 $rootScope.loadLog();
                 $httpBackend.flush();
+                expect($interval.cancel).toHaveBeenCalled();
+            });
+
+            it('should stop the timer when the scope is destroyed', function(){
+                spyOn($rootScope, 'stopLog');
+                $rootScope.$destroy();
+                expect($rootScope.stopLog).toHaveBeenCalled();
+            });
+        });
+
+        describe('$scope.stopLog', function(){
+            beforeEach(function(){
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                var controller = createController('NodeLogController');
+                $httpBackend.flush();
+            });
+            it('should cancel the interval and set stop to undefined if defined', function(){
+                spyOn($interval, 'cancel');
+                $rootScope.stopLog();
                 expect($interval.cancel).toHaveBeenCalled();
             });
         });
