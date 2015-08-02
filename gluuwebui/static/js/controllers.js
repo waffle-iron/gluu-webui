@@ -151,9 +151,6 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 if(item.id === id){
                     $scope.contents[index].deletionStarted = true;
                 }
-                else{
-                    $scope.contents[index].deletionStarted = false;
-                }
             });
 
             $http.delete("/"+resource+"/"+id).success(function(data){

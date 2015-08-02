@@ -127,10 +127,13 @@ describe('Controllers', function(){
                 it('should set deletionStarted property if id matches', function(){
                     expect($rootScope.contents[0].deletionStarted).toBe(undefined);
                     $httpBackend.expectDELETE('/providers/test-id1').respond(200, {});
+                    $httpBackend.expectDELETE('/providers/test-id3').respond(200, {});
                     $rootScope.deleteResource( 'providers', 'test-id1');
+                    $rootScope.deleteResource( 'providers', 'test-id3');
+
                     expect($rootScope.contents[0].deletionStarted).toBe(true);
-                    expect($rootScope.contents[1].deletionStarted).toBe(false);
-                    expect($rootScope.contents[2].deletionStarted).toBe(false);
+                    expect($rootScope.contents[1].deletionStarted).toBe(undefined);
+                    expect($rootScope.contents[2].deletionStarted).toBe(true);
                     $httpBackend.flush();
                 });
 
