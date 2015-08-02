@@ -135,9 +135,17 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          * Fucntion to delete a resource. This is called whenever a delete button is clicked in the overview UI
          */
         $scope.deleteResource = function(resource, id){
+            // check if the resrouce is node and make sure it has a proper id otherwise use name
+            if ( resource === 'nodes' && id === '' ) {
+                window.alert('Sorry the Node you clicked does not yet have any ID. You cannot delete a node without an ID');
+                return;
+            }
+
+            // confirm before initiating deletion
             if (!window.confirm('Are you sure you want to delete the resource?\nThis action cannot be undone.')){
                 return;
             }
+
             $http.delete("/"+resource+"/"+id).success(function(data){
                 // remove the resource from the view
                 angular.forEach($scope.contents, function(item, index){
@@ -302,7 +310,7 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
         $scope.node_name = $routeParams.node_name;
 
         $http.get('/nodes/'+$routeParams.node_name).success(function(data){
-            if (angular.isDefined(data.state)) {
+            if ( angular.isDefined(data.state) ) {
                 $scope.node_state = data.state;
                 if (data.state === 'IN_PROGRESS'){
                     // update the status every 3 seconds
@@ -310,6 +318,8 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
                 } else {
                     $scope.loadLog();
                 }
+            } else {
+                AlertMsg.addMsg('The state of the Node is not known. Cannot load logs.', 'warning');
             }
         }).error(function(data){
             postErrorAlert(AlertMsg, data);

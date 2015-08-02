@@ -105,6 +105,12 @@ describe('Controllers', function(){
                 $httpBackend.flush();
             });
 
+            it('should show an alert and return if the node has no ID', function(){
+                spyOn(window, 'alert');
+                $rootScope.deleteResource( 'nodes', '' );
+                expect(window.alert).toHaveBeenCalled();
+            });
+
             it('should not initiate delete action if confirmation is cancelled', function(){
                 spyOn(window, 'confirm').and.returnValue(false);
                 expect($rootScope.contents.length).toEqual(3);
@@ -573,7 +579,7 @@ describe('Controllers', function(){
                 expect($interval).toHaveBeenCalled();
             });
 
-            it('should load log without timer when state isn\'t IN_PROGRESS', function(){
+            it('should load log without timer when state is not IN_PROGRESS', function(){
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'FAILED'});
                 var controller = createController('NodeLogController');
                 spyOn($rootScope, 'loadLog');
@@ -583,6 +589,14 @@ describe('Controllers', function(){
 
             it('should post an alert if the node detail req fails', function(){
                 $httpBackend.expectGET('/nodes/node1').respond(404, {message: 'FAILED'});
+                var controller = createController('NodeLogController');
+                expect(AlertMsg.alerts.length).toEqual(0);
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+
+            it('should alert the user if the data does not define a state for the node', function(){
+                $httpBackend.expectGET('/nodes/node1').respond(200, {});
                 var controller = createController('NodeLogController');
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $httpBackend.flush();
