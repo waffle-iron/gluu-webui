@@ -460,11 +460,14 @@ describe('Controllers', function(){
             it('should not remove anything if index is invalid', function(){
                 expect(AlertMsg.alerts.length).toEqual(3);
 
+                spyOn(console, 'error');
                 $rootScope.closeAlert(10);
                 expect(AlertMsg.alerts.length).toEqual(3);
+                expect(console.error).toHaveBeenCalled();
 
                 $rootScope.closeAlert('myname');
                 expect(AlertMsg.alerts.length).toEqual(3);
+                expect(console.error).toHaveBeenCalled();
             });
 
             it('should log an error if the index is not a number', function(){
