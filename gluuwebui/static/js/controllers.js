@@ -146,6 +146,16 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 return;
             }
 
+            // show the gif on that button
+            angular.forEach($scope.contents, function(item, index){
+                if(item.id === id){
+                    $scope.contents[index].deletionStarted = true;
+                }
+                else{
+                    $scope.contents[index].deletionStarted = false;
+                }
+            });
+
             $http.delete("/"+resource+"/"+id).success(function(data){
                 // remove the resource from the view
                 angular.forEach($scope.contents, function(item, index){

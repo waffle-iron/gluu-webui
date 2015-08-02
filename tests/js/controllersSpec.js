@@ -119,9 +119,19 @@ describe('Controllers', function(){
                 expect($rootScope.contents.length).toEqual(3);
             });
 
+
             describe('when the user confirms deletion', function(){
                 beforeEach(function(){
                     spyOn(window, 'confirm').and.returnValue(true);
+                });
+                it('should set deletionStarted property if id matches', function(){
+                    expect($rootScope.contents[0].deletionStarted).toBe(undefined);
+                    $httpBackend.expectDELETE('/providers/test-id1').respond(200, {});
+                    $rootScope.deleteResource( 'providers', 'test-id1');
+                    expect($rootScope.contents[0].deletionStarted).toBe(true);
+                    expect($rootScope.contents[1].deletionStarted).toBe(false);
+                    expect($rootScope.contents[2].deletionStarted).toBe(false);
+                    $httpBackend.flush();
                 });
 
                 it('should remove the resource from contents upon request success', function(){

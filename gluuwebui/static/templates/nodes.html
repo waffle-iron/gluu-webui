@@ -31,7 +31,10 @@
                 <td>{{getResourceName( clusters, row.cluster_id )}}</td>
                 <td>{{getResourceName( providers, row.provider_id )}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.id)">Delete</button>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.name)">
+                        <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
+                        Delete
+                    </button>
                     <a class="btn btn-info btn-sm" href="#/node/log/{{row.name}}">View Log</a>
                 </td>
             </tr>
