@@ -136,9 +136,14 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          */
         $scope.deleteResource = function(resource, id){
             // check if the resrouce is node and make sure it has a proper id otherwise use name
-            if ( resource === 'nodes' && id === '' ) {
-                window.alert('Sorry the Node you clicked does not yet have any ID. You cannot delete a node without an ID');
-                return;
+            // id is actually name for the NODES
+            if ( resource === 'nodes' ) {
+                for (var i=0; i < $scope.contents.length; i++){
+                    if ($scope.contents[i].name === id && $scope.contents[i].state === 'IN_PROGRESS') {
+                        window.alert('Sorry the Node you clicked does not yet have any ID. You cannot delete a node without an ID');
+                        return;
+                    }
+                }
             }
 
             // confirm before initiating deletion

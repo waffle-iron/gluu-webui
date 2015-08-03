@@ -105,9 +105,10 @@ describe('Controllers', function(){
                 $httpBackend.flush();
             });
 
-            it('should show an alert and return if the node has no ID', function(){
+            it('should show an alert and return if the node state is IN_PROGRESS', function(){
                 spyOn(window, 'alert');
-                $rootScope.deleteResource( 'nodes', '' );
+                $rootScope.contents = [{name: 'node1', state: 'IN_PROGRESS'}];
+                $rootScope.deleteResource( 'nodes', 'node1' );
                 expect(window.alert).toHaveBeenCalled();
             });
 
