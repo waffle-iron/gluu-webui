@@ -183,10 +183,18 @@ def represent_cluster():
     return json_response(resp)
 
 
+def clean_keystring(key):
+    '''Helper function to remove white spaces from the copy-pasted license
+    keys in the webform'''
+    return key.strip().replace('\n', '').replace(' ', '')
+
+
 @app.route("/license_keys", methods=['GET', 'POST'])
 def represent_keys():
     if request.method == 'POST':  # Add a new credential
-        resp = api_post('license_keys', json.loads(request.data))
+        data = json.loads(request.data)
+        data['public_key'] = clean_keystring(data['public_key'])
+        resp = api_post('license_keys', data)
         return json_response(resp)
 
     res = api_get('license_keys')

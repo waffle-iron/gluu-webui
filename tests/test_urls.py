@@ -76,7 +76,7 @@ def mock_post(code):
 
 
 def check_post_success(item):
-    p = app.post(item, data='{}')
+    p = app.post(item, data='{"public_key": "key"}')  # pub_key for lic post
     assert_equal(p.status_code, 200)
     if item == '/node':
         assert_is_instance(json.loads(p.data)['log'], unicode)
@@ -85,7 +85,7 @@ def check_post_success(item):
 
 
 def check_post_error(item):
-    p = app.post(item, data="{}")
+    p = app.post(item, data='{"public_key": "key"}')
     assert_equal(p.status_code, 400)
     assert_is_instance(json.loads(p.data)['message'], unicode)
 

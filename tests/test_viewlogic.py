@@ -74,3 +74,15 @@ def test_get_node_log():
 
     assert_false(get_node('node_name_3'))
     assert_false(get_node('non existant node'))
+
+
+##############################################################################
+#   Tests for other util functions
+
+def test_clean_keystring():
+    """Tests utility function clean_keystring from views.py"""
+    fn = gluuwebui.views.clean_keystring
+
+    assert_equal(fn('this has only spaces'), 'thishasonlyspaces')
+    assert_equal(fn('this\nhas\nonly\nnew\nlines\n'), 'thishasonlynewlines')
+    assert_equal(fn('this is \n+aKeyString'), 'thisis+aKeyString')
