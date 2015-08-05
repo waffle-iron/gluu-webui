@@ -1,5 +1,5 @@
 from nose.tools import assert_equal, assert_is_instance, assert_in
-from mock import MagicMock, patch
+from mock import MagicMock
 
 import gluuwebui
 import requests
@@ -68,8 +68,7 @@ def mock_post(code):
     if code == 204:
         requests.post.return_value.json.return_value = {'id': 'mock_id',
                                                         'name': 'mock_name',
-                                                        'log': '/tmp/mock.log'}
-        requests.post.return_value.headers = {'X-Deploy-Log': '/log/location'}
+                                                        }
     else:
         requests.post.return_value.json.return_value = {'message': 'MockError'}
     requests.post.return_value.reason = "Mock Reason"
@@ -199,19 +198,3 @@ def test_dashboard_response():
 
     response = app.get('/dashboard')
     assert_equal(response.status_code, 400)
-
-
-#############################################################################
-# Test for GET /node/log/node_name
-
-
-@patch('gluuwebui.views.get_node_log')
-def test_get_deployment(get_node_log):
-    get_node_log.return_value = 'There exists a log'
-
-    response = app.get('/node/log/node_name1')
-    assert_equal(response.status_code, 200)
-
-    get_node_log.return_value = False
-    response = app.get('/node/log/node_name3')
-    assert_equal(response.status_code, 404)

@@ -57,26 +57,6 @@ def test_dashboard_get():
 
 
 ##############################################################################
-#   Tests related to the node deploy log handling
-
-def test_get_node_log():
-    """Tests for the get_node_log function that will return the proper logfile
-    contents for the given nodename or a NOT found error msg"""
-
-    get_node = gluuwebui.views.get_node_log
-
-    log = get_node('node_name_1')
-    assert_equal(log, 'INFO: Node name: node_name_1\n')
-
-    log = get_node('node_name_2')
-    expected = """another dummy log here for Node 2\nNothing fancy.\n"""
-    assert_multi_line_equal(log, expected)
-
-    assert_false(get_node('node_name_3'))
-    assert_false(get_node('non existant node'))
-
-
-##############################################################################
 #   Tests for other util functions
 
 def test_clean_keystring():
