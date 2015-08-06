@@ -255,6 +255,6 @@ def dashboard_data():
 @app.route('/node/log/<node_name>')
 def get_deployment_log(node_name):
     """returns the log data for a node with node_name"""
-    logfile = '/var/log/gluu/{0}.log'.format(node_name)
+    logfile = '/var/log/gluu/{0}-setup.log'.format(node_name)
     content = get_file(logfile)
     return Response(content, mimetype="text/html")
