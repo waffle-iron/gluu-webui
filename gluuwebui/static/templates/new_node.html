@@ -28,11 +28,11 @@
     </div>
     <div class="form-group">
         <label for="connect_delay">Delay before connecting node (secs)</label>
-        <input class="form-control" type="number" name="connect_delay" value="10" ng-model="resourceData.connect_delay" optional>
+        <input class="form-control" type="number" name="connect_delay" value="10" min="0" ng-model="resourceData.connect_delay" optional>
     </div>
     <div class="form-group">
         <label for="exec_delay">Delay before executing (secs)</label>
-        <input class="form-control" type="number" name="exec_delay" value="15" ng-model="resourceData.exec_delay" optional>
+        <input class="form-control" type="number" name="exec_delay" value="15" min="0" ng-model="resourceData.exec_delay" optional>
     </div>
     <div class="form-group" ng-if="resourceData.node_type == 'httpd'" ng-class="{'has-error': !oxauth_nodes.length}">
         <label for="oxauth_node_id" class="control-label">OxAuth Node ID</label>
@@ -42,15 +42,6 @@
             <option value="{{node.id}}" ng-repeat="node in oxauth_nodes">{{node.name}}</option>
         </select>
         <span class="help-block">ID of oxauth node (required when deploying httpd node).</span>
-    </div>
-    <div class="form-group" ng-if="resourceData.node_type == 'httpd'" ng-class="{'has-error': !oxtrust_nodes.length}">
-        <label for="oxtrust_node_id" class="control-label">OxTrust Node ID</label>
-        <select id="oxtrust_node_id"  name="oxtrust_node_id" class="form-control" ng-model="resourceData.oxtrust_node_id" required>
-            <option value="" ng-if="!oxtrust_nodes.length">No OxTrust nodes present</option>
-            <option value="" ng-if="oxtrust_nodes.length">Select an OxTrust node</option>
-            <option value="{{node.id}}" ng-repeat="node in oxtrust_nodes">{{node.name}}</option>
-        </select>
-        <span class="help-block">ID of oxtrust node (required when deploying httpd node).</span>
     </div>
     <button class="btn btn-primary" type="submit">Create Node</button>
 </form>

@@ -311,7 +311,6 @@ describe('Controllers', function(){
                     expect($rootScope.clusters.length).toEqual(1);
                     expect($rootScope.providers.length).toEqual(1);
                     expect($rootScope.oxauth_nodes.length).toEqual(0);
-                    expect($rootScope.oxtrust_nodes.length).toEqual(0);
                 });
 
                 it('should load the oxauth & oxtrust id and names for selection in New Node form', function(){
@@ -320,12 +319,11 @@ describe('Controllers', function(){
                     $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
                     var nodes = [{type: 'ldap', id: 'id1', name: 'node1'}, {type: 'oxtrust', id: 'id2', name: 'node2'},
                                  {type: 'oxauth', id: 'id3', name: 'node3'}, {type: 'httpd', id: 'id4', name: 'node4'},
-                                 {type: 'oxtrust', id: 'id5', name: 'node5'}];
+                                 {type: 'oxauth', id: 'id5', name: 'node5'}];
                     $httpBackend.expectGET('/nodes').respond(200, nodes);
                     var controller = createController('ResourceController');
                     $httpBackend.flush();
-                    expect($rootScope.oxtrust_nodes.length).toEqual(2);
-                    expect($rootScope.oxauth_nodes.length).toEqual(1);
+                    expect($rootScope.oxauth_nodes.length).toEqual(2);
                 });
 
                 it('should post alerts when dependency fetching fails for New Node', function(){
