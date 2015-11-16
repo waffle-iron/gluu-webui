@@ -12,10 +12,11 @@
                 <th>Organization</th>
                 <th>City</th>
                 <th>Ox Cluster Host</th>
-                <th>Httpd Nodes</th>
                 <th>LDAP Nodes</th>
                 <th>OxAuth Nodes</th>
                 <th>OxTrust Nodes</th>
+                <th>Nginx Nodes</th>
+                <th>oxIdp Nodes</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,10 +26,11 @@
                 <td>{{row.org_name}}</td>
                 <td>{{row.city}}</td>
                 <td>{{row.ox_cluster_hostname}}</td>
-                <td>{{row.httpd_nodes.length}}</td>
                 <td>{{row.ldap_nodes.length}}</td>
                 <td>{{row.oxauth_nodes.length}}</td>
                 <td>{{row.oxtrust_nodes.length}}</td>
+                <td>{{row.nginx_nodes.length}}</td>
+                <td>{{row.oxidp_nodes.length}}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('clusters', row.id)">Delete</button>
                 </td>
