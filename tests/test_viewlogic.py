@@ -22,6 +22,9 @@ def test_dashboard_get():
                 {'type': 'httpd', 'state': 'SUCCESS'},
                 {'type': 'oxtrust', 'state': 'DISABLED'},
                 {'type': 'oxauth', 'state': 'FAILED'},
+                {'type': 'nginx', 'state': 'FAILED'},
+                {'type': 'nginx', 'state': 'SUCCESS'},
+                {'type': 'oxidp', 'state': 'DISABLED'},
                 {'type': 'ldap', 'state': 'DISABLED'}]
     providerData = [{'type': 'master'}, {'type': 'consumer'},
                     {'type': 'consumer'}]
@@ -39,12 +42,13 @@ def test_dashboard_get():
 
     res = json.loads(app.get('/dashboard').data)
     # check node data
-    assert_equal(res['nodes']['count'], 6)
+    assert_equal(res['nodes']['count'], 9)
     assert_equal(res['nodes'],
-                 {'count': 6,
-                  'type': {'ldap': 2, 'httpd': 2, 'oxtrust': 1, 'oxauth': 1},
-                  'state': {'IN_PROGRESS': 1, 'SUCCESS': 2, 'DISABLED': 2,
-                            'FAILED': 1}
+                 {'count': 9,
+                  'type': {'ldap': 2, 'httpd': 2, 'oxtrust': 1, 'oxauth': 1,
+                           'nginx': 2, 'oxidp': 1},
+                  'state': {'IN_PROGRESS': 1, 'SUCCESS': 3, 'DISABLED': 3,
+                            'FAILED': 2}
                   })
     # check provider data
     assert_equal(res['providers'], {'count': 3,

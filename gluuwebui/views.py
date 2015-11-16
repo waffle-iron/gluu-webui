@@ -197,7 +197,8 @@ def dashboard_data():
     licenseData = api_get('license_keys')
 
     # process and collect the nodes data
-    nodetypes = {'ldap': 0, 'oxauth': 0, 'oxtrust': 0, 'httpd': 0}
+    nodetypes = {'ldap': 0, 'oxauth': 0, 'oxtrust': 0, 'httpd': 0, 'nginx': 0,
+                 'oxidp': 0}
     nodestate = {'SUCCESS': 0, 'IN_PROGRESS': 0, 'FAILED': 0, 'DISABLED': 0}
     for node in nodeData:
         if node['type'] == 'ldap':
@@ -208,6 +209,10 @@ def dashboard_data():
             nodetypes['oxtrust'] += 1
         if node['type'] == 'httpd':
             nodetypes['httpd'] += 1
+        if node['type'] == 'nginx':
+            nodetypes['nginx'] += 1
+        if node['type'] == 'oxidp':
+            nodetypes['oxidp'] += 1
 
         if node['state'] == 'SUCCESS':
             nodestate['SUCCESS'] += 1
