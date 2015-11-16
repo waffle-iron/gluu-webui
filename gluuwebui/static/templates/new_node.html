@@ -17,7 +17,6 @@
             <option value="ldap">LDAP</option>
             <option value="oxauth">oxAuth</option>
             <option value="oxtrust">oxTrust</option>
-            <option value="httpd">Httpd</option>
         </select>
     </div>
     <div class="form-group">
@@ -33,15 +32,6 @@
     <div class="form-group">
         <label for="exec_delay">Delay before executing (secs)</label>
         <input class="form-control" type="number" name="exec_delay" value="15" min="0" ng-model="resourceData.exec_delay" optional>
-    </div>
-    <div class="form-group" ng-if="resourceData.node_type == 'httpd'" ng-class="{'has-error': !oxauth_nodes.length}">
-        <label for="oxauth_node_id" class="control-label">OxAuth Node ID</label>
-        <select id="oxauth_node_id"  name="oxauth_node_id" class="form-control" ng-model="resourceData.oxauth_node_id" required>
-            <option value="" ng-if="!oxauth_nodes.length">No OxAuth nodes present</option>
-            <option value="" ng-if="oxauth_nodes.length">Select an OxAuth node</option>
-            <option value="{{node.id}}" ng-repeat="node in oxauth_nodes">{{node.name}}</option>
-        </select>
-        <span class="help-block">ID of oxauth node (required when deploying httpd node).</span>
     </div>
     <button class="btn btn-primary" type="submit">Create Node</button>
 </form>

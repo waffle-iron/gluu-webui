@@ -229,11 +229,9 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
         if( resource === 'nodes' ){
             $scope.clusters = [];
             $scope.providers = [];
-            $scope.oxauth_nodes = [];
 
             // Initialize deafult for <select> to avoid empty angular item
             $scope.resourceData.type = '';
-            $scope.resourceData.oxtrust_node_id = '';
 
             $http.get("/clusters").success(function(data){
                 angular.forEach(data, function(item){
@@ -253,15 +251,6 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 postErrorAlert(AlertMsg, data);
             });
 
-            $http.get("/nodes").success(function(data){
-                angular.forEach(data, function(item){
-                    if( item.type === 'oxauth' ){
-                        $scope.oxauth_nodes.push({'id': item.id, 'name': item.name});
-                    }
-                });
-            }).error(function(data){
-                postErrorAlert(AlertMsg, data);
-            });
         }
 
         /*
