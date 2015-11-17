@@ -105,13 +105,6 @@ describe('Controllers', function(){
                 $httpBackend.flush();
             });
 
-            it('should show an alert and return if the node state is IN_PROGRESS', function(){
-                spyOn(window, 'alert');
-                $rootScope.contents = [{name: 'node1', state: 'IN_PROGRESS'}];
-                $rootScope.deleteResource( 'nodes', 'node1' );
-                expect(window.alert).toHaveBeenCalled();
-            });
-
             it('should not initiate delete action if confirmation is cancelled', function(){
                 spyOn(window, 'confirm').and.returnValue(false);
                 expect($rootScope.contents.length).toEqual(3);
@@ -185,6 +178,14 @@ describe('Controllers', function(){
                     $rootScope.deleteResource('providers', 'test-id3');
                     $httpBackend.flush();
                     expect($rootScope.details).not.toBe(undefined);
+                });
+
+                it('should add force_rm=1 to the querystring when deleting a node IN_PROGRESS', function(){
+                    $httpBackend.expectDELETE('/nodes/node1?force_rm=1').respond(200, 'OK');
+                    $rootScope.contents = [{id: '', name:'node1', state:'IN_PROGRESS'}];
+                    $rootScope.deleteResource('nodes', 'node1');
+                    expect($rootScope.contents[0].deletionStarted).toBe(true);
+                    $httpBackend.flush();
                 });
             });
 

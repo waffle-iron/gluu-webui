@@ -159,6 +159,17 @@ def test_resource_delete():
     mock_delete(400)
     for item in resources:
         yield check_delete, item, 400
+
+
+def test_delete_parses_forcerm_querystring():
+    requests.delete = MagicMock('delete')
+    requests.delete.return_value.status_code = 204
+    requests.delete.return_value.reason = 'Mock Reason'
+    r = app.delete("/nodes/some-id?force_rm=1")
+    assert_equal(r.status_code, 200)
+    requests.delete.assert_called_once_with(
+        gluuwebui.app.config["API_SERVER_URL"]+"nodes/some-id?force_rm=1")
+
 ##############################################################################
 #   Check for static file redirects
 

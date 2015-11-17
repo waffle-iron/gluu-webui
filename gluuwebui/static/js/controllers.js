@@ -135,13 +135,13 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          * Fucntion to delete a resource. This is called whenever a delete button is clicked in the overview UI
          */
         $scope.deleteResource = function(resource, id){
+            var querystring = '';
             // check if the resrouce is node and make sure it has a proper id otherwise use name
             // id is actually name for the NODES
             if ( resource === 'nodes' ) {
                 for (var i=0; i < $scope.contents.length; i++){
                     if ($scope.contents[i].name === id && $scope.contents[i].state === 'IN_PROGRESS') {
-                        window.alert('Sorry the Node you clicked does not yet have any ID. You cannot delete a node without an ID');
-                        return;
+                        querystring = '?force_rm=1';
                     }
                 }
             }
@@ -153,12 +153,12 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
             // show the gif on that button
             angular.forEach($scope.contents, function(item, index){
-                if(item.id === id){
+                if(item.id === id || (resource === 'nodes' && item.name === id)){
                     $scope.contents[index].deletionStarted = true;
                 }
             });
 
-            $http.delete("/"+resource+"/"+id).success(function(data){
+            $http.delete("/"+resource+"/"+id+querystring).success(function(data){
                 // remove the resource from the view
                 angular.forEach($scope.contents, function(item, index){
                     if( item.id === id ){

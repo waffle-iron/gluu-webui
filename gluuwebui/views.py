@@ -179,7 +179,10 @@ def give_resource(resource, id):
         return json_response(r.json())
 
     elif request.method == 'DELETE':
-        r = requests.delete(api_base + '{0}/{1}'.format(resource, id))
+        url = api_base + '{0}/{1}'.format(resource, id)
+        if resource == 'nodes' and request.args.get('force_rm'):
+            url += '?force_rm={0}'.format(request.args.get('force_rm'))
+        r = requests.delete(url)
         if r.status_code != 204:
             raise APIError("The {0} with id {1} couldn't be deleted.".format(
                            resource, id), r.status_code, reason(r))
