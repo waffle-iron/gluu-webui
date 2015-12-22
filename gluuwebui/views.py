@@ -172,6 +172,11 @@ def give_resource(resource, id):
         newdata = json.loads(request.data)
         if 'id' in newdata.keys():
             del newdata['id']
+
+        # Clean the License keys during update time too
+        if 'public_key' in newdata:
+            newdata['public_key'] = clean_keystring(newdata['public_key'])
+
         r = requests.put(url, data=newdata)
         if r.status_code != 200:
             raise APIError("The {0} with ID {1} couldnot be updated".format(
