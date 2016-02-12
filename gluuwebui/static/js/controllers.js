@@ -161,7 +161,8 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             $http.delete("/"+resource+"/"+id+querystring).success(function(data){
                 // remove the resource from the view
                 angular.forEach($scope.contents, function(item, index){
-                    if( item.id === id ){
+                    // remove the deleted resource from the view.
+                    if( item.id === id  || (resource === 'nodes' && item.name === id)){
                         $scope.contents.splice(index, 1);
                         return;
                     }
