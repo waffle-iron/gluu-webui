@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_multi_line_equal, assert_false
+from nose.tools import assert_equal
 from mock import MagicMock
 
 import gluuwebui
@@ -70,3 +70,14 @@ def test_clean_keystring():
     assert_equal(fn('this has only spaces'), 'thishasonlyspaces')
     assert_equal(fn('this\nhas\nonly\nnew\nlines\n'), 'thishasonlynewlines')
     assert_equal(fn('this is \n+aKeyString'), 'thisis+aKeyString')
+
+
+def test_generate_curl():
+    fn = gluuwebui.views.generate_curl
+    api = gluuwebui.app.config['API_SERVER_URL']
+
+    cmd = fn('nodes', 'GET')
+    assert_equal(cmd, "curl '%s' -X GET -d 'None'" % (api+'nodes'))
+
+    cmd = fn('clusters', 'POST', data="a=b&c=d")
+    assert_equal(cmd, "curl '%s' -X POST -d 'a=b&c=d'" % (api+'clusters'))

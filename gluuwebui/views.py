@@ -51,6 +51,20 @@ def api_get(req):
         raise APIError('No response from API Server', 500, 'Connection Error')
 
 
+def generate_curl(req, method, data=None):
+    """Function that will generate a curl command for the input request object
+
+    Params:
+        req (requests.request) object for which curl command is to be generated
+
+    Returns:
+        command (string) - a string which forms the curl command of the request
+    """
+    command = "curl '{uri}' -X {method} -d '{data}'"
+    uri = api_base + req
+    return command.format(uri=uri, method=method, data=data)
+
+
 def api_post(req, data):
     """Function to send post requests to the API
     @param req (string) the resource name to request
