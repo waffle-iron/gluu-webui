@@ -97,7 +97,7 @@ def json_response(data, status=200):
 
 @app.route("/")
 def index():
-    content = get_file('static/index.html')
+    content = get_file('static/templates/index.html')
     return Response(content, mimetype="text/html")
 
 
