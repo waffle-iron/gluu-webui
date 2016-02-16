@@ -76,8 +76,5 @@ def test_generate_curl():
     fn = gluuwebui.views.generate_curl
     api = gluuwebui.app.config['API_SERVER_URL']
 
-    cmd = fn('nodes', 'GET')
-    assert_equal(cmd, "curl '%s' -X GET -d 'None'" % (api+'nodes'))
-
-    cmd = fn('clusters', 'POST', data="a=b&c=d")
-    assert_equal(cmd, "curl '%s' -X POST -d 'a=b&c=d'" % (api+'clusters'))
+    cmd = fn('clusters', 'POST', data={'a': 'b'})
+    assert_equal(cmd, "curl %s -X POST -d a='b'" % (api+'clusters'))
