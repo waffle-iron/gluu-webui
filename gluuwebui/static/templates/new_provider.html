@@ -7,12 +7,12 @@
     <div class="form-group">
         <label for="hostname">Hostname</label>
         <input name="hostname" type="text" class="form-control" ng-model="resourceData.hostname" required>
-        <span class="help-block">Hostname of the provider</span>
+        <span class="help-block">Host name of the machine. When in doubt, use <code>hostname --long</code> shell command to get the name.</span>
     </div>
     <div class="form-group">
         <label for="docker_base_url">URL to Docker API</label>
         <input name="docker_base_url" class="form-control" type="text" ng-model="resourceData.docker_base_url" required>
-        <span class="help-block">URL could be unix socket (e.g. unix:///var/run/docker.sock) for localhost or tcp (10.10.10.1:2376) for remote host</span>
+        <span class="help-block">Docker remote API URL. Supported format is <code>https://$IP:$PORT</code>, e.g. <code>https://128.199.198.172:2376</code>.</span>
     </div>
     <div class="form-group">
         <label for="type">Type</label>
@@ -23,19 +23,14 @@
         <span class="help-block">Provider type (either 'master' or 'consumer')</span>
     </div>
     <div class="form-group">
-        <label for="ssl_key">SSL Key</label>
-        <textarea class="form-control" type="text" name="ssl_key" ng-model="resourceData.ssl_key"></textarea>
-        <span class="help-block">The contents of SSL client key file</span>
+      <label for="connect_delay">Connect Delay (optional)</label>
+      <input name="connect_delay" class="form-control" type="number" ng-model="resourceData.connect_delay" ng-init="resourceData.connect_delay = 10">
+      <span class="help-block">Time to wait (in seconds) before start connecting to provider (default to 10 seconds).</span>
     </div>
     <div class="form-group">
-        <label for="ssl_cert">SSL Cert</label>
-        <textarea class="form-control" type="text" name="ssl_cert" ng-model="resourceData.ssl_cert"></textarea>
-        <span class="help-block">The contents of SSL client cert file</span>
-    </div>
-    <div class="form-group">
-        <label for="ca_cert">CA Cert</label>
-        <textarea class="form-control" type="text" name="ca_cert" ng-model="resourceData.ca_cert"></textarea>
-        <span class="help-block">The contents of SSL CA cert file</span>
+      <label for="exec_delay">Execution Delay (optional)</label>
+      <input name="exec_delay" class="form-control" type="number" ng-model="resourceData.exec_delay" ng-init="resourceData.exec_delay = 15">
+      <span class="help-block">Time to wait (in seconds) before start executing command in provider (default to 15 seconds).</span>
     </div>
     <button class="btn btn-primary" type="submit">Add provider</button>
 </form>
