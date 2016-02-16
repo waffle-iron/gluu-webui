@@ -78,3 +78,6 @@ def test_generate_curl():
 
     cmd = fn('clusters', 'POST', data={'a': 'b'})
     assert_equal(cmd, "curl %s -X POST -d a='b'" % (api+'clusters'))
+
+    cmd = fn('clusters', 'POST', data="a=b")
+    assert_equal(cmd, "curl %s -X POST -d a=b" % (api+'clusters'))
