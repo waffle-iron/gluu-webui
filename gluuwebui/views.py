@@ -63,7 +63,10 @@ def generate_curl(req, method, data=None):
     """
     command = "curl {uri} -X {method} -d {data}"
     uri = api_base + req
-    data_str = " -d ".join(["%s='%s'" % (k, v) for k, v in data.items()])
+    if isinstance(data, dict):
+        data_str = " -d ".join(["%s='%s'" % (k, v) for k, v in data.items()])
+    else:
+        data_str = str(data)
 
     return command.format(uri=uri, method=method, data=data_str)
 
