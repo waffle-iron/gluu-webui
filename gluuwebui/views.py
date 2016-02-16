@@ -4,6 +4,7 @@ from flask import request, redirect, url_for, Response
 import json
 import requests
 import os
+import datetime
 
 api_base = app.config["API_SERVER_URL"]
 
@@ -60,9 +61,22 @@ def generate_curl(req, method, data=None):
     Returns:
         command (string) - a string which forms the curl command of the request
     """
-    command = "curl '{uri}' -X {method} -d '{data}'"
+    command = "curl {uri} -X {method} -d {data}"
     uri = api_base + req
-    return command.format(uri=uri, method=method, data=data)
+    data_str = " -d ".join(["%s='%s'" % (k, v) for k, v in data.items()])
+
+    return command.format(uri=uri, method=method, data=data_str)
+
+
+def append_history(req, data, status):
+    """Function that would append the command to the config-history.log file"""
+    history = os.path.join(root_dir(), "static/config-history.log")
+    with open(history, 'a') as logfile:
+        dt = datetime.datetime.now()
+        logfile.write(dt.strftime('%d %b %Y, %H:%M:%S\n'))
+        logfile.write(generate_curl(req, "POST", data))
+        logfile.write("\n")
+        logfile.write("RESPONSE CODE: {0} \n".format(status))
 
 
 def api_post(req, data):
@@ -71,6 +85,7 @@ def api_post(req, data):
     @param data (dict) the post form data as a dict from json
     """
     r = requests.post(api_base + req, data=data)
+    append_history(req, data, r.status_code)
     if r.status_code > 210:
         try:
             params = r.json()['params']
