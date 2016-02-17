@@ -608,7 +608,16 @@ describe('Controllers', function(){
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
                 var controller = createController('NodeLogController');
                 $httpBackend.flush();
+
+                // fixture to test the scrolling to bottom after log text update
+                if (!document.getElementById('bottom')){
+                    var bottomEle = document.createElement('div');
+                    bottomEle.setAttribute('id', 'bottom');
+                    var body = document.getElementsByTagName('body')[0];
+                    body.appendChild(bottomEle);
+                }
             });
+            
             it('should load the log data to scope', function(){
                 $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG TEXT');
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
@@ -616,6 +625,16 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect($rootScope.logText).toEqual('LOG TEXT');
             });
+
+            it('should scroll to the bottom after log text is added', function(){
+                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG TEXT');
+                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                spyOn(document.getElementById('bottom'), 'scrollIntoView').and.callThrough();
+                $rootScope.loadLog();
+                $httpBackend.flush();
+                expect(document.getElementById('bottom').scrollIntoView).toHaveBeenCalled();
+            });
+
             it('should add an alert and stop the timer upon GET error', function(){
                 spyOn($interval, 'cancel');
                 $httpBackend.expectGET('/node/log/node1').respond(404, {message: 'NO DATA'});
@@ -657,5 +676,3 @@ describe('Controllers', function(){
         });
     });
 });
-
-

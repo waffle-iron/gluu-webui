@@ -326,6 +326,7 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
         $scope.loadLog = function(){
             $http.get('/node/log/'+$routeParams.node_name).success(function(data){
                 $scope.logText = data;
+                document.getElementById('bottom').scrollIntoView();
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
                 $scope.stopLog();
