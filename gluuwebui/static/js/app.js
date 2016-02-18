@@ -1,6 +1,7 @@
 var gluuwebui = angular.module('gluuwebui', [
         'ngRoute',
-        'webuiControllers'
+        'webuiControllers',
+        'ui.bootstrap'
         ]);
 
 var templateMaker = {};

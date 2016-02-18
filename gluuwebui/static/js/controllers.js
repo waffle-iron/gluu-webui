@@ -198,8 +198,8 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
 
 
 // controller that is used to respond to add/edit actions on resources
-webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$location',
-    function($scope, $http, $routeParams, AlertMsg, $location){
+webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$location', '$modal',
+    function($scope, $http, $routeParams, AlertMsg, $location, $modal){
         // Clear all alert messages
         AlertMsg.clear();
 
@@ -260,6 +260,15 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
          *
          */
         $scope.submit = function(){
+            /* Create a loading.. modal before processing */
+            var modal = $modal.open({
+                animation: false,
+                template:'<div class="modal-body"><p class="text-center"><img src="/static/img/ajax-loader.gif" alt="">  Processing ....</p></div>',
+                keyboard: false,
+                backdrop: 'static',
+                size: 'sm'
+            });
+
             var data = $scope.resourceData;
 
             if( $scope.editMode ){
@@ -271,6 +280,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                 });
             } else {  // Not in Edit Mode == New Resource
                 $http.post("/" + resource, data).success(function( data, status){
+                    modal.dismiss();
                     if( resource === 'nodes' ){
                         // redirect to node deploy log page
                         $location.path('/node/log/'+data.name);
@@ -280,6 +290,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                     }
                 }).error(function( data ){
                     postErrorAlert(AlertMsg, data);
+                    modal.dismiss();
                 });
             }
         };
