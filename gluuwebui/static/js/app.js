@@ -41,7 +41,7 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: 'templates/dashboard.html',
             controller: 'DashboardController'
         }).
-        when('/node/log/:node_name', {
+        when('/node_logs/:node_name/:action', {
             templateUrl: 'templates/node_log.html',
             controller: 'NodeLogController'
         }).

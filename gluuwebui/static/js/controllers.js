@@ -90,6 +90,24 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 return;
             }
             $scope.contents = data;
+
+            // For nodes fetch their logs too
+            if ( resource === 'nodes' ){
+                angular.forEach($scope.contents, function(item, index){
+                    $scope.contents[index].hasSetupLog = false;
+                    $scope.contents[index].hasTeardownLog = false;
+
+                    $http.get('/node_logs/'+item.name).success( function( data ){
+                        if ( data.setup_log_url ){
+                            $scope.contents[index].hasSetupLog = true;
+                        }
+                        if ( data.teardown_log_url ){
+                            $scope.contents[index].hasTeardownLog = true;
+                        }
+
+                    });
+                });
+            }
         }).error(function(data){
             postErrorAlert(AlertMsg, data);
         });
@@ -335,8 +353,8 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
         });
 
         $scope.loadLog = function(){
-            $http.get('/node/log/'+$routeParams.node_name).success(function(data){
-                $scope.logText = data;
+            $http.get('/node_logs/'+$routeParams.node_name+'/'+$routeParams.action).success(function(data){
+                $scope.logText = data.join('\n');
                 document.getElementById('bottom').scrollIntoView();
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);

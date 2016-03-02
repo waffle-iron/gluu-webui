@@ -13,6 +13,7 @@
                 <th>Type</th>
                 <th>Cluster</th>
                 <th>Provider</th>
+                <th>Logs</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -31,11 +32,19 @@
                 <td>{{getResourceName( clusters, row.cluster_id )}}</td>
                 <td>{{getResourceName( providers, row.provider_id )}}</td>
                 <td>
+                  <p class="text-danger" ng-if="!row.hasSetupLog && !row.hasTeardownLog">No Logs found</p>
+                  <p>
+                    <a class="btn btn-xs btn-default" href="#/node_logs/{{row.name}}/setup" ng-if="row.hasSetupLog">Setup</a>
+                    <a class="btn btn-xs btn-default" href="#/node_logs/{{row.name}}/teardown" ng-if="row.hasTeardownLog">Teardown</a>
+                  </p>
+
+
+                </td>
+                <td>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.name)">
                         <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
                         Delete
                     </button>
-                    <a class="btn btn-info btn-sm" href="#/node/log/{{row.name}}">View Log</a>
                 </td>
             </tr>
         </tbody>
@@ -54,4 +63,3 @@
         </tr>
     </table>
 </div>
-

@@ -188,6 +188,15 @@ def represent_keys():
     return json_response(res)
 
 
+@app.route("/node_logs/<string:node_id>/<string:action>")
+def node_logs(node_id, action=None):
+    if action:
+        res = api_get('node_logs/{0}/{1}'.format(node_id, action))
+    else:
+        res = api_get('node_logs/{}'.format(node_id))
+    return json_response(res)
+
+
 @app.route("/<resource>/<id>", methods=['GET', 'POST', 'DELETE'])
 def give_resource(resource, id):
     if request.method == 'GET':
@@ -295,11 +304,3 @@ def dashboard_data():
                          }
                      }
     return json_response(dashboardData)
-
-
-@app.route('/node/log/<node_name>')
-def get_deployment_log(node_name):
-    """returns the log data for a node with node_name"""
-    logfile = '/var/log/gluu/{0}-setup.log'.format(node_name)
-    content = get_file(logfile)
-    return Response(content, mimetype="text/html")
