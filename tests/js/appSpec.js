@@ -19,6 +19,10 @@ describe('Gluu Web UI', function(){
         it('should have ResourceController for /action/resouce/id?', function(){
             expect($route.routes['/:action/:resource/:id?'].controller).toMatch('ResourceController');
         });
+
+        it('should have NodeLogController for /node_logs/node_id/action', function(){
+            expect($route.routes['/node_logs/:node_name/:action'].controller).toMatch('NodeLogController');
+        });
     });
 
     describe('templateMaker', function(){

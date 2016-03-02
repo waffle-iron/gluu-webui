@@ -238,9 +238,10 @@ describe('Controllers', function(){
             });
 
             it('should post an alert if it can\'t fetch data', function(){
-                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid'}]);
+                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid', name: 'someid'}]);
                 $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
                 $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
+                $httpBackend.expectGET('/node_logs/someid').respond(400, {message: 'NO Logs'})
 
                 expect(AlertMsg.alerts.length).toEqual(0);
                 var controller = createController('OverviewController');
@@ -249,6 +250,19 @@ describe('Controllers', function(){
                 expect($rootScope.providers).toBe(undefined);
                 expect($rootScope.clusters).toBe(undefined);
                 expect(AlertMsg.alerts.length).toEqual(2);
+            });
+
+            it('should fetch the node_logs for each log and set the status', function(){
+                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid', name: 'someid'}]);
+                $httpBackend.expectGET('/clusters').respond(200, []);
+                $httpBackend.expectGET('/providers').respond(200, []);
+                $httpBackend.expectGET('/node_logs/someid').respond(200, {setup_log_url: 'setup_url', teardown_log_url: 'teardown_url'})
+
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+
+                expect($rootScope.contents[0].hasSetupLog).toBe(true);
+                expect($rootScope.contents[0].hasTeardownLog).toBe(true);
             });
 
         });
@@ -568,7 +582,7 @@ describe('Controllers', function(){
 
     describe('NodeLogController', function(){
         beforeEach(function(){
-            $routeParams = {node_name: 'node1'};
+            $routeParams = {node_name: 'node1', action: 'setup'};
         });
         describe('Initialization', function(){
             it('should setup a timer to GET /node/log at intervals', function(){
@@ -617,9 +631,9 @@ describe('Controllers', function(){
                     body.appendChild(bottomEle);
                 }
             });
-            
+
             it('should load the log data to scope', function(){
-                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG TEXT');
+                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG TEXT']);
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
                 $rootScope.loadLog();
                 $httpBackend.flush();
@@ -627,7 +641,7 @@ describe('Controllers', function(){
             });
 
             it('should scroll to the bottom after log text is added', function(){
-                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG TEXT');
+                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG TEXT']);
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
                 spyOn(document.getElementById('bottom'), 'scrollIntoView').and.callThrough();
                 $rootScope.loadLog();
@@ -637,7 +651,7 @@ describe('Controllers', function(){
 
             it('should add an alert and stop the timer upon GET error', function(){
                 spyOn($interval, 'cancel');
-                $httpBackend.expectGET('/node/log/node1').respond(404, {message: 'NO DATA'});
+                $httpBackend.expectGET('/node_logs/node1/setup').respond(404, {message: 'NO DATA'});
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $rootScope.loadLog();
@@ -648,7 +662,7 @@ describe('Controllers', function(){
 
             it('should stop the timer if state is not IN_PROGRESS', function(){
                 spyOn($interval, 'cancel');
-                $httpBackend.expectGET('/node/log/node1').respond(200, 'LOG DONE');
+                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG DONE']);
                 $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'SUCCESS'});
                 $rootScope.loadLog();
                 $httpBackend.flush();
