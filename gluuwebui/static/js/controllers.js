@@ -98,13 +98,8 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                     $scope.contents[index].hasTeardownLog = false;
 
                     $http.get('/node_logs/'+item.name).success( function( data ){
-                        if ( data.setup_log_url ){
-                            $scope.contents[index].hasSetupLog = true;
-                        }
-                        if ( data.teardown_log_url ){
-                            $scope.contents[index].hasTeardownLog = true;
-                        }
-
+                        $scope.contents[index].hasSetupLog = data.setup_log_url;
+                        $scope.contents[index].hasTeardownLog = data.teardown_log_url;
                     });
                 });
             }

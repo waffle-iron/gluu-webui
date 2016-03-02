@@ -261,8 +261,8 @@ describe('Controllers', function(){
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
 
-                expect($rootScope.contents[0].hasSetupLog).toBe(true);
-                expect($rootScope.contents[0].hasTeardownLog).toBe(true);
+                expect($rootScope.contents[0].hasSetupLog).toBeTruthy();
+                expect($rootScope.contents[0].hasTeardownLog).toBeTruthy();
             });
 
         });
