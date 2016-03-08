@@ -296,7 +296,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
                     modal.dismiss();
                     if( resource === 'nodes' ){
                         // redirect to node deploy log page
-                        $location.path('/node/log/'+data.name);
+                        $location.path('/node_logs/'+data.name+'/setup');
                     } else {
                         // redirect to the overview page with a message that new cluster was created
                         $location.path('/'+resource);

@@ -364,7 +364,7 @@ describe('Controllers', function(){
                 $httpBackend.flush();
                 expect($location.path()).toEqual('/resource');
             });
-            it('should redirect to /node/log/node_name upon successful POST for Nodes', function(){
+            it('should redirect to /node_logs/node_name/setup upon successful POST for Nodes', function(){
                 $routeParams = {resource: 'nodes'};
                 var controller = createController('ResourceController');
                 $rootScope.resourceData = {};
@@ -373,7 +373,7 @@ describe('Controllers', function(){
                 $httpBackend.expectPOST('/nodes', {}).respond(200, {name: 'node_name'});
                 $rootScope.submit();
                 $httpBackend.flush();
-                expect($location.path()).toEqual('/node/log/node_name');
+                expect($location.path()).toEqual('/node_logs/node_name/setup');
             });
             it('should add an alert on POST failure in both Edit and Create', function(){
                 $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
