@@ -29,11 +29,11 @@
     </div>
     <div class="form-group">
         <label for="connect_delay">Delay before connecting node (secs)</label>
-        <input class="form-control" type="number" name="connect_delay" value="10" min="0" ng-model="resourceData.connect_delay" optional>
+        <input class="form-control" type="number" name="connect_delay" min="0" ng-model="resourceData.connect_delay" ng-init="resourceData.connect_delay=10" optional>
     </div>
     <div class="form-group">
         <label for="exec_delay">Delay before executing (secs)</label>
-        <input class="form-control" type="number" name="exec_delay" value="15" min="0" ng-model="resourceData.exec_delay" optional>
+        <input class="form-control" type="number" name="exec_delay" min="0" ng-model="resourceData.exec_delay" ng-init="resourceData.exec_delay=15" optional>
     </div>
     <button class="btn btn-primary" type="submit">Create Node</button>
 </form>
