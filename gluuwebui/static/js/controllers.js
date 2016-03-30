@@ -331,17 +331,22 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
 
         $scope.node_name = $routeParams.node_name;
 
-        $http.get('/nodes/'+$routeParams.node_name).success(function(data){
-            if ( angular.isDefined(data.state) ) {
-                $scope.node_state = data.state;
-                if (data.state === 'IN_PROGRESS'){
+        $http.get('/node_logs/'+$routeParams.node_name+'/setup').success(function(data){
+            if ( angular.isDefined(data.setup_finished) ) {
+                if (data.setup_finished === true) {
+                    $scope.node_state = "SETUP_FINISHED";
+                } else {
+                    $scope.node_state = "SETUP_IN_PROGRESS";
+                }
+
+                if (data.setup_finished === false){
                     // update the status every 3 seconds
                     stop = $interval($scope.loadLog, 3000);
                 } else {
                     $scope.loadLog();
                 }
             } else {
-                AlertMsg.addMsg('The state of the Node is not known. Cannot load logs.', 'warning');
+                AlertMsg.addMsg('The state of the NodeLog is not known. Cannot load logs.', 'warning');
             }
         }).error(function(data){
             postErrorAlert(AlertMsg, data);
@@ -349,16 +354,21 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
 
         $scope.loadLog = function(){
             $http.get('/node_logs/'+$routeParams.node_name+'/'+$routeParams.action).success(function(data){
-                $scope.logText = data.join('\n');
+                $scope.logText = data["setup_log_contents"].join('\n');
                 document.getElementById('bottom').scrollIntoView();
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
                 $scope.stopLog();
             });
 
-            $http.get('/nodes/'+$routeParams.node_name).success(function(data){
-                $scope.node_state = data.state;
-                if(data.state !== 'IN_PROGRESS') {
+            $http.get('/node_logs/'+$routeParams.node_name+'/setup').success(function(data){
+                if (data.setup_finished === true) {
+                    $scope.node_state = "SETUP_FINISHED";
+                } else {
+                    $scope.node_state = "SETUP_IN_PROGRESS";
+                }
+
+                if(data.setup_finished !== false) {
                     $scope.stopLog();
                 }
             });
