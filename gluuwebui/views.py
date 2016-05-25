@@ -71,13 +71,13 @@ def generate_curl(req, method, data=None):
     return command.format(uri=uri, method=method, data=data_str)
 
 
-def append_history(req, data, status):
+def append_history(req, method, data, status):
     """Function that would append the command to the config-history.log file"""
     history = os.path.join(root_dir(), "static/config-history.log")
     with open(history, 'a') as logfile:
         dt = datetime.datetime.now()
         logfile.write(dt.strftime('%d %b %Y, %H:%M:%S\n'))
-        logfile.write(generate_curl(req, "POST", data))
+        logfile.write(generate_curl(req, method, data))
         logfile.write("\n")
         logfile.write("RESPONSE CODE: {0} \n".format(status))
 
@@ -88,7 +88,7 @@ def api_post(req, data):
     @param data (dict) the post form data as a dict from json
     """
     r = requests.post(api_base + req, data=data)
-    append_history(req, data, r.status_code)
+    append_history(req, 'POST', data, r.status_code)
     if r.status_code > 210:
         try:
             params = r.json()['params']
@@ -99,6 +99,23 @@ def api_post(req, data):
         raise APIError('Could not create a new {0}'.format(req),
                        r.status_code, reason(r), invalidParams)
     return r.json()
+
+
+def api_delete(resource, id, forced=None):
+    """Fucntion that sends the delete requests to the API.
+    @param resource (string) the resource to request
+    @param id (string) the id of the resource to be deleted
+    """
+    url = api_base + '{0}/{1}'.format(resource, id)
+    if forced:
+        url += "?force_rm={0}".format(forced)
+    r = requests.delete(url)
+    append_history(r, 'DELETE', None, r.status_code)
+    if r.status_code != 204:
+        raise APIError("The {0} with id {1} couldn't be deleted.".format(
+                       resource, id), r.status_code, reason(r))
+    data = {'message': 'Deleted {0} with id {1}'.format(resource, id)}
+    return data
 
 
 def reason(res):
@@ -140,33 +157,78 @@ def img(filename):
     return redirect(url_for('static', filename="img/{0}".format(filename)))
 
 
-@app.route("/nodes", methods=['GET', 'POST'])
-def represent_node():
+@app.route("/nodes", methods=['GET'])
+@app.route("/nodes/<node_type>", methods=['GET', 'POST', 'DELETE'])
+def represent_node(node_type=None):
     if request.method == 'POST':  # Initiate create new node
-        resp = api_post('nodes', json.loads(request.data))
-        return Response(json.dumps(resp), 200, mimetype="application/json")
+        resp = api_post('nodes/{0}'.format(node_type),
+                        json.loads(request.data))
+        return json_response(resp)
+    elif request.method == 'DELETE':
+        name = node_type  # node_type for a delete request actually has name
+        resp = api_delete('nodes', name)
+        return json_response(resp)
 
-    resp = api_get("nodes")
+    if node_type:
+        resp = api_get("nodes/{0}".format(node_type))
+    else:
+        resp = api_get("nodes")
     return json_response(resp)
 
 
-@app.route("/providers", methods=['GET', 'POST'])
-def represent_provider():
-    if request.method == 'POST':  # Add new provider
-        resp = api_post('providers', json.loads(request.data))
+@app.route("/providers", methods=['GET'])
+@app.route("/providers/<driver>", methods=['GET', 'POST', 'DELETE'])
+def represent_provider(driver=None):
+    if request.method == 'POST':
+        resp = api_post('providers/{0}'.format(driver),
+                        json.loads(request.data))
+        return json_response(resp)
+    elif request.method == 'DELETE':
+        pro_id = driver
+        resp = api_delete('providers', pro_id)
         return json_response(resp)
 
-    resp = api_get('providers')
+    if driver:  # for GETthe driver acts as the id
+        resp = api_get('providers/{0}'.format(driver))
+    else:
+        resp = api_get('providers')
     return json_response(resp)
 
 
 @app.route("/clusters", methods=['GET', 'POST'])
-def represent_cluster():
-    if request.method == 'POST':  # Add a new cluster
+@app.route("/clusters/<cluster_id>", methods=['GET', 'DELETE'])
+def represent_cluster(cluster_id=None):
+    if request.method == 'POST':
         resp = api_post('clusters', json.loads(request.data))
         return json_response(resp)
+    elif request.method == 'DELETE':
+        resp = api_delete('clusters', cluster_id)
+        return json_response(resp)
 
-    resp = api_get('clusters')
+    if cluster_id:
+        resp = api_get('clusters/{0}'.format(cluster_id))
+    else:
+        resp = api_get('clusters')
+    return json_response(resp)
+
+
+@app.route('/containers', methods=['GET'])
+@app.route('/containers/<ctype>', methods=['GET', 'POST', 'DELETE'])
+def represent_containers(ctype=None):
+    if request.method == 'POST':
+        resp = api_post('containers/{0}'.format(ctype),
+                        json.loads(request.data))
+        return json_response(resp)
+    elif request.method == 'DELETE':
+        id = ctype  # for DELETE the ctype is the id
+        force_rm = request.args.get('force_rm')
+        resp = api_delete('containers', id, force_rm)
+        return json_response(resp)
+
+    if ctype:  # for GET ctype acts as the id
+        resp = api_get('containers/{0}'.format(ctype))
+    else:
+        resp = api_get('containers')
     return json_response(resp)
 
 
@@ -177,39 +239,15 @@ def clean_keystring(key):
 
 
 @app.route("/license_keys", methods=['GET', 'POST'])
-def represent_keys():
+@app.route("/license_keys/<lic_id>", methods=['GET', 'PUT', 'DELETE'])
+def represent_keys(lic_id=None):
     if request.method == 'POST':  # Add a new credential
         data = json.loads(request.data)
         data['public_key'] = clean_keystring(data['public_key'])
         resp = api_post('license_keys', data)
         return json_response(resp)
-
-    res = api_get('license_keys')
-    return json_response(res)
-
-
-@app.route("/node_logs/<string:node_id>/<string:action>")
-def node_logs(node_id, action=None):
-    if action:
-        res = api_get('node_logs/{0}/{1}'.format(node_id, action))
-    else:
-        res = api_get('node_logs/{}'.format(node_id))
-    return json_response(res)
-
-
-@app.route("/<resource>/<id>", methods=['GET', 'POST', 'DELETE'])
-def give_resource(resource, id):
-    if request.method == 'GET':
-        resp = api_get("{0}/{1}".format(resource, id))
-        return json_response(resp)
-
-    elif request.method == 'POST':
-        # For now only provider and license_credential have put requests
-        if resource != 'providers' and resource != 'license_keys':
-            data = {'message': 'Invalid resoure to update.'}
-            return json_response(data, 400)
-
-        url = api_base + "{0}/{1}".format(resource, id)
+    elif request.method == 'PUT':
+        url = api_base + "license_keys/{0}".format(lic_id)
         newdata = json.loads(request.data)
         if 'id' in newdata.keys():
             del newdata['id']
@@ -220,20 +258,35 @@ def give_resource(resource, id):
 
         r = requests.put(url, data=newdata)
         if r.status_code != 200:
-            raise APIError("The {0} with ID {1} couldnot be updated".format(
-                           resource, id), r.status_code, reason(r))
+            raise APIError("License update failed for ID: {0}".format(lic_id),
+                           r.status_code, reason(r))
         return json_response(r.json())
-
     elif request.method == 'DELETE':
-        url = api_base + '{0}/{1}'.format(resource, id)
-        if resource == 'nodes' and request.args.get('force_rm'):
-            url += '?force_rm={0}'.format(request.args.get('force_rm'))
-        r = requests.delete(url)
-        if r.status_code != 204:
-            raise APIError("The {0} with id {1} couldn't be deleted.".format(
-                           resource, id), r.status_code, reason(r))
-        data = {'message': 'Deleted {0} with id {1}'.format(resource, id)}
-        return json_response(data)
+        resp = api_delete('license_keys', lic_id)
+        return json_response(resp)
+
+    if lic_id:
+        res = api_get('license_keys/{0}'.format(lic_id))
+    else:
+        res = api_get('license_keys')
+    return json_response(res)
+
+
+@app.route('/container_logs', methods=['GET'])
+@app.route('/container_logs/<log_id>', methods=['GET', 'DELETE'])
+@app.route('/container_logs/<log_id>/<action>', methods=['GET'])
+def represent_container_logs(log_id=None, action=None):
+    if request.method == 'DELETE':
+        resp = api_delete('container_logs', log_id)
+        return json_response(resp)
+
+    if log_id and action:
+        resp = api_get('container_logs/{0}/{1}'.format(log_id, action))
+    elif log_id:
+        resp = api_get('container_logs/{0}'.format(log_id))
+    else:
+        resp = api_get('container_logs')
+    return json_response(resp)
 
 
 @app.route('/dashboard')

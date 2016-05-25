@@ -8,7 +8,8 @@ import json
 gluuwebui.app.config['TESTING'] = True
 app = gluuwebui.app.test_client()
 
-resources = ['/providers', '/clusters', '/nodes', '/license_keys']
+resources = ['/providers', '/clusters', '/nodes', '/license_keys',
+             '/containers', '/container_logs']
 
 ##############################################################################
 #   Handling GET requests and ensuring all /resource /resource/id are answered
@@ -52,9 +53,12 @@ def test_resources_get():
 
 
 ##############################################################################
-#   Test POST requests to /resource returns a json
+#   Test POST requests to resource points return a json
 #   Success: resource_id or logfile, code 200
 #   Failure: message, code 400
+
+post_calls = ['/clusters', '/containers/type', '/license_keys', '/nodes/type',
+              '/providers/driver']
 
 
 def mock_post(code):
@@ -63,8 +67,7 @@ def mock_post(code):
     requests.post.return_value.status_code = code
 
     # also mock the save node log funtion to avoid unnecessary writes
-    gluuwebui.views.save_node_log = MagicMock(name='save_node_log')
-    gluuwebui.views.save_node_log.return_value = True
+    gluuwebui.views.append_history = MagicMock(name='save_node_log')
     if code == 204:
         requests.post.return_value.json.return_value = {'id': 'mock_id',
                                                         'name': 'mock_name',
@@ -91,11 +94,11 @@ def check_post_error(item):
 
 def test_resources_post():
     mock_post(204)
-    for item in resources:
+    for item in post_calls:
         yield check_post_success, item
 
     mock_post(400)
-    for item in resources:
+    for item in post_calls:
         yield check_post_error, item
 
 #############################################################################
@@ -106,33 +109,31 @@ def test_resources_post():
 def mock_put(code):
     requests.put = MagicMock('put')
     requests.put.return_value.status_code = code
-    requests.put.return_value.json.return_value = {'message': 'MockError'}
-    requests.put.return_value.reason = "Mock Reason"
+    if code == 200:
+        requests.put.return_value.json.return_value = {'code': 'your-code'}
+    else:
+        requests.put.return_value.json.return_value = {'message': 'MockError'}
+        requests.put.return_value.reason = "Mock Reason"
 
 
 def check_put_success(item):
-    res = app.post(item + '/some_id', data='{"id":"some_id"}')
-    # currently UPDATE should be allowed only for 2 resources as below
-    if item == '/license_keys' or item == '/providers':
-        assert_equal(res.status_code, 200)
-    else:
-        assert_equal(res.status_code, 400)
+    res = app.put(item + '/some_id', data='{"id":"some_id"}')
+    assert_equal(res.status_code, 200)
 
 
 def check_put_error(item):
-    res = app.post(item + '/some_id', data='{}')
-    assert_equal(res.status_code, 400)
-    assert_is_instance(json.loads(res.data)['message'], unicode)
+    res = app.put(item + '/some_id', data='{}')
+    assert_equal(res.status_code, 405)
 
 
 def test_resource_update():
     mock_put(200)
     for item in resources:
-        yield check_put_success, item
+        if item == '/license_keys':
+            yield check_put_success, item
+        else:
+            yield check_put_error, item
 
-    mock_put(400)
-    for item in resources:
-        yield check_put_error, item
 
 #############################################################################
 #  Tests for DELETE requests to /resource/id
@@ -165,10 +166,16 @@ def test_delete_parses_forcerm_querystring():
     requests.delete = MagicMock('delete')
     requests.delete.return_value.status_code = 204
     requests.delete.return_value.reason = 'Mock Reason'
-    r = app.delete("/nodes/some-id?force_rm=1")
+    r = app.delete("/containers/some-id?force_rm=1")
     assert_equal(r.status_code, 200)
     requests.delete.assert_called_once_with(
-        gluuwebui.app.config["API_SERVER_URL"]+"nodes/some-id?force_rm=1")
+        gluuwebui.app.config["API_SERVER_URL"]+"containers/some-id?force_rm=1")
+
+    r = app.delete("/containers/some-id?force_rm=0")
+    assert_equal(r.status_code, 200)
+    requests.delete.assert_called_with(
+        gluuwebui.app.config["API_SERVER_URL"]+"containers/some-id?force_rm=0")
+
 
 ##############################################################################
 #   Check for static file redirects
