@@ -1,3 +1,4 @@
+
 <div class="row">
     <h2>
         Nodes  <a href="#/new/nodes" class="btn btn-default">New Node</a>
@@ -8,42 +9,22 @@
         <thead>
             <tr class="active">
                 <th>Name</th>
-                <th>State</th>
-                <th>Weave IP</th>
+                <th>ID</th>
                 <th>Type</th>
-                <th>Cluster</th>
                 <th>Provider</th>
-                <th>Logs</th>
                 <th>Actions</th>
-            </tr>
+           </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/nodes" ng-click="loadResource('nodes', row.name)">{{row.name}}</a></td>
-                <td>
-                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.state == 'SUCCESS'"></span>
-                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="row.state == 'FAILED'"></span>
-                    <span class="glyphicon glyphicon-ban-circle text-warning" aria-hidden="true" ng-if="row.state == 'DISABLED'"></span>
-                    <span class="glyphicon glyphicon-time text-info" aria-hidden="true" ng-if="row.state == 'IN_PROGRESS'"></span>
-                    <small>{{row.state}}</small>
-                </td>
-                <td>{{row.weave_ip}}</td>
+                <td><a href="#/nodes" ng-click="loadResource('nodes', row.id)">{{row.name}}</a></td>
+                <td>{{row.id}}</td>
                 <td>{{row.type}}</td>
-                <td>{{getResourceName( clusters, row.cluster_id )}}</td>
                 <td>{{getResourceName( providers, row.provider_id )}}</td>
-                <td>
-                  <p class="text-danger" ng-if="!row.hasSetupLog && !row.hasTeardownLog">No Logs found</p>
-                  <p>
-                    <a class="btn btn-xs btn-default" href="#/node_logs/{{row.name}}/setup" ng-if="row.hasSetupLog">Setup</a>
-                    <a class="btn btn-xs btn-default" href="#/node_logs/{{row.name}}/teardown" ng-if="row.hasTeardownLog">Teardown</a>
-                  </p>
-
-
-                </td>
-                <td>
-                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.name)">
-                        <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
-                        Delete
+               <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.id)">
+                      <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
+                      Delete
                     </button>
                 </td>
             </tr>
@@ -53,7 +34,7 @@
 
 <div class="panel panel-default" ng-if='details'>
     <div class="panel-heading">
-        Node Details : {{details.name}}
+        Cluster Details : {{details.name}}
     </div>
 
     <table class="table">

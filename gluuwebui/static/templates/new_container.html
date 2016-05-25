@@ -1,0 +1,22 @@
+<h2>New Container</h2>
+<form ng-submit="submit()">
+    <div class="form-group">
+        <label for="container_type">Container Type</label>
+        <select id="container_type" name="container_type" class="form-control" ng-model="container_type" required>
+            <option value="">Select a container type</option>
+            <option value="ldap">LDAP</option>
+            <option value="oxauth">oxAuth</option>
+            <option value="oxtrust">oxTrust</option>
+            <option value="nginx">Nginx</option>
+            <option value="oxidp">oxIdp</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="node_id">Node ID</label>
+        <select id="node_id" name="node_id" class="form-control" ng-model="resourceData.node_id" required>
+            <option value="">Select the node to deploy your container</option>
+            <option value="{{node.id}}" ng-repeat="node in nodes">{{node.name}}</option>
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Create Container</button>
+</form>

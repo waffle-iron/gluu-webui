@@ -76,7 +76,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         $scope.currentResURI = resource;
         $scope.currentResource = resource.charAt(0).toUpperCase() + resource.slice(1).replace("_", " ");
 
-        var resources = ['clusters', 'providers', 'nodes', 'license_keys'];
+        var resources = ['clusters', 'providers', 'nodes', 'license_keys', 'containers'];
         if(resources.indexOf(resource) === -1){
             // if it doesnot match it means some random url has been typed out
             // prevent the default http request
@@ -92,12 +92,12 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             $scope.contents = data;
 
             // For nodes fetch their logs too
-            if ( resource === 'nodes' ){
+            if ( resource === 'containers' ){
                 angular.forEach($scope.contents, function(item, index){
                     $scope.contents[index].hasSetupLog = false;
                     $scope.contents[index].hasTeardownLog = false;
 
-                    $http.get('/node_logs/'+item.name).success( function( data ){
+                    $http.get('/container_logs/'+item.name).success( function( data ){
                         $scope.contents[index].hasSetupLog = data.setup_log_url;
                         $scope.contents[index].hasTeardownLog = data.teardown_log_url;
                     });
@@ -108,16 +108,27 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
         });
 
         /*
-         * If it is a node, fetch the list of clusters and providers for listing against each node
+         * If it is containers, fetch the list of clusters and nodes for listing against each container
          */
-        if( resource === 'nodes' ){
+        if( resource === 'containers' ){
             $http.get('/clusters').success( function(data){
                 $scope.clusters = data;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
 
-            $http.get('/providers').success( function(data){
+            $http.get('/nodes').success( function(data){
+                $scope.nodes = data;
+            }).error(function(data){
+                postErrorAlert(AlertMsg, data);
+            });
+        }
+
+        /*
+         * If it is nodes, fetch the providers
+         */
+        if( resource === 'nodes' ){
+            $http.get('/providers').success(function(data){
                 $scope.providers = data;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
@@ -131,11 +142,6 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             var name = id;
             angular.forEach(list, function(item){
                 if( item.id === id ){
-                    // providers donot have name -- they have hostname
-                    if('hostname' in item){
-                        name = item.hostname;
-                        return;
-                    }
                     name = item.name;
                     return;
                 }
@@ -241,30 +247,27 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
          *  If the resource is a node add the list of ids for cluster and provider as a dropdown
          */
         if( resource === 'nodes' ){
-            $scope.clusters = [];
             $scope.providers = [];
 
             // Initialize deafult for <select> to avoid empty angular item
-            $scope.resourceData.type = '';
-
-            $http.get("/clusters").success(function(data){
-                angular.forEach(data, function(item){
-                    $scope.clusters.push({'id' : item.id, 'name': item.name});
-                });
-                $scope.resourceData.cluster_id = data.length > 0 ? data[0].id : '';
-            }).error(function(data){
-                postErrorAlert(AlertMsg, data);
-            });
+            $scope.node_type = '';
+            $scope.resourceData.provider_id = '';
 
             $http.get("/providers").success(function(data){
-                angular.forEach(data, function(item){
-                    $scope.providers.push({'id' : item.id, 'name': item.hostname});
-                });
-                $scope.resourceData.provider_id = data.length > 0 ? data[0].id : '';
+                $scope.providers = data;
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
             });
 
+        }
+
+        /*
+         * If it is a container, fetch the list of available nodes
+         */
+        if( resource === 'containers'){
+            $http.get('/nodes').success(function(data){
+                $scope.nodes = data;
+            });
         }
 
         /*
@@ -283,20 +286,34 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
             });
 
             var data = $scope.resourceData;
+            var url = '';
 
             if( $scope.editMode ){
-                $http.post("/" + resource + "/" + data.id, data).success(function(data, status){
+                url = "/" + resource + "/" + data.id;
+                $http.put(url, data).success(function(data, status){
+                    modal.dismiss();
                     // redirect to the overview page with a message that things have been updated
                     $location.path('/'+resource);
                 }).error(function(data){
+                    modal.dismiss();
                     postErrorAlert(AlertMsg, data);
                 });
-            } else {  // Not in Edit Mode == New Resource
-                $http.post("/" + resource, data).success(function( data, status){
+            } else {
+                if (resource === 'providers') {
+                    // here the $routeParams.id carries the provider type; ugly override, should be fixed
+                    url = "/providers/" + $routeParams.id;
+                } else if (resource === 'containers'){
+                    url = "/containers/" + $scope.container_type;
+                } else if (resource === 'nodes'){
+                    url = "/nodes/" + $scope.node_type;
+                } else {
+                    url = "/" + resource;
+                }
+                $http.post(url, data).success(function( data, status){
                     modal.dismiss();
-                    if( resource === 'nodes' ){
+                    if( resource === 'containers' ){
                         // redirect to node deploy log page
-                        $location.path('/node_logs/'+data.name+'/setup');
+                        $location.path('/container_logs/'+data.name+'/setup');
                     } else {
                         // redirect to the overview page with a message that new cluster was created
                         $location.path('/'+resource);
@@ -322,18 +339,18 @@ webuiControllers.controller( 'DashboardController', ['$scope', '$http', '$routeP
 
 
 // controller for the Node Log loader page
-webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$interval',
+webuiControllers.controller( 'ContainerLogController', ['$scope', '$http', '$routeParams', 'AlertMsg', '$interval',
     function($scope, $http, $routeParams, AlertMsg, $interval){
 
         // Initialization code
         var stop;
         AlertMsg.clear();
 
-        $scope.node_name = $routeParams.node_name;
 
-        $http.get('/nodes/'+$routeParams.node_name).success(function(data){
+        $http.get('/containers/'+$routeParams.id).success(function(data){
             if ( angular.isDefined(data.state) ) {
-                $scope.node_state = data.state;
+                $scope.container_name = data.name;
+                $scope.container_state = data.state;
                 if (data.state === 'IN_PROGRESS'){
                     // update the status every 3 seconds
                     stop = $interval($scope.loadLog, 3000);
@@ -348,15 +365,19 @@ webuiControllers.controller( 'NodeLogController', ['$scope', '$http', '$routePar
         });
 
         $scope.loadLog = function(){
-            $http.get('/node_logs/'+$routeParams.node_name+'/'+$routeParams.action).success(function(data){
-                $scope.logText = data.join('\n');
+            $http.get('/container_logs/'+$routeParams.id+'/'+$routeParams.action).success(function(data){
+                if ($routeParams.action === 'setup'){
+                    $scope.logText = data.setup_log_contents.join('\n');
+                } else if ($routeParams.action === 'teardown'){
+                    $scope.logText = data.teardown_log_contents.join('\n');
+                }
                 document.getElementById('bottom').scrollIntoView();
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
                 $scope.stopLog();
             });
 
-            $http.get('/nodes/'+$routeParams.node_name).success(function(data){
+            $http.get('/containers/'+$routeParams.id).success(function(data){
                 $scope.node_state = data.state;
                 if(data.state !== 'IN_PROGRESS') {
                     $scope.stopLog();

@@ -1,23 +1,34 @@
 <div class="row">
-    <h2>
-        Providers  <a href="#/new/providers" class="btn btn-default">New Provider</a>
-    </h2>
+  <div class="col-md-3">
+    <h2>Providers</h2>
+  </div>
+  <div class="col-md-9">
+    <div class="btn-group" dropdown is-open="status.isopen">
+      <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled" style="margin-top: 20px">
+        New Provider <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="#/new/providers/digitalocean">Digital Ocean Provider</a></li>
+        <li><a href="#/new/providers/generic">Generic Provider</a></li>
+      </ul>
+  </div>
 </div>
 <div id="resourceTable" class="row" ng-if="contents.length">
     <table class="table table-bordered table-hover">
         <thead>
             <tr class="active">
-                <th>Host Name</th>
-                <th>Type</th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Driver</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/providers" ng-click="loadResource('providers', row.id)">{{row.hostname}}</a></td>
-                <td>{{row.type}}</td>
+                <td><a href="#/providers" ng-click="loadResource('providers', row.id)">{{row.id}}</a></td>
+                <td>{{row.name}}</td>
+                <td>{{row.driver}}</td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="#/edit/providers/{{row.id}}">Edit</a>
                     <button class="btn btn-danger btn-sm" ng-click="deleteResource('providers', row.id)">Delete</button>
                 </td>
             </tr>
@@ -27,7 +38,7 @@
 
 <div class="panel panel-default" ng-if='details'>
     <div class="panel-heading">
-        Provider Details : {{details.hostname}}
+        Provider Details : {{details.name}}
     </div>
 
     <table class="table">

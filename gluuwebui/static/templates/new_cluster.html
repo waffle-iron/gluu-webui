@@ -5,7 +5,7 @@
         <input class="form-control" type="text" name="id" disabled ng-model="resourceData.id">
     </div>
     <div class="form-group">
-        <label for="name">Name</label>
+        <label for="name">Name *</label>
         <input class="form-control" type="text" name="name"  ng-model="resourceData.name" required>
         <span class="help-block">Name of the cluster</span>
     </div>
@@ -15,49 +15,44 @@
         <span class="help-block">Description of the purpose of the cluster</span>
     </div>
     <div class="form-group">
-        <label for="org_name">Organization Name</label>
+        <label for="org_name">Organization Name *</label>
         <input class="form-control" type="text" name="org_name" ng-model="resourceData.org_name" required>
-        <span class="help-block">Full name of the organization</span>
+        <span class="help-block">Organization name for X.509 certificate.</span>
     </div>
     <div class="form-group">
-        <label for="org_short_name">Org. Name Abbrevation</label>
+        <label for="org_short_name">Org. Name Abbrevation *</label>
         <input class="form-control" type="text" name="org_short_name" ng-model="resourceData.org_short_name" required>
-        <span class="help-block">Short word or abbreviation for the organization</span>
+        <span class="help-block">Organization short name for X.509 certificate.</span>
     </div>
     <div class="form-group">
-        <label for="city">City</label>
+        <label for="city">City *</label>
         <input class="form-control" type="text" name="city" ng-model="resourceData.city" required>
-        <span class="help-block">City for self-signed certificates.</span>
+        <span class="help-block">City for X.509 certificate.</span>
     </div>
     <div class="form-group">
-        <label for="state">State or Province</label>
+        <label for="state">State or Province *</label>
         <input class="form-control" type="text" name="state" ng-model="resourceData.state" required>
-        <span class="help-block">State or province for self-signed certificates.</span>
+        <span class="help-block">State or province name for X.509 certificate.</span>
     </div>
     <div class="form-group">
-        <label for="country_code">Country Code</label>
+        <label for="country_code">Country Code *</label>
         <input class="form-control" type="text" name="country_code" ng-model="resourceData.country_code" required>
-        <span class="help-block">ISO 3166-1 two-character country code for self-signed certificates.</span>
+        <span class="help-block">ISO 3166-1 alpha-2 country code.</span>
     </div>
     <div class="form-group">
-        <label for="admin_email">Admin Email</label>
+        <label for="admin_email">Admin Email *</label>
         <input class="form-control" type="text" name="admin_email" ng-model="resourceData.admin_email" required>
-        <span class="help-block">Admin email for the self-signed certifcates.</span>
+        <span class="help-block">Admin email address for X.509 certificate.</span>
     </div>
     <div class="form-group">
-        <label for="ox_cluster_hostname">oxCluster Hostname</label>
+        <label for="ox_cluster_hostname">oxCluster Hostname *</label>
         <input class="form-control" type="text" name="ox_cluster_hostname" ng-model="resourceData.ox_cluster_hostname" required>
-        <span class="help-block">Hostname to use for the admin interface website.</span>
+        <span class="help-block">Domain name to use for the admin interface website.</span>
     </div>
     <div class="form-group">
-        <label for="admin_pw">LDAP Admin Password</label>
+        <label for="admin_pw">Admin Password *</label>
         <input class="form-control" type="password" name="admin_pw" ng-model="resourceData.admin_pw" required>
-        <span class="help-block">Password for LDAP replication admin.</span>
-    </div>
-    <div class="form-group">
-        <label for="weave_ip_network">Weave Network IP</label>
-        <input class="form-control" type="text" name="weave_ip_network" ng-model="resourceData.weave_ip_network" required>
-        <span class="help-block">The IP address for weave network, e.g. 10.20.10.0/24</span>
+        <span class="help-block">Default password for default Admin account. Minimum password length is 6 characters.</span>
     </div>
     <button class="btn btn-primary" type="submit">Create Cluster</button>
 </form>

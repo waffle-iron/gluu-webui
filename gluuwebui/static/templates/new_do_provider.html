@@ -1,0 +1,50 @@
+<h2>New DigitalOcean Provider</h2>
+<form ng-submit="submit()">
+    <div class="form-group">
+        <label for="name">Name *</label>
+        <input class="form-control" name="name" type="text" ng-model="resourceData.name">
+        <span class="help-block">A unique name of the provider.</span>
+    </div>
+    <div class="form-group">
+        <label for="digitalocean_access_token">DigitalOcean access token *</label>
+        <input name="digitalocean_access_token" type="text" class="form-control" ng-model="resourceData.digitalocean_access_token" required>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ng-model="resourceData.digitalocean_backups">Enable DigitalOcean Backups (turned off by default)</label>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ng-model="resourceData.digitalocean_private_networking">Enable DigitalOcean private networking (turned off by default)</label>
+      </label>
+    </div>
+    <div class="form-group">
+        <label for="digitalocean_region">DigitalOcean Region *</label>
+        <select id="digitalocean_region" name="digitalocean_region" class="form-control" ng-model="resourceData.digitalocean_region" required>
+            <option value="nyc1">New York 1</option>
+            <option value="nyc2">New York 2</option>
+            <option value="nyc3">New York 3</option>
+            <option value="ams2">Amsterdam 2</option>
+            <option value="ams3">Amsterdam 3</option>
+            <option value="sgp1">Singapore 1</option>
+            <option value="lon1">London 1</option>
+            <option value="sfo1">San Fransisco 1</option>
+            <option value="tor1">Toronto 1</option>
+            <option value="fra1">Frankfurt 1</option>
+        </select>
+        <span class="help-block">Region where droplet is hosted.</span>
+    </div>
+    <div class="form-group">
+        <label for="digitalocean_size">DigitalOcean Droplet Size</label>
+        <select id="digitalocean_size" name="digitalocean_size" class="form-control" ng-model="resourceData.digitalocean_size" required>
+            <option value="4gb">4 GB, 2 CPUs (minimum recommended)</option>
+            <option value="8gb">8 GB, 4 CPUs</option>
+            <option value="16gb">16 GB, 8 CPUs</option>
+            <option value="32gb">32 GB, 12 CPUs</option>
+            <option value="48gb">48 GB, 16 CPUs</option>
+            <option value="64gb">64 GB, 20 CPUs</option>
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Add provider</button>
+</form>

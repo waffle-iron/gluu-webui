@@ -11,6 +11,11 @@ templateMaker.getTemplate = function(params) {
     var template = '';
     if (action == 'new' || action == 'edit') {
         template = templateMaker.newTemplates[resource];
+
+        // in case of the providers we get the provider driver as the id value when parsing the url
+        if (resource === 'providers'){
+            template = template[params.id]
+        }
     } else if( typeof action === 'undefined' ){
         template = templateMaker.viewTemplates[resource];
     }
@@ -23,16 +28,21 @@ templateMaker.getTemplate = function(params) {
 
 templateMaker.newTemplates = {
          'license_keys': 'templates/new_license_key.html',
-         'providers': 'templates/new_provider.html',
+         'providers': {
+             'digitalocean': 'templates/new_do_provider.html',
+             'generic': 'templates/new_generic_provider.html'
+         },
          'clusters': 'templates/new_cluster.html',
          'nodes': 'templates/new_node.html',
+         'containers': 'templates/new_container.html'
 };
 
 templateMaker.viewTemplates = {
          'providers':  'templates/providers.html',
          'license_keys':  'templates/license_keys.html',
          'clusters':  'templates/clusters.html',
-         'nodes':  'templates/nodes.html'
+         'nodes':  'templates/nodes.html',
+         'containers': 'templates/containers.html'
 };
 
 gluuwebui.config(['$routeProvider', function($routeProvider){
@@ -41,9 +51,9 @@ gluuwebui.config(['$routeProvider', function($routeProvider){
             templateUrl: 'templates/dashboard.html',
             controller: 'DashboardController'
         }).
-        when('/node_logs/:node_name/:action', {
-            templateUrl: 'templates/node_log.html',
-            controller: 'NodeLogController'
+        when('/container_logs/:id/:action', {
+            templateUrl: 'templates/container_log.html',
+            controller: 'ContainerLogController'
         }).
         when('/:resource', {
             templateUrl: templateMaker.getTemplate,

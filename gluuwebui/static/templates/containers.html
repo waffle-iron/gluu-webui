@@ -1,0 +1,63 @@
+<div class="row">
+    <h2>
+        Containers  <a href="#/new/containers" class="btn btn-default">New Container</a>
+    </h2>
+</div>
+<div id="resourceTable" class="row" ng-if="contents.length">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="active">
+                <th>Name</th>
+                <th>State</th>
+                <th>Type</th>
+                <th>Cluster</th>
+                <th>Node</th>
+                <th>Logs</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in contents track by $index">
+                <td><a href="#/containers" ng-click="loadResource('containers', row.id)">{{row.name}}</a></td>
+                <td>
+                    <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true" ng-if="row.state == 'SUCCESS'"></span>
+                    <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true" ng-if="row.state == 'FAILED'"></span>
+                    <span class="glyphicon glyphicon-ban-circle text-warning" aria-hidden="true" ng-if="row.state == 'DISABLED'"></span>
+                    <span class="glyphicon glyphicon-time text-info" aria-hidden="true" ng-if="row.state == 'IN_PROGRESS'"></span>
+                    <small>{{row.state}}</small>
+                </td>
+                <td>{{row.type}}</td>
+                <td>{{getResourceName( clusters, row.cluster_id )}}</td>
+                <td>{{getResourceName( nodes, row.node_id )}}</td>
+                <td>
+                  <p class="text-danger" ng-if="!row.hasSetupLog && !row.hasTeardownLog">No Logs found</p>
+                  <p>
+                    <a class="btn btn-xs btn-default" href="#/container_logs/{{row.id}}/setup" ng-if="row.hasSetupLog">Setup</a>
+                    <a class="btn btn-xs btn-default" href="#/container_logs/{{row.id}}/teardown" ng-if="row.hasTeardownLog">Teardown</a>
+                  </p>
+
+
+                </td>
+                <td>
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('containers', row.id)">
+                        <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default" ng-if='details'>
+    <div class="panel-heading">
+        Node Details : {{details.name}}
+    </div>
+
+    <table class="table">
+        <tr ng-repeat='(key, value) in details'>
+            <td><strong>{{key}}</strong></td>
+            <td>{{value}}</td>
+        </tr>
+    </table>
+</div>

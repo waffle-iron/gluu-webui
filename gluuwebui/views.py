@@ -110,7 +110,7 @@ def api_delete(resource, id, forced=None):
     if forced:
         url += "?force_rm={0}".format(forced)
     r = requests.delete(url)
-    append_history(r, 'DELETE', None, r.status_code)
+    append_history(resource, 'DELETE', None, r.status_code)
     if r.status_code != 204:
         raise APIError("The {0} with id {1} couldn't be deleted.".format(
                        resource, id), r.status_code, reason(r))
