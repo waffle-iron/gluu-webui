@@ -4,7 +4,7 @@
 
 The Web UI for the Gluu Cluster REST API
 
-> This should be run on the same server as [gluu-flask](https://github.com/GluuFederation/gluu-flask)
+> This should be run on the same server as [gluu-engine](https://github.com/GluuFederation/gluu-engine)
 
 ## Development
 
