@@ -345,11 +345,12 @@ webuiControllers.controller( 'ContainerLogController', ['$scope', '$http', '$rou
         AlertMsg.clear();
 
 
-        $http.get('/containers/'+$routeParams.id).success(function(data){
+        $http.get('/container_logs/'+$routeParams.id).success(function(data){
             if ( angular.isDefined(data.state) ) {
-                $scope.container_name = data.name;
+                $scope.container_name = data.container_name;
                 $scope.container_state = data.state;
-                if (data.state === 'IN_PROGRESS'){
+                if ( ($routeParams.action === 'setup' && data.state === 'SETUP_IN_PROGRESS') ||
+                     ($routeParams.action === 'teardown' && data.state === 'TEARDOWN_IN_PROGRESS') ){
                     // update the status every 3 seconds
                     stop = $interval($scope.loadLog, 3000);
                 } else {
@@ -370,16 +371,15 @@ webuiControllers.controller( 'ContainerLogController', ['$scope', '$http', '$rou
                     $scope.logText = data.teardown_log_contents.join('\n');
                 }
                 document.getElementById('bottom').scrollIntoView();
+
+                // stop the $interval if the state has shifted to finished
+                if (($routeParams.action === 'setup' && data.state === 'SETUP_FINISHED') ||
+                    ($routeParams.action === 'teardown' && data.state === 'TEARDOWN_FINISHED')) {
+                    $scope.stopLog();
+                }
             }).error(function(data){
                 postErrorAlert(AlertMsg, data);
                 $scope.stopLog();
-            });
-
-            $http.get('/containers/'+$routeParams.id).success(function(data){
-                $scope.node_state = data.state;
-                if(data.state !== 'IN_PROGRESS') {
-                    $scope.stopLog();
-                }
             });
         };
 
