@@ -12,7 +12,9 @@
     <div class="form-group">
         <label for="name">Name *</label>
         <input name="name" type="text" class="form-control" ng-model="resourceData.name" required>
-        <span class="help-block">Name of the node. This is also acts as its hostname. Currently, the name must be set as<code>gluu.discovery</code>.</span>
+        <span class="help-block">Name of the node. This is also acts as its hostname.
+          <span ng-if="node_type == 'discovery'"> Currently, the name must be set as<code>gluu.discovery</code>.</span>
+        </span>
     </div>
     <div class="form-group">
         <label for="provider_id">Provider *</label>
