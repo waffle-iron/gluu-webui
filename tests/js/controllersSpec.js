@@ -99,7 +99,7 @@ describe('Controllers', function(){
 
         describe('$scope.deleteResource', function(){
             beforeEach(function(){
-                var resources = [{id: 'test-id1'}, {id: 'test-id2'}, {id: 'test-id3'}];
+                var resources = [{id: 'test-id1', name: 'name1'}, {id: 'test-id2', name: 'name2'}, {id: 'test-id3', name: 'name3'}];
                 $httpBackend.when('GET', '/providers').respond(200, resources);
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
@@ -179,6 +179,24 @@ describe('Controllers', function(){
                     expect($rootScope.contents[0].deletionStarted).toBe(true);
                     $httpBackend.flush();
                 });
+
+                describe('when the resource is node', function(){
+                    it('should send DELETE request to /nodes/name', function(){
+                        $httpBackend.expectDELETE('/nodes/name1').respond(200, 'OK');
+                        expect($rootScope.contents[0].deletionStarted).toBe(undefined);
+                        $rootScope.deleteResource('nodes', 'name1');
+                        expect($rootScope.contents[0].deletionStarted).toBe(true);
+                        $httpBackend.flush();
+                    });
+
+                    it('should remove the details based on the name', function(){
+                        $httpBackend.expectDELETE('/nodes/name1').respond(200, 'OK');
+                        $rootScope.details = {id: 'test-id1', name: 'name1'};
+                        $rootScope.deleteResource('nodes', 'name1');
+                        $httpBackend.flush();
+                        expect($rootScope.details).toBe(undefined);
+                    });
+                });
             });
 
         });
@@ -249,8 +267,30 @@ describe('Controllers', function(){
                 expect($rootScope.contents[0].hasSetupLog).toBeTruthy();
                 expect($rootScope.contents[0].hasTeardownLog).toBeTruthy();
             });
-
         });
+
+        describe('when the resoure id Node', function(){
+            beforeEach(function(){
+                $routeParams = {resource: 'nodes'};
+            });
+            it('should load the providers', function(){
+                $httpBackend.expectGET('/nodes').respond(200, []);
+                $httpBackend.expectGET('/providers').respond(200, []);
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+                expect($rootScope.providers).toEqual([]);
+            });
+
+            it('should post an error if it cannot get providers', function(){
+                $httpBackend.expectGET('/nodes').respond(200, [{}]);
+                $httpBackend.expectGET('/providers').respond(400, {message: 'not ok'});
+                expect(AlertMsg.alerts.length).toEqual(0);
+                var controller = createController('OverviewController');
+                $httpBackend.flush();
+                expect(AlertMsg.alerts.length).toEqual(1);
+            });
+        });
+
     });
 
     describe('ResourceController', function(){
