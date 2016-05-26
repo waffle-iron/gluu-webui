@@ -19,7 +19,7 @@ describe('Controllers', function(){
             switch (name) {
                 case 'ResourceController': deps.$location = $location;
                                            break;
-                case 'NodeLogController': deps.$interval = $interval;
+                case 'ContainerLogController': deps.$interval = $interval;
                                           break;
             }
             return $controller(name, deps);
@@ -580,47 +580,60 @@ describe('Controllers', function(){
         });
     });
 
-    describe('NodeLogController', function(){
+    describe('ContainerLogController', function(){
         beforeEach(function(){
-            $routeParams = {node_name: 'node1', action: 'setup'};
+            $routeParams = {id: 'container-1', action: 'setup'};
         });
         describe('Initialization', function(){
-            it('should setup a timer to GET /node/log at intervals', function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
-                var controller = createController('NodeLogController');
+           it('should load log without timer when state is SETUP_FINISHED or TEARDOWN_FINISHED', function(){
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'SETUP_FINISHED'});
+                var controller = createController('ContainerLogController');
+                spyOn($rootScope, 'loadLog');
                 $httpBackend.flush();
-                expect($interval).toHaveBeenCalled();
-            });
+                expect($rootScope.loadLog).toHaveBeenCalled();
 
-            it('should load log without timer when state is not IN_PROGRESS', function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'FAILED'});
-                var controller = createController('NodeLogController');
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'TEARDOWN_FINISHED'});
+                var controller = createController('ContainerLogController');
                 spyOn($rootScope, 'loadLog');
                 $httpBackend.flush();
                 expect($rootScope.loadLog).toHaveBeenCalled();
             });
 
-            it('should post an alert if the node detail req fails', function(){
-                $httpBackend.expectGET('/nodes/node1').respond(404, {message: 'FAILED'});
-                var controller = createController('NodeLogController');
+            it('should post an alert if container_log fetch req fails', function(){
+                $httpBackend.expectGET('/container_logs/container-1').respond(404, {message: 'FAILED'});
+                var controller = createController('ContainerLogController');
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(1);
             });
 
             it('should alert the user if the data does not define a state for the node', function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, 'Data without State');
-                var controller = createController('NodeLogController');
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, 'Data without State');
+                var controller = createController('ContainerLogController');
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(1);
             });
+
+            it('should set an interval to load log if the state is either SETUP_IN_PROGRESS or TEARDOWN_IN_PROGRESS', function(){
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'SETUP_IN_PROGRESS'});
+                var controller = createController('ContainerLogController');
+                $httpBackend.flush();
+                expect($interval).toHaveBeenCalledWith($rootScope.loadLog, 3000);
+
+                $routeParams = {id: 'container-1', action: 'teardown'};
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'TEARDOWN_IN_PROGRESS'});
+                var controller = createController('ContainerLogController');
+                $httpBackend.flush();
+                expect($interval).toHaveBeenCalledWith($rootScope.loadLog, 3000);
+            });
+
         });
 
         describe('$scope.loadLog', function(){
             beforeEach(function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
-                var controller = createController('NodeLogController');
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'SETUP_IN_PROGRESS'});
+                var controller = createController('ContainerLogController');
                 $httpBackend.flush();
 
                 // fixture to test the scrolling to bottom after log text update
@@ -633,16 +646,14 @@ describe('Controllers', function(){
             });
 
             it('should load the log data to scope', function(){
-                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG TEXT']);
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                $httpBackend.expectGET('/container_logs/container-1/setup').respond(200, {setup_log_contents: ['Line 1', 'Line 2']});
                 $rootScope.loadLog();
                 $httpBackend.flush();
-                expect($rootScope.logText).toEqual('LOG TEXT');
+                expect($rootScope.logText).toEqual('Line 1\nLine 2');
             });
 
             it('should scroll to the bottom after log text is added', function(){
-                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG TEXT']);
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                $httpBackend.expectGET('/container_logs/container-1/setup').respond(200, {setup_log_contents: ['Line 1', 'Line 2']});
                 spyOn(document.getElementById('bottom'), 'scrollIntoView').and.callThrough();
                 $rootScope.loadLog();
                 $httpBackend.flush();
@@ -651,8 +662,7 @@ describe('Controllers', function(){
 
             it('should add an alert and stop the timer upon GET error', function(){
                 spyOn($interval, 'cancel');
-                $httpBackend.expectGET('/node_logs/node1/setup').respond(404, {message: 'NO DATA'});
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
+                $httpBackend.expectGET('/container_logs/container-1/setup').respond(404, {message: 'NO DATA'});
                 expect(AlertMsg.alerts.length).toEqual(0);
                 $rootScope.loadLog();
                 $httpBackend.flush();
@@ -660,10 +670,18 @@ describe('Controllers', function(){
                 expect($interval.cancel).toHaveBeenCalled();
             });
 
-            it('should stop the timer if state is not IN_PROGRESS', function(){
+            it('should stop the timer if state is SETUP_FINISHED', function(){
                 spyOn($interval, 'cancel');
-                $httpBackend.expectGET('/node_logs/node1/setup').respond(200, ['LOG DONE']);
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'SUCCESS'});
+                $httpBackend.expectGET('/container_logs/container-1/setup').respond(200,{state: 'SETUP_FINISHED', setup_log_contents: ['LOG DONE']});
+                $rootScope.loadLog();
+                $httpBackend.flush();
+                expect($interval.cancel).toHaveBeenCalled();
+            });
+
+            it('should stop the timer if state is TEARDOWN_FINISHED', function(){
+                spyOn($interval, 'cancel');
+                $routeParams.action = 'teardown';
+                $httpBackend.expectGET('/container_logs/container-1/teardown').respond(200,{state: 'TEARDOWN_FINISHED', teardown_log_contents: ['LOG DONE']});
                 $rootScope.loadLog();
                 $httpBackend.flush();
                 expect($interval.cancel).toHaveBeenCalled();
@@ -678,8 +696,8 @@ describe('Controllers', function(){
 
         describe('$scope.stopLog', function(){
             beforeEach(function(){
-                $httpBackend.expectGET('/nodes/node1').respond(200, {state: 'IN_PROGRESS'});
-                var controller = createController('NodeLogController');
+                $httpBackend.expectGET('/container_logs/container-1').respond(200, {state: 'SETUP_IN_PROGRESS'});
+                var controller = createController('ContainerLogController');
                 $httpBackend.flush();
             });
             it('should cancel the interval and set stop to undefined if defined', function(){

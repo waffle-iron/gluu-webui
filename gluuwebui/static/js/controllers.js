@@ -402,7 +402,6 @@ webuiControllers.controller( 'ContainerLogController', ['$scope', '$http', '$rou
         var stop;
         AlertMsg.clear();
 
-
         $http.get('/container_logs/'+$routeParams.id).success(function(data){
             if ( angular.isDefined(data.state) ) {
                 $scope.container_name = data.container_name;
