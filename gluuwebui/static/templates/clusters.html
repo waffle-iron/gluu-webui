@@ -1,7 +1,7 @@
 
 <div class="row">
     <h2>
-        Clusters  <a href="#/new/clusters" class="btn btn-default">New Cluster</a>
+      Clusters  <a href="#/new/clusters" class="btn btn-default" ng-if="contents.length < 1">New Cluster</a>
     </h2>
 </div>
 <div id="resourceTable" class="row" ng-if="contents.length">
