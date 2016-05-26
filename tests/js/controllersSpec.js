@@ -163,14 +163,6 @@ describe('Controllers', function(){
                     expect($rootScope.details).toBe(undefined);
                 });
 
-                it('should remove the details if the id is empty using the name for NODES', function(){
-                    $httpBackend.expectDELETE('/nodes/test-id1').respond(200, 'OK');
-                    $rootScope.details = {id: '', name: 'test-id1'};
-                    $rootScope.deleteResource('nodes', 'test-id1');
-                    $httpBackend.flush();
-                    expect($rootScope.details).toBe(undefined);
-                });
-
                 it('should NOT remove the details if the id doesnt match', function(){
                     $httpBackend.expectDELETE('/providers/test-id3').respond(200, 'OK');
                     $rootScope.details = {id: 'test-id1'};
@@ -180,10 +172,10 @@ describe('Controllers', function(){
                     expect($rootScope.details).not.toBe(undefined);
                 });
 
-                it('should add force_rm=1 to the querystring when deleting a node IN_PROGRESS', function(){
-                    $httpBackend.expectDELETE('/nodes/node1?force_rm=1').respond(200, 'OK');
-                    $rootScope.contents = [{id: '', name:'node1', state:'IN_PROGRESS'}];
-                    $rootScope.deleteResource('nodes', 'node1');
+                it('should add force_rm=1 to the querystring when deleting a container IN_PROGRESS', function(){
+                    $httpBackend.expectDELETE('/containers/container_id?force_rm=1').respond(200, 'OK');
+                    $rootScope.contents = [{id: 'container_id', state:'IN_PROGRESS'}];
+                    $rootScope.deleteResource('containers', 'container_id');
                     expect($rootScope.contents[0].deletionStarted).toBe(true);
                     $httpBackend.flush();
                 });
@@ -198,20 +190,14 @@ describe('Controllers', function(){
                 $httpBackend.flush();
             });
 
-            it('should return cluster name for cluster id', function(){
-                var list = [{id: 'id1', name: 'cluster1'}, {id: 'id2', name: 'cluster2'}];
+            it('should return resource name for given resource id', function(){
+                var list = [{id: 'id1', name: 'cluster1'}, {id: 'id2', name: 'resource2'}];
                 expect($rootScope.getResourceName(list, 'id1')).toMatch('cluster1');
-                expect($rootScope.getResourceName(list, 'id2')).toMatch('cluster2');
-            });
-
-            it('should return provider hostname for provider id', function(){
-                var list = [{id: 'id1', hostname: 'provider1'}, {id: 'id2', hostname: 'provider2'}];
-                expect($rootScope.getResourceName(list, 'id1')).toMatch('provider1');
-                expect($rootScope.getResourceName(list, 'id2')).toMatch('provider2');
+                expect($rootScope.getResourceName(list, 'id2')).toMatch('resource2');
             });
 
             it('should return the id if the id doesn\'t match anything', function(){
-                var list = [{id: 'id1', hostname: 'provider2'}, {id: 'id2', hostname: 'provider2'}];
+                var list = [{id: 'id1', name: 'provider2'}, {id: 'id2', name: 'provider2'}];
                 expect($rootScope.getResourceName(list, 'id3')).toMatch('id3');
                 expect($rootScope.getResourceName(list, 'random-id')).toMatch('random-id');
 
@@ -221,42 +207,41 @@ describe('Controllers', function(){
             });
         });
 
-        describe('when resource is NODE', function(){
+        describe('when resource is Containers', function(){
             beforeEach(function(){
-                $routeParams = {resource: 'nodes'};
+                $routeParams = {resource: 'containers'};
             });
-            it('should load list of clusters and providers to the scope', function(){
-                $httpBackend.expectGET('/nodes').respond(200, []);
+            it('should load list of clusters and nodes to the scope', function(){
+                $httpBackend.expectGET('/containers').respond(200, []);
                 $httpBackend.expectGET('/clusters').respond(200, []);
-                $httpBackend.expectGET('/providers').respond(200, []);
+                $httpBackend.expectGET('/nodes').respond(200, []);
 
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
 
-                expect($rootScope.providers).toEqual([]);
+                expect($rootScope.nodes).toEqual([]);
                 expect($rootScope.clusters).toEqual([]);
             });
 
             it('should post an alert if it can\'t fetch data', function(){
-                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid', name: 'someid'}]);
+                $httpBackend.expectGET('/containers').respond(200, []);
                 $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
-                $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
-                $httpBackend.expectGET('/node_logs/someid').respond(400, {message: 'NO Logs'})
+                $httpBackend.expectGET('/nodes').respond(400, {message: 'NOT OK'});
 
                 expect(AlertMsg.alerts.length).toEqual(0);
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
 
-                expect($rootScope.providers).toBe(undefined);
-                expect($rootScope.clusters).toBe(undefined);
-                expect(AlertMsg.alerts.length).toEqual(2);
+                expect($rootScope.nodes).toBeUndefined();
+                expect($rootScope.clusters).toBeUndefined();
+                expect(AlertMsg.alerts.length).toEqual(3); // +1 for empty /containers
             });
 
-            it('should fetch the node_logs for each log and set the status', function(){
-                $httpBackend.expectGET('/nodes').respond(200, [{id: 'someid', name: 'someid'}]);
+            it('should fetch the container_logs for each log and set the status', function(){
+                $httpBackend.expectGET('/containers').respond(200, [{id: 'some-id', name: 'some-name'}]);
                 $httpBackend.expectGET('/clusters').respond(200, []);
-                $httpBackend.expectGET('/providers').respond(200, []);
-                $httpBackend.expectGET('/node_logs/someid').respond(200, {setup_log_url: 'setup_url', teardown_log_url: 'teardown_url'})
+                $httpBackend.expectGET('/nodes').respond(200, []);
+                $httpBackend.expectGET('/container_logs/some-name').respond(200, {setup_log_url: 'setup_url', teardown_log_url: 'teardown_url'})
 
                 var controller = createController('OverviewController');
                 $httpBackend.flush();
@@ -316,24 +301,21 @@ describe('Controllers', function(){
              *  Tests to verfiy NEW NODE form specific actions
              */
             describe('when resource is NODE', function(){
-                it('should get the list of clusters and providers for Node form', function(){
+                it('should get the list of providers for Node form', function(){
                     $routeParams = {resource: 'nodes'};
-                    $httpBackend.expectGET('/clusters').respond(200, [{id: 'id1', name: 'cluster1'}]);
-                    $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', hostname: 'provider1'}]);
+                    $httpBackend.expectGET('/providers').respond(200, [{id: 'id2', name: 'provider1'}]);
                     var controller = createController('ResourceController');
                     $httpBackend.flush();
-                    expect($rootScope.clusters.length).toEqual(1);
                     expect($rootScope.providers.length).toEqual(1);
                 });
 
                 it('should post alerts when dependency fetching fails for New Node', function(){
                     $routeParams = {resource: 'nodes'};
-                    $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
                     $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
                     expect(AlertMsg.alerts.length).toEqual(0);
                     var controller = createController('ResourceController');
                     $httpBackend.flush();
-                    expect(AlertMsg.alerts.length).toEqual(2);
+                    expect(AlertMsg.alerts.length).toEqual(1);
                 });
             });
 
@@ -341,50 +323,82 @@ describe('Controllers', function(){
 
         describe('$scope.submit', function(){
             beforeEach(function(){
+            });
+
+            it('should send a PUT request to /resource/id in edit mode', function(){
                 $routeParams = {resource: 'resource'};
                 var controller = createController('ResourceController');
                 $rootScope.resourceData = {id: 'some-id', name: 'some name'};
-            });
-
-            it('should post data to /resource/id in edit mode', function(){
-                $httpBackend.expectPOST('/resource/some-id', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $httpBackend.expectPUT('/resource/some-id', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
                 $rootScope.editMode = true;
                 $rootScope.submit();
                 $httpBackend.flush();
             });
-            it('should post data to /resource in new mode', function(){
-                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+
+            it('should post data to /providers/driver when the resource is provider', function(){
+                $routeParams = {resource: 'providers', id: 'digitalocean'};
+                var controller = createController('ResourceController');
+                $rootScope.resourceData = {id: 'some-id', name: 'some name'};
+                $httpBackend.expectPOST('/providers/digitalocean', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $rootScope.editMode = false;
+                $rootScope.submit();
+                $httpBackend.flush();
+            });
+
+            it('should post data to /containers/contianer_type when the resource is contianers', function(){
+                $routeParams = {resource: 'containers'};
+                $httpBackend.expectGET('/nodes').respond(200, []);
+                var controller = createController('ResourceController');
+                $rootScope.container_type = 'oxidp';
+                $rootScope.resourceData = {id: 'id1'};
+                $httpBackend.expectPOST('/containers/oxidp', {id: 'id1'}).respond(200, 'OK');
+                $rootScope.editMode = false;
+                $rootScope.submit();
+                $httpBackend.flush();
+            });
+
+            it('should post data to /nodes/node_type when the resource is node', function(){
+                $routeParams = {resource: 'nodes'};
+                $httpBackend.expectGET('/providers').respond(200, []);
+                var controller = createController('ResourceController');
+                $rootScope.node_type = 'master';
+                $rootScope.resourceData = {id: 'id1'};
+                $httpBackend.expectPOST('/nodes/master', {id: 'id1'}).respond(200, 'OK');
                 $rootScope.editMode = false;
                 $rootScope.submit();
                 $httpBackend.flush();
             });
             it('should redirect to /resource upon post success', function(){
-                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(200, 'OK');
+                $routeParams = {resource: 'resource'};
+                $httpBackend.expectPOST('/resource', {}).respond(200, 'OK');
+                var controller = createController('ResourceController');
                 $rootScope.submit();
                 $httpBackend.flush();
                 expect($location.path()).toEqual('/resource');
             });
-            it('should redirect to /node_logs/node_name/setup upon successful POST for Nodes', function(){
-                $routeParams = {resource: 'nodes'};
+            it('should redirect to /container_logs/container_name/setup upon successful POST for containers', function(){
+                $routeParams = {resource: 'containers'};
+                $httpBackend.expectGET('/nodes').respond(200, []);
                 var controller = createController('ResourceController');
-                $rootScope.resourceData = {};
-                $httpBackend.expectGET('/clusters').respond(200, []);
-                $httpBackend.expectGET('/providers').respond(200, []);
-                $httpBackend.expectPOST('/nodes', {}).respond(200, {name: 'node_name'});
+                $rootScope.container_type = 'oxauth';
+                $httpBackend.expectPOST('/containers/oxauth', {}).respond(200, {name: 'container_1'});
                 $rootScope.submit();
                 $httpBackend.flush();
-                expect($location.path()).toEqual('/node_logs/node_name/setup');
+                expect($location.path()).toEqual('/container_logs/container_1/setup');
             });
             it('should add an alert on POST failure in both Edit and Create', function(){
-                $httpBackend.expectPOST('/resource', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
+                $routeParams = {resource: 'resource', id: 'some-id'};
+                var controller = createController('ResourceController');
                 expect(AlertMsg.alerts.length).toEqual(0);
                 // Create Mode
+                $httpBackend.expectPOST('/resource', {}).respond(400, {message: 'not accepted'});
                 $rootScope.editMode = false;
                 $rootScope.submit();
                 $httpBackend.flush();
                 expect(AlertMsg.alerts.length).toEqual(1);
                 // Edit Mode
-                $httpBackend.expectPOST('/resource/some-id', {id: 'some-id', name: 'some name'}).respond(400, {message: 'not accepted'});
+                $httpBackend.expectPUT('/resource/some-id', {id: 'some-id'}).respond(400, {message: 'not accepted'});
+                $rootScope.resourceData = {id: 'some-id'};
                 $rootScope.editMode = true;
                 $rootScope.submit();
                 $httpBackend.flush();
@@ -561,23 +575,6 @@ describe('Controllers', function(){
     });
 
     describe('Dashboard Controller', function(){
-        it('should get dashboard data from the server and load', function(){
-            var data = {nodes: 0, clusters: 2, providers: 1};
-            $httpBackend.expectGET('/dashboard').respond(200, data);
-
-            var controller = createController('DashboardController');
-            $httpBackend.flush();
-            expect($rootScope.data).toEqual(data);
-        });
-
-        it('should post an alert if it did not get any alert', function(){
-            $httpBackend.expectGET('/dashboard').respond(400, {message: 'NOTHING'});
-            expect(AlertMsg.alerts.length).toEqual(0);
-
-            var controller = createController('DashboardController');
-            $httpBackend.flush();
-            expect(AlertMsg.alerts.length).toEqual(1);
-        });
     });
 
     describe('ContainerLogController', function(){

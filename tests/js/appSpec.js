@@ -20,13 +20,13 @@ describe('Gluu Web UI', function(){
             expect($route.routes['/:action/:resource/:id?'].controller).toMatch('ResourceController');
         });
 
-        it('should have NodeLogController for /node_logs/node_id/action', function(){
-            expect($route.routes['/node_logs/:node_name/:action'].controller).toMatch('NodeLogController');
+        it('should have ContainerLogController for /container_logs/log_id/action', function(){
+            expect($route.routes['/container_logs/:id/:action'].controller).toMatch('ContainerLogController');
         });
     });
 
     describe('templateMaker', function(){
-        var resources = ['license_keys', 'providers', 'clusters', 'nodes'];
+        var resources = ['license_keys', 'providers', 'clusters', 'nodes', 'containers'];
         describe('function getTemplate', function(){
             it('should return a valid template for /resource', function(){
                 for( var i in resources ){
@@ -39,11 +39,12 @@ describe('Gluu Web UI', function(){
             it('should return a template url for new and edit actions', function(){
                 // FIXME Negative assertions are costly
                 for(var i in resources){
-                    var params = {action: 'new', resource: resources[i]};
+                    // id - carries the types for providers FIXME use proper url routing
+                    var params = {action: 'new', resource: resources[i], id: 'digitalocean'};
                     expect(templateMaker.getTemplate(params)).not.toMatch('templates/404.html');
                 }
                 for(i in resources){
-                    var params2 = {action: 'edit', resource: resources[i]};
+                    var params2 = {action: 'edit', resource: resources[i], id: 'generic'};
                     expect(templateMaker.getTemplate(params2)).not.toMatch('templates/404.html');
                 }
             });

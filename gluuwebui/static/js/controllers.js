@@ -158,7 +158,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
             // check if the resrouce is a container in progress, then force delete the container
             if ( resource === 'containers' ) {
                 for (var i=0; i < $scope.contents.length; i++){
-                    if ($scope.contents[i].name === id && $scope.contents[i].state === 'IN_PROGRESS') {
+                    if ($scope.contents[i].id === id && $scope.contents[i].state === 'IN_PROGRESS') {
                         querystring = '?force_rm=1';
                     }
                 }
@@ -270,7 +270,7 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
 
         /*
          *  Funtion that handles the New Resource and Edit Resource form submissions
-         *  This fucntion is called whent the 'Add Resource' button is clicked in the form
+         *  This fucntion is called when the 'Create' button is clicked in the form
          *
          */
         $scope.submit = function(){
