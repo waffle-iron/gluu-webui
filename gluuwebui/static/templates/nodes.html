@@ -17,7 +17,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="row in contents track by $index">
-                <td><a href="#/nodes" ng-click="loadResource('nodes', row.id)">{{row.name}}</a></td>
+                <td><a href="#/nodes" ng-click="loadResource('nodes', row.name)">{{row.name}}</a></td>
                 <td>{{row.id}}</td>
                 <td>{{row.type}}</td>
                 <td>{{getResourceName( providers, row.provider_id )}}</td>
