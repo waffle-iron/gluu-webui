@@ -328,11 +328,69 @@ webuiControllers.controller( 'ResourceController', ['$scope', '$http', '$routePa
 webuiControllers.controller( 'DashboardController', ['$scope', '$http', '$routeParams', 'AlertMsg',
     function($scope, $http, $routeParams, AlertMsg){
         AlertMsg.clear();
-        $http.get('/dashboard').success(function(data){
-            $scope.data = data;
-        }).error(function(data){
-            postErrorAlert(AlertMsg, data);
-        });
+
+        // charts.js animation setting
+        $scope.options = {
+            animation: false
+        };
+
+        function getCount(list, property, value){
+            var count = 0;
+            for(var i=0; i < list.length; i++){
+                if (list[i][property] === value){
+                    count += 1;
+                }
+            }
+            return count;
+        }
+
+        $http.get('/clusters').success(function(data){
+            $scope.clusters = data;
+        }).error(function(data){ postErrorAlert(AlertMsg, data); });
+
+        $http.get('/providers').success(function(data){
+            $scope.providers = data;
+            var doCount = getCount(data, 'driver', 'digitalocean'),
+                genCount = getCount(data, 'driver', 'generic');
+            $scope.drivers = [doCount + ' - Digital Ocean', genCount + ' - Generic'];
+            $scope.driverCounts = [doCount, genCount];
+
+        }).error(function(data){ postErrorAlert(AlertMsg, data); });
+
+        $http.get('/nodes').success(function(data){
+            $scope.nodes = data;
+
+            var masterCount = getCount(data, 'type', 'master'),
+                workerCount = getCount(data, 'type', 'worker'),
+                disCount = getCount(data, 'type', 'discovery');
+
+            $scope.nodeTypes = [disCount + " - Discovery", masterCount + " - Master", workerCount + " - Worker"];
+            $scope.nodeCounts = [disCount, masterCount, workerCount];
+
+        }).error(function(data){ postErrorAlert(AlertMsg, data); });
+
+        $http.get('/containers').success(function(data){
+            $scope.containers = data;
+
+            var ldap = getCount(data, 'type', 'ldap'),
+                oxauth = getCount(data, 'type', 'oxauth'),
+                nginx = getCount(data, 'type', 'nginx'),
+                oxtrust = getCount(data, 'type', 'oxtrust'),
+                oxidp = getCount(data, 'type', 'oxidp');
+
+            $scope.conTypes = [ldap+' - LDAP', oxauth+' - OxAuth', nginx+' - Nginx', oxtrust+' - OxTrust', oxidp+' - OxIDP'];
+            $scope.conTypeCount = [ldap, oxauth, nginx, oxtrust, oxidp];
+
+            var success = getCount(data, 'state', 'SUCCESS'),
+                progress = getCount(data, 'state', 'IN_PROGRESS'),
+                failed = getCount(data, 'state', 'FAILED'),
+                disabled = getCount(data, 'state', 'DISABLED');
+
+            $scope.conStates = [success+' - Success', progress+' - In Progress', failed+' - Failed', disabled+' - Disabled'];
+            $scope.conStateCount = [success, progress, failed, disabled];
+            $scope.conStateColors = ['#5cb85c', '#f0ad4e', '#d9534f', '#777777'];
+
+        }).error(function(data){ postErrorAlert(AlertMsg, data); });
 }]);
 
 

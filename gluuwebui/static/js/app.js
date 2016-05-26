@@ -1,7 +1,8 @@
 var gluuwebui = angular.module('gluuwebui', [
         'ngRoute',
         'webuiControllers',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'chart.js'
         ]);
 
 var templateMaker = {};

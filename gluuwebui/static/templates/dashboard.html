@@ -1,132 +1,58 @@
+<div class="jumbotron" ng-if="clusters.length < 1">
+  <h1>Welcome!</h1>
+  <p>
+    <strong>Nothing!</strong> This Gluu installation doesn't have a cluster associated with it.
+  </p>
+  <p><a class="btn btn-primary btn-lg" href="#/new/clusters" role="button">Create a new cluster</a></p>
+</div>
 
 <div class="row">
-    <div class="col-md-5">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            Clusters
-        </div>
-        <div class="panel-body">
-            <p>Available: {{data.clusters}}</p>
-        </div>
-    </div>
-    </div>
-    <div class="col-md-5 col-md-offset-1">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            Providers
-        </div>
-        <div class="panel-body">
-            <p>Available: {{data.providers.count}}</p>
-        </div>
-        <table class="table">
-            <thead>
-                <tr class="bg-info" colspan=2 ng-click='showProviderTypes=!showProviderTypes' ng-init="showProviderTypes=false">
-                    <td colspan=2><strong>Provider Types</strong><span class="caret pull-right"></td>
-                </tr>
-            </thead>
-            <tbody ng-show="showProviderTypes">
-                <tr>
-                    <td>Master</td>
-                    <td>{{data.providers.type.master}}</td>
-                </tr>
-                <tr>
-                    <td>Consumer</td>
-                    <td>{{data.providers.type.consumer}}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
+  <h2>Cluster: <small>{{clusters[0].name}}</small></h2>
 </div>
+
 <div class="row">
-    <div class="col-md-5">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            Nodes
-        </div>
-        <div class="panel-body">
-            <p>Available: {{data.nodes.count}}</p>
-        </div>
-        <table class="table">
-            <thead>
-            <tr class="bg-info" ng-click='showNodeTypes=!showNodeTypes' ng-init='showNodeTypes=false'>
-                <td colspan=2><strong>Node Types</strong><span class="caret pull-right"></td>
-            </tr>
-            </thead>
-            <tbody ng-show='showNodeTypes'>
-            <tr>
-                <td>LDAP</td>
-                <td>{{data.nodes.type.ldap}}</td>
-            </tr>
-            <tr>
-                <td>oxTrust</td>
-                <td>{{data.nodes.type.oxtrust}}</td>
-            </tr>
-            <tr>
-                <td>oxAuth</td>
-                <td>{{data.nodes.type.oxauth}}</td>
-            </tr>
-            <tr>
-                <td>Nginx</td>
-                <td>{{data.nodes.type.nginx}}</td>
-            </tr>
-            <tr>
-                <td>oxIdp</td>
-                <td>{{data.nodes.type.oxidp}}</td>
-            </tr>
-            <tr>
-                <td class="text-warning">Httpd (Deprecated)</td>
-                <td>{{data.nodes.type.httpd}}</td>
-            </tr>
-            </tbody>
-        </table>
-        <table class="table">
-            <thead>
-            <tr class="bg-warning" ng-click='showstate=!showstate' ng-init='showstate=false'>
-                <td colspan=2><strong>Node States</strong><span class="caret pull-right"></span></td>
-            </tr>
-            </thead>
-            <tbody ng-show='showstate'>
-            <tr class="text-success">
-                <td>Success</td>
-                <td>{{data.nodes.state.SUCCESS}}</td>
-            </tr>
-            <tr class="text-info">
-                <td>In Progress</td>
-                <td>{{data.nodes.state.IN_PROGRESS}}</td>
-            </tr>
-            <tr class="text-danger">
-                <td>Failed</td>
-                <td>{{data.nodes.state.FAILED}}</td>
-            </tr>
-            <tr class="text-warning">
-                <td>Disabled</td>
-                <td>{{data.nodes.state.DISABLED}}</td>
-            </tr>
-            </tbody>
-        </table>
+  <div class="col-md-6" id="providers-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Providers - {{providers.length}}</h3>
+      </div>
+      <div class="panel-body">
+        <canvas id="driversChart" class="chart chart-doughnut" chart-data="driverCounts" chart-labels="drivers"
+          chart-legend=true chart-options="options"></canvas>
+      </div>
     </div>
+  </div>
+  <div class="col-md-6" id="nodes-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Nodes - {{nodes.length}}</h3>
+      </div>
+      <div class="panel-body">
+        <canvas id="nodetypesChart" class="chart chart-doughnut" chart-data="nodeCounts" chart-labels="nodeTypes"
+          chart-legend=true chart-options="options"></canvas>
+      </div>
     </div>
-    <div class="col-md-5 col-md-offset-1">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            License Keys
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Containers - {{containers.length}}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="containerTypes" class="chart chart-doughnut" chart-data="conTypeCount" chart-labels="conTypes"
+              chart-legend=true chart-options="options"></canvas>
+          </div>
+          <div class="col-md-6">
+            <canvas id="containerStates" class="chart chart-doughnut" chart-data="conStateCount" chart-labels="conStates"
+              chart-legend=true chart-options="options" chart-colours="conStateColors"></canvas>
+          </div>
         </div>
-        <div class="panel-body">
-            <p>Available: {{data.license_keys.count}}</p>
-        </div>
-        <table class="table">
-            <tbody>
-                <tr class="bg-success text-success">
-                    <td>Valid</td>
-                    <td>{{data.license_keys.type.valid}}</td>
-                </tr>
-                <tr class="bg-danger text-danger">
-                    <td>Invalid</td>
-                    <td>{{data.license_keys.type.invalid}}</td>
-                </tr>
-            </tbody>
-        </table>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
