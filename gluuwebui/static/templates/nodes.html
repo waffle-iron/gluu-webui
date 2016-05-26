@@ -22,7 +22,7 @@
                 <td>{{row.type}}</td>
                 <td>{{getResourceName( providers, row.provider_id )}}</td>
                <td>
-                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.id)">
+                    <button class="btn btn-danger btn-sm" ng-click="deleteResource('nodes', row.name)">
                       <img src="img/ajax-loader.gif" alt="Processing... " ng-show="row.deletionStarted">
                       Delete
                     </button>

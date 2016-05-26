@@ -155,9 +155,8 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
          */
         $scope.deleteResource = function(resource, id){
             var querystring = '';
-            // check if the resrouce is node and make sure it has a proper id otherwise use name
-            // id is actually name for the NODES
-            if ( resource === 'nodes' ) {
+            // check if the resrouce is a container in progress, then force delete the container
+            if ( resource === 'containers' ) {
                 for (var i=0; i < $scope.contents.length; i++){
                     if ($scope.contents[i].name === id && $scope.contents[i].state === 'IN_PROGRESS') {
                         querystring = '?force_rm=1';
@@ -189,8 +188,7 @@ webuiControllers.controller('OverviewController', ['$scope', '$http', '$routePar
                 // also remove the details view if present for the same id
                 if( angular.isDefined($scope.details) ){
                     // nodes mightnot have ids, instead use their names
-                    if( (resource === 'nodes' && $scope.details.id === '' && $scope.details.name == id) ||
-                        $scope.details.id === id ) {
+                    if( (resource === 'nodes' && $scope.details.name == id) || $scope.details.id === id ) {
                             $scope.details = undefined;
                     }
                 }
