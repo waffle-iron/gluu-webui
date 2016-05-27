@@ -76,7 +76,7 @@ module.exports = function(config) {
         dir: './coverage',
         reporters: [
             {type: 'html', subdir: 'report-html'},
-            { type: 'text', subdir: '.', file: 'coverage.txt' },
+            {type: 'text'},
         ]
     }
   });

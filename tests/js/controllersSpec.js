@@ -615,6 +615,35 @@ describe('Controllers', function(){
     });
 
     describe('Dashboard Controller', function(){
+        it('should fetch the data about all the resources', function(){
+            $httpBackend.expectGET('/clusters').respond(200, []);
+            $httpBackend.expectGET('/providers').respond(200, []);
+            $httpBackend.expectGET('/nodes').respond(200, []);
+            $httpBackend.expectGET('/containers').respond(200, []);
+            var controller = createController('DashboardController');
+            $httpBackend.flush();
+        });
+
+        it('should post an alert whenever some data cannot be fetched', function(){
+            $httpBackend.expectGET('/clusters').respond(400, {message: 'NOT OK'});
+            $httpBackend.expectGET('/providers').respond(400, {message: 'NOT OK'});
+            $httpBackend.expectGET('/nodes').respond(400, {message: 'NOT OK'});
+            $httpBackend.expectGET('/containers').respond(400, {message: 'NOT OK'});
+            var controller = createController('DashboardController');
+            expect(AlertMsg.alerts.length).toEqual(0);
+            $httpBackend.flush();
+            expect(AlertMsg.alerts.length).toEqual(4);
+        });
+
+        it('should populate the values for provider drivers for dashboard', function(){
+            $httpBackend.expectGET('/clusters').respond(200, []);
+            $httpBackend.expectGET('/providers').respond(200, [{driver: 'generic'}, {driver: 'generic'}]);
+            $httpBackend.expectGET('/nodes').respond(200, []);
+            $httpBackend.expectGET('/containers').respond(200, []);
+            var controller = createController('DashboardController');
+            $httpBackend.flush();
+            expect($rootScope.driverCounts).toEqual([0,2])
+        });
     });
 
     describe('ContainerLogController', function(){

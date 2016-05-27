@@ -17,7 +17,7 @@
   "scripts": {
     "start": "python run.py",
     "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --log-level debug --single-run",
-    "karma": "./node_modules/karma/bin/karma start tests/karma.conf.js --log-level debug"
+    "karma": "./node_modules/karma/bin/karma start tests/karma.conf.js"
   },
   "repository": {
     "type": "git",
