@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/GluuFederation/gluu-webui.png?label=ready&title=Ready)](https://waffle.io/GluuFederation/gluu-webui)
 # gluu-webui
 
 [![Build Status](https://travis-ci.org/GluuFederation/gluu-webui.svg?branch=master)](https://travis-ci.org/GluuFederation/gluu-webui)
